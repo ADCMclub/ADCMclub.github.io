@@ -1,0 +1,20 @@
+{
+  "name": "𝓐𝓓𝓒𝓜.𝒞𝓁𝓊𝒷",
+  "short_name": "𝓐𝓓𝓒𝓜",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#1a1a1a",
+  "icons": [
+    {
+      "src": "https://images.guns.lol/EOicS.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://images.guns.lol/EOicS.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
