@@ -1,12 +1,14 @@
 <!DOCTYPE html>
 <html lang="es">
+  
 
+<!--================================== HEAD =====================================-->
 <head>
   <meta charset="utf-8">
-  <title>𝓐𝓓𝓒𝓜.𝒞𝓁𝓊𝒷</title>
+  <title>𝓐𝓓𝓒𝓜.𝒞𝓁𝓊𝒷</title> 
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
-  <meta content="" name="keywords">
-  <meta content="" name="description">
+  <meta content="ADCM" name="keywords">
+  <meta content="Official page ADCM Club" name="description">
   <link rel="icon" type="imagen/png" href="https://images.guns.lol/TO1Qe.png">
 
   <!-- Facebook Opengraph integration: https://developers.facebook.com/docs/sharing/opengraph -->
@@ -24,7 +26,7 @@
   <meta name="twitter:image" content="">
 
   <!-- Place your favicon.ico and apple-touch-icon.png in the template root directory -->
-  <link href="favicon.ico" rel="shortcut icon">
+  <link href="logo.ico" rel="shortcut icon">
 
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,700,700i|Raleway:300,400,500,700,800" rel="stylesheet">
@@ -39,16 +41,16 @@
   <!-- Main Stylesheet File -->
   <link href="css/style.css" rel="stylesheet">
 
- <!--========================== Full scream ============================-->
+ <!--.............. Full scream ..............-->
 
 <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#1a1a1a">
 
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<link rel="apple-touch-icon" href="https://images.guns.lol/EOicS.png">
+<link rel="apple-touch-icon" href="https://images.guns.lol/TO1Qe.png">
 <meta name="apple-mobile-web-app-title" content="𝓐𝓓𝓒𝓜.𝒞𝓁𝓊𝒷">
- <!--========================== logo google ============================-->
+ <!--.............. logo google ..............-->
 <!-- Manifest -->
 <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#1a1a1a">
@@ -70,14 +72,18 @@
 }
 </script>
 
-
 </head>
 
+
+
+
+
+<!--================================== BODY =====================================-->
 <body>
-      <!--========================== MUSIC ============================-->
-<!DOCTYPE html>
-<html lang="es">
-<head>
+      <!--.............. MUSIC ..............-->
+ <!DOCTYPE html>
+ <html lang="es">
+ <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Reproducción Automática</title>
@@ -87,6 +93,7 @@
       margin: 0;
     }
 
+    /* .......... PANTALLA BIENVENIDA ........ */
     #pantallaBienvenida {
       position: fixed;
       top: 0;
@@ -119,16 +126,16 @@
       }
     }
   </style>
-</head>
-<body>
+ </head>
+ <body>
 
-  <!-- Pantalla de bienvenida -->
+  <!--.............. Pantalla de bienvenida  letras..............-->
   <div id="pantallaBienvenida" onclick="iniciarPagina()">
     𝒲ℰℒ𝒞𝒪ℳℰ <br>
     𝒸𝓁𝒾𝒸𝓀 𝓉ℴ ℯ𝓃𝓉ℯ𝓇
   </div>
 
-  <!-- Audio -->
+  <!--.............. Audio ..............-->
   <audio id="miAudio" loop>
     <source src="Music/No_More.mp3" type="audio/mp3">
     Tu navegador no soporta el elemento de audio.
@@ -147,13 +154,14 @@
       audio.play().catch(error => console.log("Autoplay bloqueado por el navegador"));
     }
   </script>
-</body>
-</html>
+ </body>
+ </html>
 
-  <!--========================== ============================-->
-<!--==========================
-  Hero Section
-  ============================-->
+
+
+
+
+ <!--================================ Hero Section ===================================-->
   <section id="hero">
     <div class="hero-container">
         <div class="wow fadeIn">
@@ -169,14 +177,13 @@
             </div>
         </div>
     </div>
-</section>
+ </section>
 
 
 
 
-  <!--==========================
-  Sección de encabezado
-  ============================-->
+
+ <!--============================ Sección de encabezado ===============================-->
   <header id="header">
     <div class="container">
       <div id="logo" class="pull-left">
@@ -187,23 +194,24 @@
 
       <nav id="nav-menu-container">
         <ul class="nav-menu">
-          <div hidden><li class="menu-active"><a href="#hero">Home</a></li>
-          <div hidden><li><a href="#about"></a></li>
+          <div hidden><li class="menu-active"><a href="#hero">Home</a></li></div>
+          <div hidden><li><a href="#about"></a></li></div>
           <div hidden><li><a href="#services">Servicios</a></li></div>
           <div hidden><li><a href="#portfolio">Portfolio</a></li></div>
           <div hidden><li><a href="#testimonials">Testimonials</a></li></div>
-          <div hidden><li><a href="#team">Equipo</a></li>
-          <div hidden><li><a href="#contact">Contactos</a></li></div></div>
+          <div hidden><li><a href="#team">Equipo</a></li></div>
+          <div hidden></div><li><a href="#contact">Contactos</a></li></div>
         </ul>
       </nav>
       <!-- #nav-menu-container -->
     </div>
   </header>
-  <!-- #header -->
 
-  <!--==========================
-  About Section
-  ============================-->
+
+
+
+
+ <!--================================ About Section ===================================-->
   <section id="about">
     <div class="container wow fadeInUp">
       <div class="row">
@@ -230,9 +238,13 @@
     </div>
   </section>
   <div hidden>
-  <!--==========================
-  Services Section
-  ============================-->
+
+
+
+
+
+    
+ <!--============================== Services Section =================================-->
   <section id="services">
     <div class="container wow fadeInUp">
       <div class="row">
@@ -277,11 +289,14 @@
       </div>
     </div>
   </section>
-</div>
+ </div>
   <div hidden>
-  <!--==========================
-  Subscrbe Section
-  ============================-->
+
+
+
+
+
+ <!--============================== Subscrbe Section =================================-->
   <section id="subscribe">
     <div class="container wow fadeInUp">
       <div class="row">
@@ -295,11 +310,14 @@
       </div>
     </div>
   </section>
-</div>
+ </div>
   <div hidden>
-  <!--==========================
-  Porfolio Section
-  ============================-->
+
+
+
+
+
+ <!--============================== Porfolio Section =================================-->
   <section id="portfolio">
     <div class="container wow fadeInUp">
       <div class="row">
@@ -386,11 +404,14 @@
       </div>
     </div>
   </section>
-</div>
+ </div>
   <div hidden>
-  <!--==========================
-  Testimonials Section
-  ============================-->
+
+
+
+
+
+ <!--============================ Testimonials Section ===============================-->
   <section id="testimonials">
     <div class="container wow fadeInUp">
       <div class="row">
@@ -433,10 +454,12 @@
 
     </div>
   </section>
-</div>
-  <!--==========================
-  Team Section
-  ============================-->
+ </div>
+
+
+
+
+ <!--============================  Team Section ===================================-->
   <section id="team">
     <div class="container wow fadeInUp">
       <div class="row">
@@ -504,17 +527,21 @@
       </div>
     </div>
   </section>
-  <div hidden>
-  <!--==========================
-  Contact Section
-  ============================-->
+ 
+
+
+
+
+
+ <!--============================  Contact Section ===================================-->
+  <div hidden></div>
   <section id="contact">
     <div class="container wow fadeInUp">
       <div class="row">
         <div class="col-md-12">
-          <h3 class="section-title">Contactanos</h3>
+          <h3 class="section-title">Contact us</h3>
           <div class="section-title-divider"></div>
-          <p class="section-description">Cuéntanos tus dudas, preguntas o comentarios</p>
+          <p class="section-description">Tell us your doubts, questions or comments</p>
         </div>
       </div>
 
@@ -523,17 +550,17 @@
           <div class="info">
             <div>
               <i class="fa fa-map-marker"></i>
-              <p>A108 Adam Street<br>New York, NY 535022</p>
+              <p>ECUADOR<br></p>
             </div>
 
             <div>
               <i class="fa fa-envelope"></i>
-              <p>info@example.com</p>
+              <p>support@adcm.club</p>
             </div>
 
             <div>
               <i class="fa fa-phone"></i>
-              <p>+1 5589 55488 55s</p>
+              <p>+593</p>
             </div>
 
           </div>
@@ -541,26 +568,26 @@
 
         <div class="col-md-5 col-md-push-2">
           <div class="form">
-            <div id="sendmessage">Tu mensaje ha sido enviado. ¡Gracias!</div>
+            <div id="sendmessage">Your message has been sent. Thank you!</div>
             <div id="errormessage"></div>
             <form action="" method="post" role="form" class="contactForm">
               <div class="form-group">
-                <input type="text" name="name" class="form-control" id="name" placeholder="Su nombre" data-rule="minlen:4" data-msg="Por favor ingrese al menos 4 caracteres" />
+                <input type="text" name="name" class="form-control" id="name" placeholder="Your name" data-rule="minlen:4" data-msg="Please enter at least 4 characters" />
                 <div class="validation"></div>
               </div>
               <div class="form-group">
-                <input type="email" class="form-control" name="email" id="email" placeholder="Su Email" data-rule="email" data-msg="Ingresa un Correo Valido" />
+                <input type="email" class="form-control" name="email" id="email" placeholder="Your Email" data-rule="email" data-msg="Enter a valid email address" />
                 <div class="validation"></div>
               </div>
               <div class="form-group">
-                <input type="text" class="form-control" name="subject" id="subject" placeholder="Asunto" data-rule="minlen:4" data-msg="Por favor ingrese al menos 8 caracteres del tema" />
+                <input type="text" class="form-control" name="subject" id="subject" placeholder="Affair" data-rule="minlen:4" data-msg="Please enter at least 8 characters of the subject" />
                 <div class="validation"></div>
               </div>
               <div class="form-group">
-                <textarea class="form-control" name="menssage" rows="5" data-rule="required" data-msg="Por favor escribe algo para nosotros" placeholder="Mensaje"></textarea>
+                <textarea class="form-control" name="menssage" rows="5" data-rule="required" data-msg="Please write something for us" placeholder="Mensaje"></textarea>
                 <div class="validation"></div>
               </div>
-              <div class="text-center"><button type="submit">Enviar mensaje</button></div>
+              <div class="text-center"><button type="submit">Send message</button></div>
             </form>
           </div>
         </div>
@@ -568,10 +595,13 @@
       </div>
     </div>
   </section>
-</div>
-  <!--==========================
-  Footer
-============================-->
+ </div>
+
+
+
+
+
+  <!--===============================  Footer ======================================-->
   <footer id="footer">
     <div class="container">
       <div class="row">
@@ -588,6 +618,11 @@
     </div>
   </footer>
   <!-- #footer -->
+  <!--=====================================================================-->
+
+
+
+
 
   <a href="#" class="back-to-top"><i class="fa fa-chevron-up"></i></a>
 
