@@ -573,9 +573,9 @@ body.mobile-nav-active #mobile-nav-toggle {
 #about .about-container {
   width: 100%;
   height: 600px;
-  background: url(https://images.guns.lol/2sDRO.jpeg) no-repeat;
-  background-size: 450px 550px;
-  background-position: 220px top; /* empuja la imagen un poco a la derecha */
+  background: url(https://images.guns.lol/ElbWk.png) no-repeat;
+  background-size: 450px 450px;
+  background-position: 400px top; /* empuja la imagen un poco a la derecha */
 }
 
 /* Estilo para móviles */
