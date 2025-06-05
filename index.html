@@ -195,14 +195,77 @@
     <nav id="nav-menu-container">
       <ul class="nav-menu">
 
-        <li><a href="register.html">Login</a></li>
-        <li><a href="https://bb.jeinzmacias.news/">Soccer</a></li>
-        <li><a href="contacto.html">Contact</a></li>
+        <li><a href="register.html" class="btn-menu-nav">Login</a></li>
+        <li><a href="https://bb.jeinzmacias.news/" class="btn-menu-nav">Soccer</a></li>
+        <li><a href="contacto.html" class="btn-menu-nav">Contact</a></li>
       </ul>
     </nav>
     <!-- #nav-menu-container -->
   </div>
 </header>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const buttons = document.querySelectorAll('.btn-menu-nav');
+
+    buttons.forEach(button => {
+      button.style.position = 'relative';
+      button.style.overflow = 'hidden';
+      button.style.transition = 'all 0.3s ease';
+      button.style.color = '#fff';
+      button.style.background = 'linear-gradient(45deg, #8b0000, #ff0000)';
+      button.style.padding = '12px 26px';
+      button.style.marginRight = '12px';  // margen derecho para separar botones
+      button.style.marginBottom = '8px';  // margen inferior para filas/móviles
+      button.style.borderRadius = '12px';
+      button.style.fontWeight = '700';
+      button.style.textTransform = 'uppercase';
+      button.style.letterSpacing = '1.5px';
+      button.style.fontFamily = "'Raleway', sans-serif";
+      button.style.boxShadow = '0 4px 15px rgba(255, 0, 0, 0.6)';
+      button.style.zIndex = '1';
+      button.style.textDecoration = 'none';
+      button.style.userSelect = 'none';
+
+      // Crear un span para el brillo animado
+      const shine = document.createElement('span');
+      shine.style.position = 'absolute';
+      shine.style.top = '50%';
+      shine.style.left = '-75%';
+      shine.style.width = '50%';
+      shine.style.height = '200%';
+      shine.style.background = 'rgba(255, 255, 255, 0.3)';
+      shine.style.transform = 'skewX(-25deg) translateX(0)';
+      shine.style.transition = 'transform 0.6s ease';
+      shine.style.pointerEvents = 'none';
+      shine.style.filter = 'blur(8px)';
+      shine.style.borderRadius = '12px';
+      shine.style.zIndex = '0';
+
+      button.appendChild(shine);
+
+      // Hover effect con JS
+      button.addEventListener('mouseenter', () => {
+        shine.style.transform = 'skewX(-25deg) translateX(200%)';
+        button.style.background = 'linear-gradient(45deg, #b30000, #ff3333)';
+        button.style.boxShadow = '0 6px 25px rgba(255, 51, 51, 0.8)';
+        button.style.transform = 'scale(1.08)';
+        button.style.color = '#fff';
+        button.style.zIndex = '2';
+      });
+
+      button.addEventListener('mouseleave', () => {
+        shine.style.transform = 'skewX(-25deg) translateX(0)';
+        button.style.background = 'linear-gradient(45deg, #8b0000, #ff0000)';
+        button.style.boxShadow = '0 4px 15px rgba(255, 0, 0, 0.6)';
+        button.style.transform = 'scale(1)';
+        button.style.color = '#fff';
+        button.style.zIndex = '1';
+      });
+    });
+  });
+</script>
+
 
 
 
