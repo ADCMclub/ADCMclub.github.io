@@ -229,7 +229,7 @@
         .then(userCredential => {
           showMessage(`¡Bienvenido, ${userCredential.user.email}!`);
           loginForm.reset();
-          window.location.href = "index.html";  // <-- Redirije -https://tusitio.com/privado -dashboard.html
+          window.location.href = "/index.html";  // <-- Redirije -https://tusitio.com/privado -dashboard.html
         })
         .catch(error => {
           document.getElementById('login-error').textContent = error.message;
