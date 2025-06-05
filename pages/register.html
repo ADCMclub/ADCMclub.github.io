@@ -131,6 +131,16 @@
       transform: translateX(-50%) translateY(0);
       pointer-events: auto;
     }
+    #message-box.error {
+  background: linear-gradient(135deg, #5a0000, #ff3333);
+  box-shadow: 0 6px 20px rgba(255, 80, 80, 0.8);
+}
+
+#message-box.success {
+  background: linear-gradient(135deg, #009900, #33cc33);
+  box-shadow: 0 6px 20px rgba(0, 255, 80, 0.5);
+}
+
   </style>
 </head>
 <body>
@@ -201,16 +211,18 @@
       document.getElementById('register-error').textContent = '';
     }
 
-    // Función para mostrar mensajes animados
-    function showMessage(text) {
-      const messageBox = document.getElementById('message-box');
-      messageBox.textContent = text;
-      messageBox.classList.add('show');
+function showMessage(text, tipo = 'success') {
+  const messageBox = document.getElementById('message-box');
+  messageBox.textContent = text;
 
-      setTimeout(() => {
-        messageBox.classList.remove('show');
-      }, 3000); // Duración del mensaje: 3 segundos
-    }
+  messageBox.classList.remove('error', 'success');
+  messageBox.classList.add('show', tipo);
+
+  setTimeout(() => {
+    messageBox.classList.remove('show', tipo);
+  }, 3500);
+}
+
 
     // Login
     loginForm.addEventListener('submit', (e) => {
@@ -231,9 +243,28 @@
           loginForm.reset();
           window.location.href = "#hero";  // <-- Redirije -https://tusitio.com/privado -/dashboard.html
         })
-        .catch(error => {
-          document.getElementById('login-error').textContent = error.message;
-        });
+.catch(error => {
+  let message = 'Error desconocido. Intenta nuevamente.';
+
+  switch (error.code) {
+    case 'auth/user-not-found':
+      message = '⚠ Usuario no registrado.';
+      break;
+    case 'auth/wrong-password':
+      message = '🔒 Contraseña incorrecta.';
+      break;
+    case 'auth/invalid-email':
+      message = '✉ Correo no válido.';
+      break;
+    case 'auth/too-many-requests':
+      message = '🚫 Muchos intentos. Intenta más tarde.';
+      break;
+  }
+
+  document.getElementById('login-error').textContent = message;
+  showMessage(message, 'error');
+});
+
     });
 
     // Registro con guardado en Realtime Database
@@ -276,9 +307,21 @@
           registerForm.reset();
           toggleForms();
         })
-        .catch(error => {
-          document.getElementById('register-error').textContent = error.message;
-        });
+.catch(error => {
+  let message = 'Error durante el registro.';
+
+  if (error.code === 'auth/email-already-in-use') {
+    message = '📧 Este correo ya está registrado.';
+  } else if (error.code === 'auth/invalid-email') {
+    message = '❌ Correo electrónico no válido.';
+  } else if (error.code === 'auth/weak-password') {
+    message = '🔑 La contraseña es muy débil.';
+  }
+
+  document.getElementById('register-error').textContent = message;
+  showMessage(message, 'error');
+});
+
     });
   </script>
 
