@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>𝓐𝓓𝓒𝓜.𝒞𝓁𝓊𝒷 | Login & Registro</title>
+  <link rel="icon" href="https://images.guns.lol/TO1Qe.png" />
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: #121212;
+      font-family: 'Open Sans', sans-serif;
+      color: #eee;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+    }
+    #login-register {
+      background: #1e1e1e;
+      padding: 40px 35px;
+      border-radius: 15px;
+      box-shadow: 0 0 25px #960000cc;
+      max-width: 420px;
+      width: 100%;
+      animation: fadeInUp 0.8s ease forwards;
+      opacity: 0;
+      transform: translateY(40px);
+    }
+    @keyframes fadeInUp {
+      to { opacity: 1; transform: translateY(0); }
+    }
+    #login-register h2 {
+      text-align: center;
+      color: #960000;
+      margin-bottom: 25px;
+      font-weight: 700;
+      font-size: 2.4rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+    form { display: flex; flex-direction: column; }
+    label {
+      font-weight: 600;
+      margin-bottom: 6px;
+      margin-top: 18px;
+      font-size: 0.9rem;
+      color: #ccc;
+    }
+    input {
+      padding: 12px 15px;
+      border-radius: 8px;
+      border: none;
+      background-color: #2a2a2a;
+      color: #eee;
+      font-size: 1rem;
+    }
+    input:focus {
+      outline: none;
+      border: 2px solid #960000;
+      background-color: #3a1a1a;
+    }
+    #action-btn {
+      background-color: #960000;
+      color: #fff;
+      font-weight: 700;
+      font-size: 1.1rem;
+      margin-top: 30px;
+      padding: 14px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      width: 100%;
+      box-shadow: 0 4px 15px #960000bb;
+      transition: transform 0.3s ease, background-color 0.3s ease;
+    }
+    #action-btn:hover {
+      background-color: #b30000;
+      transform: scale(1.05);
+    }
+    #toggle-link {
+      margin-top: 22px;
+      text-align: center;
+      color: #aaa;
+      cursor: pointer;
+      font-size: 0.95rem;
+    }
+    #toggle-link:hover {
+      color: #960000;
+      text-decoration: underline;
+    }
+    .hidden {
+      display: none;
+    }
+    .error-message {
+      color: #ff4c4c;
+      font-size: 0.85rem;
+      margin-top: 6px;
+      font-weight: 600;
+    }
+
+    /* Mensaje animado */
+    #message-box {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-50px);
+      background: linear-gradient(135deg, #960000, #ff0000);
+      color: white;
+      padding: 15px 30px;
+      border-radius: 25px;
+      font-weight: 700;
+      font-size: 1.2rem;
+      box-shadow: 0 6px 20px rgba(255, 0, 0, 0.7);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s ease, transform 0.5s ease;
+      z-index: 9999;
+      user-select: none;
+    }
+    #message-box.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+      pointer-events: auto;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="login-register">
+    <!-- LOGIN -->
+    <form id="login-form" autocomplete="off">
+      <h2>Iniciar Sesión</h2>
+      <label for="login-email">Correo electrónico</label>
+      <input type="email" id="login-email" name="email" required placeholder="tu@email.com" />
+      <label for="login-password">Contraseña</label>
+      <input type="password" id="login-password" name="password" required minlength="8" placeholder="Contraseña segura" />
+      <button type="submit" id="action-btn">Entrar</button>
+      <div id="login-error" class="error-message"></div>
+      <p id="toggle-link">¿No tienes cuenta? <strong>Regístrate aquí</strong></p>
+    </form>
+
+    <!-- REGISTRO -->
+    <form id="register-form" class="hidden" autocomplete="off">
+      <h2>Registro</h2>
+      <label for="register-name">Nombre</label>
+      <input type="text" id="register-name" name="name" required placeholder="Tu nombre" />
+      <label for="register-lastname">Apellido</label>
+      <input type="text" id="register-lastname" name="lastname" required placeholder="Tu apellido" />
+      <label for="register-email">Correo electrónico</label>
+      <input type="email" id="register-email" name="email" required placeholder="tu@email.com" />
+      <label for="register-password">Contraseña</label>
+      <input type="password" id="register-password" name="password" required minlength="8" placeholder="Contraseña segura" />
+      <button type="submit" id="action-btn">Registrar</button>
+      <div id="register-error" class="error-message"></div>
+      <p id="toggle-link">¿Ya tienes cuenta? <strong>Inicia sesión aquí</strong></p>
+    </form>
+  </div>
+
+  <!-- Mensaje animado -->
+  <div id="message-box"></div>
+
+  <script>
+    // Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyB7ztd2KFKy473gIrwyIGPF0X1qagSiE90",
+      authDomain: "adcm-register.firebaseapp.com",
+      databaseURL: "https://adcm-register-default-rtdb.firebaseio.com", // importante
+      projectId: "adcm-register",
+      storageBucket: "adcm-register.appspot.com",
+      messagingSenderId: "424404455656",
+      appId: "1:424404455656:web:db45153ee450914fea795d"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.database();
+
+    const loginForm = document.getElementById('login-form');
+    const registerForm = document.getElementById('register-form');
+    const toggleLinks = document.querySelectorAll('#toggle-link');
+
+    toggleLinks.forEach(link => link.addEventListener('click', toggleForms));
+
+    function toggleForms() {
+      loginForm.classList.toggle('hidden');
+      registerForm.classList.toggle('hidden');
+      clearErrors();
+    }
+
+    function clearErrors() {
+      document.getElementById('login-error').textContent = '';
+      document.getElementById('register-error').textContent = '';
+    }
+
+    // Función para mostrar mensajes animados
+    function showMessage(text) {
+      const messageBox = document.getElementById('message-box');
+      messageBox.textContent = text;
+      messageBox.classList.add('show');
+
+      setTimeout(() => {
+        messageBox.classList.remove('show');
+      }, 3000); // Duración del mensaje: 3 segundos
+    }
+
+    // Login
+    loginForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      clearErrors();
+
+      const email = loginForm.email.value.trim();
+      const password = loginForm.password.value;
+
+      if (!email || !password) {
+        document.getElementById('login-error').textContent = 'Por favor completa todos los campos.';
+        return;
+      }
+
+      auth.signInWithEmailAndPassword(email, password)
+        .then(userCredential => {
+          showMessage(`¡Bienvenido, ${userCredential.user.email}!`);
+          loginForm.reset();
+          window.location.href = "index.html";  // <-- Redirije -https://tusitio.com/privado -dashboard.html
+        })
+        .catch(error => {
+          document.getElementById('login-error').textContent = error.message;
+        });
+    });
+
+    // Registro con guardado en Realtime Database
+    registerForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      clearErrors();
+
+      const name = registerForm.name.value.trim();
+      const lastname = registerForm.lastname.value.trim();
+      const email = registerForm.email.value.trim();
+      const password = registerForm.password.value;
+
+      if (!name || !lastname || !email || !password) {
+        document.getElementById('register-error').textContent = 'Por favor completa todos los campos.';
+        return;
+      }
+
+      if (password.length < 8) {
+        document.getElementById('register-error').textContent = 'La contraseña debe tener al menos 8 caracteres.';
+        return;
+      }
+
+      auth.createUserWithEmailAndPassword(email, password)
+        .then(userCredential => {
+          const user = userCredential.user;
+
+          return user.updateProfile({
+            displayName: `${name} ${lastname}`
+          }).then(() => {
+            return db.ref('usuarios/' + user.uid).set({
+              nombre: name,
+              apellido: lastname,
+              email: email,
+              uid: user.uid
+            });
+          });
+        })
+        .then(() => {
+          showMessage('¡Registro exitoso! Ya puedes iniciar sesión.');
+          registerForm.reset();
+          toggleForms();
+        })
+        .catch(error => {
+          document.getElementById('register-error').textContent = error.message;
+        });
+    });
+  </script>
+
+</body>
+</html>

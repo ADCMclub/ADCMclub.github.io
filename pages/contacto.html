@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Contacto | ADCM Club</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Contáctanos - ADCM Club" />
+  <link rel="icon" href="https://images.guns.lol/TO1Qe.png" />
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #121212;
+      color: #fff;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      background-color: #960000;
+      padding: 30px 0;
+      text-align: center;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 2.5em;
+      color: #fff;
+    }
+
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+      max-width: 1000px;
+      margin: 50px auto;
+      background: #1a1a1a;
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 0 30px rgba(150, 0, 0, 0.5);
+      position: relative;
+    }
+
+    .form-section, .info-section {
+      padding: 40px;
+      flex: 1 1 50%;
+      min-width: 300px;
+      transition: transform 0.5s ease, opacity 0.5s ease;
+    }
+
+    .form-section {
+      background-color: #1e1e1e;
+    }
+
+    .form-section label {
+      display: block;
+      margin-top: 20px;
+      font-weight: bold;
+      opacity: 0.9;
+    }
+
+    .form-section input, .form-section textarea {
+      width: 100%;
+      padding: 12px;
+      margin-top: 5px;
+      border: none;
+      border-radius: 5px;
+      background-color: #2a2a2a;
+      color: #fff;
+      font-size: 15px;
+      transition: box-shadow 0.3s ease;
+    }
+
+    .form-section input:focus, .form-section textarea:focus {
+      outline: none;
+      box-shadow: 0 0 8px 2px #960000;
+    }
+
+    .form-section button {
+      background-color: #960000;
+      color: #fff;
+      padding: 14px 20px;
+      border: none;
+      border-radius: 5px;
+      margin-top: 30px;
+      cursor: pointer;
+      font-size: 16px;
+      width: 100%;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    .form-section button:hover {
+      background-color: #b30000;
+      transform: scale(1.05);
+    }
+
+    .info-section {
+      background-color: #141414;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      opacity: 0.95;
+    }
+
+    .info-section h2 {
+      color: #fff;
+      font-size: 1.8em;
+      margin-bottom: 20px;
+    }
+
+    .info-section p {
+      margin: 10px 0;
+      color: #ccc;
+      font-size: 1.1em;
+    }
+
+    .social-links a {
+      display: inline-block;
+      margin: 10px 10px 0 0;
+      text-decoration: none;
+      color: #fff;
+      background: #960000;
+      padding: 10px 15px;
+      border-radius: 5px;
+      transition: background 0.3s ease, transform 0.3s ease;
+      font-weight: 600;
+    }
+
+    .social-links a:hover {
+      background: #b30000;
+      transform: translateY(-3px);
+    }
+
+    footer {
+      text-align: center;
+      padding: 25px;
+      background-color: #0d0d0d;
+      font-size: 0.9em;
+      color: #888;
+    }
+
+    /* Mensaje de éxito animado */
+    #successMessage {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-50px);
+      background-color: #228B22;
+      color: white;
+      padding: 15px 30px;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(34, 139, 34, 0.6);
+      font-weight: 700;
+      font-size: 1.1em;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s ease, transform 0.5s ease;
+      z-index: 1000;
+    }
+
+    #successMessage.show {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* Responsive para pantallas medianas */
+    @media screen and (max-width: 768px) {
+      .container {
+        flex-direction: column;
+        margin: 30px 15px;
+      }
+      .form-section, .info-section {
+        padding: 30px 20px;
+        flex: 1 1 100%;
+      }
+      header h1 {
+        font-size: 2em;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>Contáctanos</h1>
+    <p>¿Tienes preguntas o sugerencias? Estamos aquí para ayudarte.</p>
+  </header>
+
+  <div class="container">
+    <!-- FORMULARIO -->
+    <div class="form-section">
+      <form id="contactForm" action="https://formspree.io/f/mwpbprzz" method="POST">
+        <label for="nombre">Nombre completo:</label>
+        <input type="text" id="nombre" name="nombre" required minlength="3" maxlength="50" placeholder="Tu nombre completo" />
+
+        <label for="email">Correo electrónico:</label>
+        <input type="email" id="email" name="email" required placeholder="tu@email.com" />
+
+        <label for="mensaje">Mensaje:</label>
+        <textarea id="mensaje" name="mensaje" rows="5" required minlength="10" maxlength="1000" placeholder="Escribe tu mensaje aquí..."></textarea>
+
+        <button type="submit">Enviar mensaje</button>
+      </form>
+    </div>
+
+    <!-- INFORMACIÓN Y REDES -->
+    <div class="info-section">
+      <h2>ADCM Club</h2>
+      <p><strong>Email:</strong> support@adcm.club</p>
+      <p><strong>Ubicación:</strong> Latinoamérica (virtual)</p>
+      <div class="social-links">
+        <a href="https://discord.gg/nByGf7sM79" target="_blank" rel="noopener noreferrer">Discord</a>
+        <a href="https://instagram.com/adcm.club" target="_blank" rel="noopener noreferrer">Instagram</a>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    &copy; 2025 ADCM Club — Todos los derechos reservados
+  </footer>
+
+  <div id="successMessage">¡Mensaje enviado con éxito! Gracias por contactarnos.</div>
+
+  <script>
+    const form = document.getElementById('contactForm');
+    const successMessage = document.getElementById('successMessage');
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+
+      const formData = new FormData(form);
+
+      try {
+        const response = await fetch(form.action, {
+          method: form.method,
+          body: formData,
+          headers: { 'Accept': 'application/json' }
+        });
+
+        if (response.ok) {
+          // Mostrar mensaje animado
+          successMessage.classList.add('show');
+
+          // Limpiar el formulario
+          form.reset();
+
+          // Ocultar mensaje después de 3.5 segundos
+          setTimeout(() => {
+            successMessage.classList.remove('show');
+          }, 3500);
+        } else {
+          const data = await response.json();
+          if (data.errors) {
+            alert('Error al enviar el mensaje: ' + data.errors.map(e => e.message).join(', '));
+          } else {
+            alert('Error al enviar el mensaje, intenta de nuevo.');
+          }
+        }
+      } catch (error) {
+        alert('Error al enviar el mensaje, verifica tu conexión.');
+      }
+    });
+  </script>
+</body>
+</html>
