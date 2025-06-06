@@ -46,18 +46,16 @@ body {
 
 #login-register {
   background: #1e1e1e;
-  padding: 40px 35px;
+  padding: 40px 20px;
   border-radius: 20px;
   box-shadow: 0 0 40px #960000cc;
   max-width: 420px;
-  width: 100%;
-  /* quita opacity y transform para que se vea */
-  /* opacity: 0;
-  transform: translateY(40px); */
+  width: 90%;
   position: relative;
   overflow: hidden;
-  margin-left: 100px; /* margen arriba/abajo 0, izquierda/derecha auto */
+  margin: 0 16px; /* margen horizontal en móvil */
 }
+
 
     
     @keyframes fadeInUp {
@@ -292,6 +290,48 @@ body {
 
 .toggle-password:hover {
   color: #fff;
+}
+@media (max-width: 480px) {
+  #login-register {
+    padding: 30px 20px;
+    border-radius: 16px;
+  }
+
+  #login-register h2 {
+    font-size: 2rem;
+  }
+
+  label {
+    font-size: 0.95rem;
+  }
+
+  input {
+    font-size: 1rem;
+    padding: 12px 16px;
+  }
+
+  #action-btn {
+    font-size: 1.1rem;
+    padding: 14px;
+  }
+
+  #toggle-link {
+    font-size: 0.95rem;
+  }
+
+  #message-box {
+    font-size: 1rem;
+    padding: 14px 24px;
+  }
+
+  header h1 {
+    font-size: 1.5rem;
+  }
+
+  #btn-logout {
+    font-size: 0.9rem;
+    padding: 10px 20px;
+  }
 }
 
   </style>
