@@ -337,8 +337,44 @@ body {
       <button id="btn-logout" aria-label="Cerrar sesión">Cerrar sesión</button>
     </header>
     <!-- Aquí puedes añadir contenido privado -->
+
+
+
+
+
+
+
+
+    
   </div>
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
   <!-- Mensaje animado -->
   <div id="message-box" role="alert" aria-live="assertive"></div>
 
@@ -522,20 +558,35 @@ body {
     });
 
     // Control de estado del usuario
-    auth.onAuthStateChanged(user => {
-      if (user) {
-        loginRegisterDiv.style.display = 'none';
-        contenidoPrivado.classList.add('visible');
-        userInfoSpan.textContent = user.email;
-        document.body.style.userSelect = 'text';
-      } else {
-        loginRegisterDiv.style.display = 'block';
-        contenidoPrivado.classList.remove('visible');
-        userInfoSpan.textContent = '';
-        document.body.style.userSelect = 'none';
-      }
-      document.body.style.visibility = 'visible';
+auth.onAuthStateChanged(user => {
+  if (user) {
+    loginRegisterDiv.style.display = 'none';
+    contenidoPrivado.classList.add('visible');
+
+    // Obtener nombre desde base de datos
+    db.ref('users/' + user.uid).once('value').then(snapshot => {
+      const userData = snapshot.val();
+if (userData && userData.name && userData.lastname) {
+  userInfoSpan.textContent = `${userData.name} ${userData.lastname}`;
+} else if (userData && userData.name) {
+  userInfoSpan.textContent = userData.name;
+} else {
+  userInfoSpan.textContent = user.email; // fallback
+}
+
+    }).catch(() => {
+      userInfoSpan.textContent = user.email;
     });
+
+    document.body.style.userSelect = 'text';
+  } else {
+    loginRegisterDiv.style.display = 'block';
+    contenidoPrivado.classList.remove('visible');
+    userInfoSpan.textContent = '';
+    document.body.style.userSelect = 'none';
+  }
+  document.body.style.visibility = 'visible';
+});
   </script>
 </body>
 </html>
