@@ -12,101 +12,159 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 
   <style>
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      background: #121212;
-      font-family: 'Open Sans', sans-serif;
-      color: #eee;
-      height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      overflow: hidden;
-    }
-    #login-register {
-      background: #1e1e1e;
-      padding: 40px 35px;
-      border-radius: 15px;
-      box-shadow: 0 0 25px #960000cc;
-      max-width: 420px;
-      width: 100%;
-      animation: fadeInUp 0.8s ease forwards;
-      opacity: 0;
-      transform: translateY(40px);
-    }
+body {
+  margin: 0;
+  background: url('/Music/videoplayback.mp4') no-repeat center center fixed;
+  background-size: cover;
+  font-family: 'Open Sans', sans-serif;
+  color: #eee;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  visibility: visible; /* para que se vea */
+  user-select: none;
+}
+
+
+#login-register {
+  background: #1e1e1e;
+  padding: 40px 35px;
+  border-radius: 20px;
+  box-shadow: 0 0 40px #960000cc;
+  max-width: 420px;
+  width: 100%;
+  /* quita opacity y transform para que se vea */
+  /* opacity: 0;
+  transform: translateY(40px); */
+  position: relative;
+  overflow: hidden;
+  margin-left: 100px; /* margen arriba/abajo 0, izquierda/derecha auto */
+}
+
+    
     @keyframes fadeInUp {
-      to { opacity: 1; transform: translateY(0); }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    form {
+      display: flex;
+      flex-direction: column;
+      transition: opacity 0.5s ease, transform 0.5s ease;
+      will-change: opacity, transform;
+    }
+    form.hidden {
+      opacity: 0;
+      pointer-events: none;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      transform: translateX(100%);
+    }
+    form.visible {
+      opacity: 1;
+      pointer-events: auto;
+      position: relative;
+      transform: translateX(0);
     }
     #login-register h2 {
       text-align: center;
-      color: #960000;
-      margin-bottom: 25px;
+      color: #d42a2a;
+      margin-bottom: 30px;
       font-weight: 700;
-      font-size: 2.4rem;
-      letter-spacing: 1px;
+      font-size: 2.8rem;
+      letter-spacing: 2px;
       text-transform: uppercase;
+      text-shadow: 0 0 8px #b30000;
+      user-select: none;
     }
-    form { display: flex; flex-direction: column; }
     label {
       font-weight: 600;
-      margin-bottom: 6px;
-      margin-top: 18px;
-      font-size: 0.9rem;
-      color: #ccc;
+      margin-bottom: 8px;
+      margin-top: 16px;
+      font-size: 1rem;
+      color: #bbb;
     }
     input {
-      padding: 12px 15px;
-      border-radius: 8px;
+      padding: 14px 18px;
+      border-radius: 10px;
       border: none;
       background-color: #2a2a2a;
       color: #eee;
-      font-size: 1rem;
+      font-size: 1.1rem;
+      transition: background-color 0.3s ease, box-shadow 0.3s ease;
+      box-shadow: inset 0 0 6px #000000aa;
+      font-weight: 500;
+      letter-spacing: 0.03em;
+    }
+    input::placeholder {
+      color: #666;
+      font-style: italic;
     }
     input:focus {
       outline: none;
-      border: 2px solid #960000;
       background-color: #3a1a1a;
+      box-shadow: 0 0 10px #ff4c4c;
+      border: 2px solid #ff4c4c;
     }
     #action-btn {
-      background-color: #960000;
+      background-color: #d42a2a;
       color: #fff;
       font-weight: 700;
-      font-size: 1.1rem;
-      margin-top: 30px;
-      padding: 14px;
+      font-size: 1.2rem;
+      margin-top: 36px;
+      padding: 16px;
       border: none;
-      border-radius: 10px;
+      border-radius: 14px;
       cursor: pointer;
       width: 100%;
-      box-shadow: 0 4px 15px #960000bb;
-      transition: transform 0.3s ease, background-color 0.3s ease;
+      box-shadow: 0 6px 20px #b32a2aaa;
+      transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+      user-select: none;
     }
     #action-btn:hover {
-      background-color: #b30000;
-      transform: scale(1.05);
+      background-color: #ff4c4c;
+      box-shadow: 0 8px 30px #ff4c4ccc;
+      transform: scale(1.07);
     }
     #toggle-link {
-      margin-top: 22px;
+      margin-top: 26px;
       text-align: center;
       color: #aaa;
       cursor: pointer;
-      font-size: 0.95rem;
+      font-size: 1rem;
+      transition: color 0.3s ease, text-shadow 0.3s ease;
+      user-select: none;
+    }
+    #toggle-link strong {
+      color: #ff4c4c;
+      user-select: text;
     }
     #toggle-link:hover {
-      color: #960000;
+      color: #ff4c4c;
+      text-shadow: 0 0 8px #ff4c4c;
       text-decoration: underline;
     }
-    .hidden {
-      display: none;
-    }
     .error-message {
-      color: #ff4c4c;
-      font-size: 0.85rem;
-      margin-top: 6px;
-      font-weight: 600;
+      color: #ff6161;
+      font-size: 0.9rem;
+      margin-top: 8px;
+      font-weight: 700;
+      min-height: 24px;
+      text-align: center;
+      user-select: none;
+      animation: shake 0.3s ease;
     }
-
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-4px); }
+      50% { transform: translateX(4px); }
+      75% { transform: translateX(-4px); }
+    }
     /* Mensaje animado */
     #message-box {
       position: fixed;
@@ -115,16 +173,17 @@
       transform: translateX(-50%) translateY(-50px);
       background: linear-gradient(135deg, #960000, #ff0000);
       color: white;
-      padding: 15px 30px;
-      border-radius: 25px;
+      padding: 16px 36px;
+      border-radius: 30px;
       font-weight: 700;
-      font-size: 1.2rem;
-      box-shadow: 0 6px 20px rgba(255, 0, 0, 0.7);
+      font-size: 1.3rem;
+      box-shadow: 0 8px 25px rgba(255, 0, 0, 0.85);
       opacity: 0;
       pointer-events: none;
-      transition: opacity 0.5s ease, transform 0.5s ease;
+      transition: opacity 0.4s ease, transform 0.4s ease;
       z-index: 9999;
       user-select: none;
+      filter: drop-shadow(0 0 8px #ff0000aa);
     }
     #message-box.show {
       opacity: 1;
@@ -132,30 +191,92 @@
       pointer-events: auto;
     }
     #message-box.error {
-  background: linear-gradient(135deg, #5a0000, #ff3333);
-  box-shadow: 0 6px 20px rgba(255, 80, 80, 0.8);
+      background: linear-gradient(135deg, #5a0000, #ff3333);
+      box-shadow: 0 8px 25px rgba(255, 80, 80, 0.9);
+      filter: drop-shadow(0 0 10px #ff4444dd);
+    }
+    #message-box.success {
+      background: linear-gradient(135deg, #007a00, #33cc33);
+      box-shadow: 0 8px 25px rgba(0, 255, 80, 0.8);
+      filter: drop-shadow(0 0 10px #00ff00cc);
+    }
+    /* Contenido privado */
+    #contenido-privado {
+      width: 100vw;
+      height: 100vh;
+      margin: 0;
+      padding: 40px 30px;
+      box-sizing: border-box;
+      font-family: 'Open Sans', sans-serif;
+      color: #eee;
+      background: #121212;
+      display: flex;
+      flex-direction: column;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s ease;
+      user-select: none;
+    }
+    #contenido-privado.visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #1e1e1e;
+      padding: 16px 30px;
+      border-radius: 16px;
+      box-shadow: 0 0 30px #960000cc;
+      margin-bottom: 40px;
+      user-select: none;
+    }
+    header h1 {
+      font-weight: 700;
+      font-size: 2rem;
+      margin: 0;
+      color: #ff5a5a;
+      text-shadow: 0 0 8px #ff4c4c;
+    }
+    #user-info {
+      color: #fff;
+      font-weight: 600;
+    }
+    #btn-logout {
+      background: #ff4c4c;
+      border: none;
+      color: white;
+      font-weight: 700;
+      padding: 12px 26px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: background-color 0.3s ease, box-shadow 0.3s ease;
+      user-select: none;
+      box-shadow: 0 4px 15px #ff4c4cbb;
+    }
+    #btn-logout:hover {
+      background-color: #ff7878;
+      box-shadow: 0 6px 25px #ff7878cc;
+    }
+    .password-container {
+  position: relative;
 }
 
-#message-box.success {
-  background: linear-gradient(135deg, #009900, #33cc33);
-  box-shadow: 0 6px 20px rgba(0, 255, 80, 0.5);
-}
-body {
-  visibility: hidden;
-}
-#contenido-privado {
-  width: 100vw;
-  height: 100vh;
-  margin: 0;
-  padding: 40px 30px;
-  box-sizing: border-box;
-  font-family: 'Open Sans', sans-serif;
-  color: #eee;
-  background: #121212;
-  /* display eliminado para no sobrescribir .hidden */
-  flex-direction: column;
+.toggle-password {
+  position: absolute;
+  top: 50%;
+  right: 16px;
+  transform: translateY(-50%);
+  cursor: pointer;
+  font-size: 1.1rem;
+  color: #bbb;
+  user-select: none;
 }
 
+.toggle-password:hover {
+  color: #fff;
+}
 
   </style>
 </head>
@@ -163,85 +284,54 @@ body {
 
   <div id="login-register">
     <!-- LOGIN -->
-    <form id="login-form" autocomplete="off">
+    <form id="login-form" autocomplete="off" class="visible" novalidate>
       <h2>Iniciar Sesión</h2>
       <label for="login-email">Correo electrónico</label>
-      <input type="email" id="login-email" name="email" required placeholder="tu@email.com" />
+      <input type="email" id="login-email" name="email" required placeholder="tu@email.com" autocomplete="username" />
       <label for="login-password">Contraseña</label>
-      <input type="password" id="login-password" name="password" required minlength="8" placeholder="Contraseña segura" />
+      <input type="password" id="login-password" name="password" required minlength="8" placeholder="Contraseña segura" autocomplete="current-password" />
       <button type="submit" id="action-btn">Entrar</button>
-      <div id="login-error" class="error-message"></div>
+      <div id="login-error" class="error-message" aria-live="polite"></div>
       <p id="toggle-link">¿No tienes cuenta? <strong>Regístrate aquí</strong></p>
     </form>
 
     <!-- REGISTRO -->
-    <form id="register-form" class="hidden" autocomplete="off">
+    <form id="register-form" class="hidden" autocomplete="off" novalidate>
       <h2>Registro</h2>
       <label for="register-name">Nombre</label>
-      <input type="text" id="register-name" name="name" required placeholder="Tu nombre" />
+      <input type="text" id="register-name" name="name" required placeholder="Tu nombre" autocomplete="given-name" />
       <label for="register-lastname">Apellido</label>
-      <input type="text" id="register-lastname" name="lastname" required placeholder="Tu apellido" />
+      <input type="text" id="register-lastname" name="lastname" required placeholder="Tu apellido" autocomplete="family-name" />
       <label for="register-email">Correo electrónico</label>
-      <input type="email" id="register-email" name="email" required placeholder="tu@email.com" />
+      <input type="email" id="register-email" name="email" required placeholder="tu@email.com" autocomplete="email" />
       <label for="register-password">Contraseña</label>
-      <input type="password" id="register-password" name="password" required minlength="8" placeholder="Contraseña segura" />
+      <input type="password" id="register-password" name="password" required minlength="8" placeholder="Contraseña segura" autocomplete="new-password" />
       <button type="submit" id="action-btn">Registrar</button>
-      <div id="register-error" class="error-message"></div>
+      <div id="register-error" class="error-message" aria-live="polite"></div>
       <p id="toggle-link">¿Ya tienes cuenta? <strong>Inicia sesión aquí</strong></p>
     </form>
   </div>
 
-
-
-
-
-
-
-
-
-<div id="contenido-privado" class="hidden">
-
-
-
-  <!-- Barra superior con saludo y botón -->
-  <header style="display: flex; justify-content: space-between; align-items: center; background: #1e1e1e; padding: 16px 30px; border-radius: 12px; box-shadow: 0 0 20px #960000cc; margin-bottom: 30px;">
-    <h1 style="font-weight: 700; font-size: 1.8rem; margin: 0; color: #ff4c4c;">
-Bienvenido, <span id="user-info" style="color:#fff;">Usuario</span>
-
-    </h1>
-    <button id="btn-logout" style="background: #ff4c4c; border: none; color: white; font-weight: 600; padding: 10px 22px; border-radius: 8px; cursor: pointer; transition: background-color 0.3s ease;">
-      Cerrar sesión
-    </button>
-  </header>
-
-  <!-- CONTENIDO -->
-
-
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
+  <div id="contenido-privado" class="hidden" role="main" aria-live="polite" aria-atomic="true">
+    <!-- Barra superior con saludo y botón -->
+    <header>
+      <h1>
+        Bienvenido, <span id="user-info">Usuario</span>
+      </h1>
+      <button id="btn-logout" aria-label="Cerrar sesión">Cerrar sesión</button>
+    </header>
+    <!-- Aquí puedes añadir contenido privado -->
+  </div>
 
   <!-- Mensaje animado -->
-  <div id="message-box"></div>
+  <div id="message-box" role="alert" aria-live="assertive"></div>
 
   <script>
     // Firebase config
     const firebaseConfig = {
       apiKey: "AIzaSyB7ztd2KFKy473gIrwyIGPF0X1qagSiE90",
       authDomain: "adcm-register.firebaseapp.com",
-      databaseURL: "https://adcm-register-default-rtdb.firebaseio.com", // importante
+      databaseURL: "https://adcm-register-default-rtdb.firebaseio.com",
       projectId: "adcm-register",
       storageBucket: "adcm-register.appspot.com",
       messagingSenderId: "424404455656",
@@ -255,32 +345,56 @@ Bienvenido, <span id="user-info" style="color:#fff;">Usuario</span>
     const loginForm = document.getElementById('login-form');
     const registerForm = document.getElementById('register-form');
     const toggleLinks = document.querySelectorAll('#toggle-link');
+    const loginErrorDiv = document.getElementById('login-error');
+    const registerErrorDiv = document.getElementById('register-error');
+    const contenidoPrivado = document.getElementById('contenido-privado');
+    const loginRegisterDiv = document.getElementById('login-register');
+    const userInfoSpan = document.getElementById('user-info');
 
-    toggleLinks.forEach(link => link.addEventListener('click', toggleForms));
-
+    // Animación suave para toggle
     function toggleForms() {
-      loginForm.classList.toggle('hidden');
-      registerForm.classList.toggle('hidden');
       clearErrors();
+
+      if (loginForm.classList.contains('visible')) {
+        loginForm.classList.remove('visible');
+        loginForm.classList.add('hidden');
+        registerForm.classList.remove('hidden');
+        setTimeout(() => {
+          registerForm.classList.add('visible');
+        }, 20);
+      } else {
+        registerForm.classList.remove('visible');
+        registerForm.classList.add('hidden');
+        loginForm.classList.remove('hidden');
+        setTimeout(() => {
+          loginForm.classList.add('visible');
+        }, 20);
+      }
     }
+
+    toggleLinks.forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        toggleForms();
+      });
+    });
 
     function clearErrors() {
-      document.getElementById('login-error').textContent = '';
-      document.getElementById('register-error').textContent = '';
+      loginErrorDiv.textContent = '';
+      registerErrorDiv.textContent = '';
     }
 
-function showMessage(text, tipo = 'success') {
-  const messageBox = document.getElementById('message-box');
-  messageBox.textContent = text;
+    function showMessage(text, tipo = 'success') {
+      const messageBox = document.getElementById('message-box');
+      messageBox.textContent = text;
 
-  messageBox.classList.remove('error', 'success');
-  messageBox.classList.add('show', tipo);
+      messageBox.classList.remove('error', 'success');
+      messageBox.classList.add('show', tipo);
 
-  setTimeout(() => {
-    messageBox.classList.remove('show', tipo);
-  }, 3500);
-}
-
+      setTimeout(() => {
+        messageBox.classList.remove('show', tipo);
+      }, 3500);
+    }
 
     // Login
     loginForm.addEventListener('submit', (e) => {
@@ -291,41 +405,42 @@ function showMessage(text, tipo = 'success') {
       const password = loginForm.password.value;
 
       if (!email || !password) {
-        document.getElementById('login-error').textContent = 'Por favor completa todos los campos.';
+        loginErrorDiv.textContent = 'Por favor completa todos los campos.';
+        loginErrorDiv.animate([{ transform: 'translateX(-5px)' }, { transform: 'translateX(5px)' }, { transform: 'translateX(0)' }], { duration: 300 });
         return;
       }
 
       auth.signInWithEmailAndPassword(email, password)
         .then(userCredential => {
-          showMessage(`¡Bienvenido, ${userCredential.user.email}!`);
+          showMessage(`¡Bienvenido, ${userCredential.user.email}!`, 'success');
           loginForm.reset();
-          window.location.href = "#hero";  // <-- Redirije -https://tusitio.com/privado -/dashboard.html
+          // El contenido privado será mostrado por onAuthStateChanged
         })
-.catch(error => {
-  let message = 'Error desconocido. Intenta nuevamente.';
+        .catch(error => {
+          let message = 'Error desconocido. Intenta nuevamente.';
 
-  switch (error.code) {
-    case 'auth/user-not-found':
-      message = '⚠ Usuario no registrado.';
-      break;
-    case 'auth/wrong-password':
-      message = '🔒 Contraseña incorrecta.';
-      break;
-    case 'auth/invalid-email':
-      message = '✉ Correo no válido.';
-      break;
-    case 'auth/too-many-requests':
-      message = '🚫 Muchos intentos. Intenta más tarde.';
-      break;
-  }
+          switch (error.code) {
+            case 'auth/user-not-found':
+              message = '⚠ Usuario no registrado.';
+              break;
+            case 'auth/wrong-password':
+              message = '🔒 Contraseña incorrecta.';
+              break;
+            case 'auth/invalid-email':
+              message = '✉ Correo no válido.';
+              break;
+            case 'auth/too-many-requests':
+              message = '🚫 Muchos intentos. Intenta más tarde.';
+              break;
+          }
 
-  document.getElementById('login-error').textContent = message;
-  showMessage(message, 'error');
-});
-
+          loginErrorDiv.textContent = message;
+          loginErrorDiv.animate([{ transform: 'translateX(-5px)' }, { transform: 'translateX(5px)' }, { transform: 'translateX(0)' }], { duration: 300 });
+          showMessage(message, 'error');
+        });
     });
 
-    // Registro con guardado en Realtime Database
+    // Registro
     registerForm.addEventListener('submit', (e) => {
       e.preventDefault();
       clearErrors();
@@ -336,99 +451,75 @@ function showMessage(text, tipo = 'success') {
       const password = registerForm.password.value;
 
       if (!name || !lastname || !email || !password) {
-        document.getElementById('register-error').textContent = 'Por favor completa todos los campos.';
+        registerErrorDiv.textContent = 'Completa todos los campos.';
+        registerErrorDiv.animate([{ transform: 'translateX(-5px)' }, { transform: 'translateX(5px)' }, { transform: 'translateX(0)' }], { duration: 300 });
         return;
       }
 
       if (password.length < 8) {
-        document.getElementById('register-error').textContent = 'La contraseña debe tener al menos 8 caracteres.';
+        registerErrorDiv.textContent = 'La contraseña debe tener al menos 8 caracteres.';
+        registerErrorDiv.animate([{ transform: 'translateX(-5px)' }, { transform: 'translateX(5px)' }, { transform: 'translateX(0)' }], { duration: 300 });
         return;
       }
 
       auth.createUserWithEmailAndPassword(email, password)
         .then(userCredential => {
-          const user = userCredential.user;
+          const uid = userCredential.user.uid;
 
-          return user.updateProfile({
-            displayName: `${name} ${lastname}`
-          }).then(() => {
-            return db.ref('usuarios/' + user.uid).set({
-              nombre: name,
-              apellido: lastname,
-              email: email,
-              uid: user.uid
-            });
+          // Guardar datos extra en la base de datos
+          db.ref('users/' + uid).set({
+            name,
+            lastname,
+            email,
+            createdAt: Date.now()
           });
-        })
-        .then(() => {
-          showMessage('¡Registro exitoso! Ya puedes iniciar sesión.');
+
+          showMessage('Registro exitoso. Bienvenido!', 'success');
           registerForm.reset();
           toggleForms();
         })
-.catch(error => {
-  let message = 'Error durante el registro.';
-
-  if (error.code === 'auth/email-already-in-use') {
-    message = '📧 Este correo ya está registrado.';
-  } else if (error.code === 'auth/invalid-email') {
-    message = '❌ Correo electrónico no válido.';
-  } else if (error.code === 'auth/weak-password') {
-    message = '🔑 La contraseña es muy débil.';
-  }
-
-  document.getElementById('register-error').textContent = message;
-  showMessage(message, 'error');
-});
-
-    });
-
-
-// Solo desconectar sesión al hacer clic en el botón, no recargar la página
-document.addEventListener('DOMContentLoaded', () => {
-  const btnLogout = document.getElementById('btn-logout');
-  if (btnLogout) {
-    btnLogout.addEventListener('click', () => {
-      auth.signOut()
-        .then(() => {
-          showMessage('Has cerrado sesión.', 'success');
-
-          // Ocultar contenido privado y mostrar login sin recargar
-          document.getElementById('contenido-privado').classList.add('hidden');
-          document.getElementById('login-register').classList.remove('hidden');
-        })
         .catch(error => {
-          showMessage('Error al cerrar sesión.', 'error');
-          console.error(error);
+          let message = 'Error desconocido. Intenta nuevamente.';
+          switch (error.code) {
+            case 'auth/email-already-in-use':
+              message = 'Este correo ya está registrado.';
+              break;
+            case 'auth/invalid-email':
+              message = 'Correo inválido.';
+              break;
+            case 'auth/weak-password':
+              message = 'La contraseña es débil.';
+              break;
+          }
+          registerErrorDiv.textContent = message;
+          registerErrorDiv.animate([{ transform: 'translateX(-5px)' }, { transform: 'translateX(5px)' }, { transform: 'translateX(0)' }], { duration: 300 });
+          showMessage(message, 'error');
         });
     });
-  }
-});
 
-// Escucha si hay sesión activa
-// Escucha los cambios de estado de autenticación
-auth.onAuthStateChanged(user => {
-  const loginSection = document.getElementById('login-register');
-  const contenidoPrivado = document.getElementById('contenido-privado');
-  const userInfo = document.getElementById('user-info');
+    // Logout
+    const btnLogout = document.getElementById('btn-logout');
+    btnLogout.addEventListener('click', () => {
+      auth.signOut().then(() => {
+        showMessage('Sesión cerrada.', 'success');
+      });
+    });
 
-  if (user) {
-    loginSection.classList.add('hidden');
-    contenidoPrivado.classList.remove('hidden');
-    userInfo.textContent = user.displayName || user.email;
-  } else {
-    loginSection.classList.remove('hidden');
-    contenidoPrivado.classList.add('hidden');
-    userInfo.textContent = '';
-  }
-
-  // ✅ Mostrar el body solo después de saber si hay sesión
-  document.body.style.visibility = 'visible';
-});
-
-
-
-
+    // Control de estado del usuario
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        loginRegisterDiv.style.display = 'none';
+        contenidoPrivado.classList.add('visible');
+        userInfoSpan.textContent = user.email;
+        document.body.style.userSelect = 'text';
+      } else {
+        loginRegisterDiv.style.display = 'block';
+        contenidoPrivado.classList.remove('visible');
+        userInfoSpan.textContent = '';
+        document.body.style.userSelect = 'none';
+      }
+      document.body.style.visibility = 'visible';
+    });
   </script>
-
 </body>
 </html>
