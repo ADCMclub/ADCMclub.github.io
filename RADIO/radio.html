@@ -1,91 +1,314 @@
 <!DOCTYPE html>
 <html lang="es">
-<head> 
+<head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Productora - Radio y Eventos</title>
-  <link rel="stylesheet" href="radio.css" />
-  <!-- Firebase scripts -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
-  <!-- Tu configuración de Firebase -->
-  <script src="firebase-config.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Radio En Vivo</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Poppins -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+  <!-- tsParticles CDN para fondo animado -->
+  <script src="https://cdn.jsdelivr.net/npm/tsparticles@3.3.0/tsparticles.bundle.min.js"></script>
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+      font-family: 'Poppins', 'Segoe UI', Arial, sans-serif;
+      background: #111; /* Fondo negro elegante */
+      color: #fff;
+      transition: background 0.5s;
+    }
+    #tsparticles {
+      position: fixed;
+      z-index: -2;
+      width: 100vw;
+      height: 100vh;
+      top: 0;
+      left: 0;
+    }
+    /* Secciones con degradados */
+    section,
+    .section-gradient {
+      background: linear-gradient(135deg, #18181b 0%, #232526 100%);
+      transition: background 0.5s;
+    }
+    #inicio {
+      background: linear-gradient(120deg, #232526 0%, #fff 100%);
+      color: #18181b;
+      box-shadow: 0 8px 32px 0 rgba(0,0,0,0.18);
+    }
+    #programacion {
+      background: linear-gradient(120deg, #232526 0%, #bfa76a 100%);
+      color: #fff;
+    }
+    #locutores {
+      background: linear-gradient(120deg, #18181b 0%, #fffbe6 100%);
+      color: #18181b;
+    }
+    #galeria {
+      background: linear-gradient(120deg, #232526 0%, #fff 100%);
+      color: #18181b;
+    }
+    #contacto {
+      background: linear-gradient(120deg, #18181b 0%, #bfa76a 100%);
+      color: #fff;
+    }
+    /* Animaciones personalizadas */
+    @keyframes fade {
+      from { opacity: 0; transform: translateY(20px);}
+      to { opacity: 1; transform: translateY(0);}
+    }
+    .animate-fade { animation: fade 1.2s cubic-bezier(.4,0,.2,1) both; }
+    @keyframes pulseSlow {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(236, 72, 153, 0.5);}
+      50% { box-shadow: 0 0 40px 10px rgba(236, 72, 153, 0.3);}
+    }
+    .animate-pulseSlow { animation: pulseSlow 2.5s infinite; }
+    /* Botón animado */
+    .btn-anim {
+      position: relative;
+      overflow: hidden;
+      transition: background 0.3s;
+    }
+    .btn-anim::before {
+      content: "";
+      position: absolute;
+      left: -50%;
+      top: 0;
+      width: 200%;
+      height: 100%;
+      background: linear-gradient(90deg, #ec4899 0%, #06b6d4 100%);
+      opacity: 0.15;
+      transform: skewX(-20deg);
+      transition: left 0.4s;
+      z-index: 0;
+    }
+    .btn-anim:hover::before {
+      left: 0;
+      opacity: 0.25;
+    }
+    .btn-anim span {
+      position: relative;
+      z-index: 1;
+    }
+    /* Tarjeta de tips */
+    .tip-card {
+      background: linear-gradient(135deg, #fffbe6 0%, #bfa76a 100%);
+      color: #18181b;
+      border-radius: 1.25rem;
+      box-shadow: 0 4px 32px 0 rgba(0,0,0,0.18);
+      padding: 1.5rem 1.25rem;
+      margin-bottom: 2rem;
+      border-left: 6px solid #bfa76a;
+      font-size: 1rem;
+      font-weight: 500;
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+    .tip-card svg {
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    @keyframes gold-shine {
+      0% {
+        filter: drop-shadow(0 0 8px #f6e27a88);
+        text-shadow: 0 0 16px #fffbe6cc, 0 0 8px #bfa76a88;
+      }
+      50% {
+        filter: drop-shadow(0 0 24px #f6e27a) brightness(1.15);
+        text-shadow: 0 0 32px #fffbe6cc, 0 0 16px #bfa76a;
+      }
+      100% {
+        filter: drop-shadow(0 0 8px #f6e27a88);
+        text-shadow: 0 0 16px #fffbe6cc, 0 0 8px #bfa76a88;
+      }
+    }
+  </style>
 </head>
+<body class="bg-black text-white font-sans relative">
 
-<body>
+  <!-- Fondo animado de partículas -->
+  <div id="tsparticles"></div>
 
-  <h1>Productora Radio & Eventos</h1>
+  <!-- NAV -->
+  <header class="bg-gradient-to-r from-black via-gray-900 to-black shadow-lg animate-fade">
+    <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+      <div class="flex items-center space-x-3">
+        <img src="/RADIO/img_radio/logo_rdcrsound_sf.png" alt="Logo RDC Sound" class="w-12 h-12 rounded-full shadow-lg" />
+        <h1
+          class="text-2xl md:text-3xl font-extrabold tracking-wide select-none"
+          style="
+            font-family: 'Poppins', 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(90deg, #bfa76a 10%, #f6e27a 50%, #bfa76a 90%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-fill-color: transparent;
+            filter: drop-shadow(0 0 8px #f6e27a88);
+          "
+        >
+          RDCR Sound
+        </h1>
+      </div>
+      <nav class="space-x-4 text-sm font-semibold">
+        <a href="#inicio" class="hover:text-yellow-400 transition-colors">Inicio</a>
+        <a href="#programacion" class="hover:text-yellow-400 transition-colors">Programación</a>
+        <a href="#locutores" class="hover:text-yellow-400 transition-colors">Locutores</a>
+        <a href="#galeria" class="hover:text-yellow-400 transition-colors">Galería</a>
+        <a href="#contacto" class="hover:text-yellow-400 transition-colors">Contacto</a>
+      </nav>
+    </div>
+  </header>
 
-  <section id="radios">
-    <h2>Radios</h2>
-    <ul class="radio-list" id="radio-list"></ul>
+  <!-- HERO -->
+  <section id="inicio" class="section-gradient text-center py-20 animate-fade">
+    <div class="max-w-2xl mx-auto">
+      <h2
+        class="text-4xl md:text-5xl font-extrabold mb-4 animate-fade select-none"
+        style="
+          font-family: 'Poppins', 'Segoe UI', Arial, sans-serif;
+          background: linear-gradient(90deg, #bfa76a 10%, #f6e27a 50%, #bfa76a 90%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+          text-fill-color: transparent;
+          filter: drop-shadow(0 0 12px #f6e27a88);
+          letter-spacing: 1px;
+          text-shadow: 0 0 16px #fffbe6cc, 0 0 8px #bfa76a88;
+          animation: gold-shine 2.5s linear infinite alternate;
+        "
+      >
+        Tu radio favorita en vivo 24/7
+      </h2>
+      <p class="text-gray-800 mb-8 animate-fade text-lg">Conéctate al ritmo de la mejor música latina, pop, y más.</p>
+      <!-- Tarjeta de tips -->
+      <div class="tip-card animate-fade" style="background: linear-gradient(135deg, #fffbe6 0%, #bfa76a 100%); color: #18181b; border-left: 6px solid #bfa76a;">
+        <svg width="28" height="28" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="12" fill="#bfa76a" opacity="0.15"/><path d="M12 8v4m0 4h.01" stroke="#bfa76a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="9" stroke="#bfa76a" stroke-width="2"/></svg>
+        <span>
+          <b>Tip:</b> ¡Haz clic en las secciones del menú para descubrir la programación, locutores y más! Síguenos en redes sociales para no perderte novedades.
+        </span>
+      </div>
+      <div class="flex justify-center gap-4 mt-8">
+        <button class="btn-anim px-6 py-2 rounded-full bg-yellow-400/80 hover:bg-yellow-500 text-gray-900 font-semibold shadow-lg transition-all"><span>Ver Programación</span></button>
+        <a href="#contacto" class="btn-anim px-6 py-2 rounded-full bg-yellow-200/80 hover:bg-yellow-300 text-gray-900 font-semibold shadow-lg transition-all"><span>Contáctanos</span></a>
+      </div>
+    </div>
   </section>
 
-  <section id="eventos">
-    <h2>Eventos</h2>
-    <ul class="eventos-list" id="eventos-list"></ul>
+  <!-- PROGRAMACIÓN -->
+  <section id="programacion" class="section-gradient py-16 px-6 animate-fade">
+    <h3 class="text-3xl font-semibold text-center mb-10 bg-gradient-to-r from-yellow-400 via-yellow-200 to-yellow-500 bg-clip-text text-transparent" style="font-family: 'Poppins', 'Segoe UI', Arial, sans-serif;">🎧 Programación</h3>
+    <div class="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+      <div class="bg-white/80 p-6 rounded-xl shadow-lg hover:scale-105 hover:bg-yellow-100/80 transition-transform duration-300 animate-fade text-gray-900">
+        <h4 class="font-bold text-lg">Mañanas Musicales</h4>
+        <p class="text-sm">Lunes a Viernes | 7:00 AM - 11:00 AM</p>
+      </div>
+      <div class="bg-white/80 p-6 rounded-xl shadow-lg hover:scale-105 hover:bg-yellow-100/80 transition-transform duration-300 animate-fade text-gray-900">
+        <h4 class="font-bold text-lg">Zona Retro</h4>
+        <p class="text-sm">Lunes a Viernes | 2:00 PM - 5:00 PM</p>
+      </div>
+      <div class="bg-white/80 p-6 rounded-xl shadow-lg hover:scale-105 hover:bg-yellow-100/80 transition-transform duration-300 animate-fade text-gray-900">
+        <h4 class="font-bold text-lg">Noche Urbana</h4>
+        <p class="text-sm">Lunes a Viernes | 8:00 PM - 12:00 AM</p>
+      </div>
+    </div>
   </section>
 
-  <section id="noticias">
-    <h2>Noticias</h2>
-    <ul class="noticias-list" id="noticias-list"></ul>
+  <!-- LOCUTORES -->
+  <section id="locutores" class="section-gradient py-16 px-6 animate-fade">
+    <h3 class="text-3xl font-semibold text-center mb-10 bg-gradient-to-r from-yellow-400 via-yellow-200 to-yellow-500 bg-clip-text text-transparent" style="font-family: 'Poppins', 'Segoe UI', Arial, sans-serif;">🎙 Locutores</h3>
+    <div class="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+      <div class="text-center hover:scale-105 transition-transform duration-300 animate-fade">
+        <img src="https://via.placeholder.com/150" alt="Locutor" class="mx-auto rounded-full w-32 h-32 mb-4 border-4 border-yellow-400/40 shadow-lg">
+        <h4 class="font-bold text-lg text-gray-900">Carlos Beat</h4>
+        <p class="text-sm text-gray-700">Mañanas Musicales</p>
+      </div>
+      <div class="text-center hover:scale-105 transition-transform duration-300 animate-fade">
+        <img src="https://via.placeholder.com/150" alt="Locutor" class="mx-auto rounded-full w-32 h-32 mb-4 border-4 border-yellow-400/40 shadow-lg">
+        <h4 class="font-bold text-lg text-gray-900">Luna Voz</h4>
+        <p class="text-sm text-gray-700">Zona Retro</p>
+      </div>
+      <div class="text-center hover:scale-105 transition-transform duration-300 animate-fade">
+        <img src="https://via.placeholder.com/150" alt="Locutor" class="mx-auto rounded-full w-32 h-32 mb-4 border-4 border-yellow-400/40 shadow-lg">
+        <h4 class="font-bold text-lg text-gray-900">DJ Nocturno</h4>
+        <p class="text-sm text-gray-700">Noche Urbana</p>
+      </div>
+    </div>
   </section>
 
+  <!-- GALERÍA -->
+  <section id="galeria" class="section-gradient py-16 px-6 animate-fade">
+    <h3 class="text-3xl font-semibold text-center mb-10 bg-gradient-to-r from-yellow-400 via-yellow-200 to-yellow-500 bg-clip-text text-transparent" style="font-family: 'Poppins', 'Segoe UI', Arial, sans-serif;">📸 Galería</h3>
+    <div class="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+      <img src="https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=400&q=80" alt="Galería 1" class="rounded-xl shadow-lg hover:scale-105 transition-transform duration-300 animate-fade">
+      <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80" alt="Galería 2" class="rounded-xl shadow-lg hover:scale-105 transition-transform duration-300 animate-fade">
+      <img src="https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80" alt="Galería 3" class="rounded-xl shadow-lg hover:scale-105 transition-transform duration-300 animate-fade">
+    </div>
+  </section>
+
+  <!-- CONTACTO -->
+  <section id="contacto" class="section-gradient py-16 px-6 animate-fade">
+    <h3 class="text-3xl font-semibold text-center mb-10 bg-gradient-to-r from-yellow-400 via-yellow-200 to-yellow-500 bg-clip-text text-transparent" style="font-family: 'Poppins', 'Segoe UI', Arial, sans-serif;">✉️ Contacto</h3>
+    <form class="max-w-xl mx-auto bg-white/80 p-8 rounded-xl shadow-lg space-y-6">
+      <input type="text" placeholder="Nombre" class="w-full px-4 py-2 rounded bg-gray-100 text-gray-900 focus:outline-none focus:ring-2 focus:ring-yellow-400 transition">
+      <input type="email" placeholder="Correo electrónico" class="w-full px-4 py-2 rounded bg-gray-100 text-gray-900 focus:outline-none focus:ring-2 focus:ring-yellow-400 transition">
+      <textarea placeholder="Mensaje" class="w-full px-4 py-2 rounded bg-gray-100 text-gray-900 focus:outline-none focus:ring-2 focus:ring-yellow-400 transition"></textarea>
+      <button type="submit" class="btn-anim px-6 py-2 rounded-full bg-yellow-400/80 hover:bg-yellow-500 text-gray-900 font-semibold shadow-lg transition-all"><span>Enviar</span></button>
+    </form>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="bg-gradient-to-r from-black via-gray-900 to-black py-6 text-center text-sm text-gray-400 animate-fade" style="font-family: 'Poppins', 'Segoe UI', Arial, sans-serif;">
+    <p>© 2025 MiRadio - Todos los derechos reservados.</p>
+    <div class="mt-2 flex justify-center space-x-4">
+      <a href="#" class="hover:text-yellow-400 transition">Facebook</a>
+      <a href="#" class="hover:text-yellow-400 transition">Instagram</a>
+      <a href="#" class="hover:text-yellow-400 transition">Twitter</a>
+    </div>
+  </footer>
+
+  <!-- tsParticles config -->
   <script>
-    const radioList = document.getElementById("radio-list");
-    const eventosList = document.getElementById("eventos-list");
-    const noticiasList = document.getElementById("noticias-list");
-
-    function renderRadios(radios) {
-      radioList.innerHTML = "";
-      radios.forEach(r => {
-        const li = document.createElement("li");
-        li.innerHTML = `
-          <img src="${r.logo}" alt="Logo ${r.name}" class="radio-logo" />
-          <div class="radio-info">
-            <strong>${r.name}</strong><br/>
-            <a href="${r.stream}" target="_blank" rel="noopener noreferrer">Escuchar</a>
-          </div>
-        `;
-        radioList.appendChild(li);
-      });
-    }
-
-    function renderEventos(eventos) {
-      eventosList.innerHTML = "";
-      eventos.forEach(e => {
-        const li = document.createElement("li");
-        li.textContent = e;
-        eventosList.appendChild(li);
-      });
-    }
-
-    function renderNoticias(noticias) {
-      noticiasList.innerHTML = "";
-      noticias.forEach(n => {
-        const li = document.createElement("li");
-        li.textContent = n;
-        noticiasList.appendChild(li);
-      });
-    }
-
-    // Leer datos de Firebase Realtime Database en tiempo real
-    database.ref('radios').on('value', snapshot => {
-      const data = snapshot.val();
-      if (data) renderRadios(data);
-      else renderRadios([]);
-    });
-
-    database.ref('eventos').on('value', snapshot => {
-      const data = snapshot.val();
-      if (data) renderEventos(data);
-      else renderEventos([]);
-    });
-
-    database.ref('noticias').on('value', snapshot => {
-      const data = snapshot.val();
-      if (data) renderNoticias(data);
-      else renderNoticias([]);
+    tsParticles.load("tsparticles", {
+      fpsLimit: 60,
+      background: { color: "transparent" },
+      particles: {
+        number: { value: 60, density: { enable: true, area: 800 } },
+        color: { value: ["#ec4899", "#06b6d4", "#fde047", "#fff"] },
+        shape: { type: "circle" },
+        opacity: { value: 0.25, random: true },
+        size: { value: 3, random: { enable: true, minimumValue: 1 } },
+        move: {
+          enable: true,
+          speed: 1.2,
+          direction: "none",
+          random: false,
+          straight: false,
+          outModes: { default: "out" },
+          attract: { enable: false }
+        },
+        links: {
+          enable: true,
+          distance: 120,
+          color: "#fff",
+          opacity: 0.08,
+          width: 1
+        }
+      },
+      interactivity: {
+        events: {
+          onHover: { enable: true, mode: "repulse" },
+          onClick: { enable: true, mode: "push" }
+        },
+        modes: {
+          repulse: { distance: 80, duration: 0.4 },
+          push: { quantity: 4 }
+        }
+      },
+      detectRetina: true
     });
   </script>
 </body>
