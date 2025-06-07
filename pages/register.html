@@ -12,6 +12,47 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 
   <style>
+    /* Reset básico */
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  max-width: 100vw;
+  min-height: 100vh;
+  overflow-x: hidden;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Open Sans', sans-serif;
+  color: #eee;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+#login-register {
+  background: #1e1e1e;
+  padding: 2rem;
+  border-radius: 20px;
+  box-shadow: 0 0 40px #960000cc;
+  width: 90%;
+  max-width: 420px;
+  margin: 1rem auto;
+  position: relative;
+  box-sizing: border-box;
+}
+
+@media (max-width: 480px) {
+  #login-register {
+    width: 95%;
+    padding: 1.5rem;
+    margin: 0.5rem auto;
+    border-radius: 16px;
+  }
+}
+
     @supports (height: 100dvh) {
 body {
   margin: 0;
@@ -51,10 +92,11 @@ body {
   padding: 2rem 1rem;
   border-radius: 20px;
   box-shadow: 0 0 40px #960000cc;
-  width: 100%;               /* Ocupa todo el ancho posible */
-  max-width: 420px;          /* Pero no se pasa de 420px en pantallas grandes */
-  max-height: 90vh;          /* Evita crecer más que la pantalla */
-  overflow-y: auto;          /* Scroll vertical si crece contenido */
+  width: 90vw;             /* ocupa 90% del ancho del viewport */
+  max-width: 420px;        /* no más de 420px */
+  max-height: 90vh;        /* no crece más que la pantalla */
+  overflow-x: hidden;      /* bloquea scroll horizontal */
+  overflow-y: hidden;        /* scroll vertical si contenido crece */
   box-sizing: border-box;
   position: fixed;
   top: 50%;
