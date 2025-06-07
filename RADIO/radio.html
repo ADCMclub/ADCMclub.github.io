@@ -265,35 +265,11 @@
           </linearGradient>
         </defs>
         <!-- Onda principal dorada -->
-        <path fill="url(#waveGradient1)">
-          <animate attributeName="d" dur="7s" repeatCount="indefinite"
-            values="
-              M0,90 Q360,130 720,90 T1440,110 V130 H0 Z;
-              M0,110 Q360,70 720,120 T1440,90 V130 H0 Z;
-              M0,90 Q360,130 720,90 T1440,110 V130 H0 Z
-            "
-          />
-        </path>
+        <path id="wave1" fill="url(#waveGradient1)" opacity="0"></path>
         <!-- Onda secundaria blanca/dorada -->
-        <path fill="url(#waveGradient2)" opacity="0.7">
-          <animate attributeName="d" dur="10s" repeatCount="indefinite"
-            values="
-              M0,120 Q360,130 720,110 T1440,120 V130 H0 Z;
-              M0,130 Q360,110 720,130 T1440,110 V130 H0 Z;
-              M0,120 Q360,130 720,110 T1440,120 V130 H0 Z
-            "
-          />
-        </path>
+        <path id="wave2" fill="url(#waveGradient2)" opacity="0.7"></path>
         <!-- Onda decorativa extra, más sutil -->
-        <path fill="url(#waveGradient3)" opacity="0.5">
-          <animate attributeName="d" dur="13s" repeatCount="indefinite"
-            values="
-              M0,128 Q360,120 720,128 T1440,129 V130 H0 Z;
-              M0,129 Q360,125 720,129 T1440,128 V130 H0 Z;
-              M0,128 Q360,120 720,128 T1440,129 V130 H0 Z
-            "
-          />
-        </path>
+        <path id="wave3" fill="url(#waveGradient3)" opacity="0.5"></path>
       </svg>
     </div>
     <div class="max-w-2xl mx-auto relative z-10">
