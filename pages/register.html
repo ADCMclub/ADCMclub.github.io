@@ -420,7 +420,7 @@ body {
     </form>
   </div>
 
-  <div id="contenido-privado" class="hidden" role="main" aria-live="polite" aria-atomic="true">
+<div id="contenido-privado" class="hidden" role="main" aria-live="polite" aria-atomic="true">
     <!-- Barra superior con saludo y botón -->
     <header>
       <h1>
@@ -428,17 +428,29 @@ body {
       </h1>
       <button id="btn-logout" aria-label="Cerrar sesión">Cerrar sesión</button>
     </header>
-    <!-- Aquí puedes añadir contenido privado -->
-
-
-
-
-
-
-
 
     
+
+    <!-- Aquí puedes añadir contenido privado -->
+
+<!-- HTML -->
+<div id="admin" class="hidden" role="main" aria-live="polite" aria-atomic="true">
+  <h2>Panel de Administración</h2>
+  <iframe src="/RADIO/admradio.html" width="100%" height="600px" style="border:none;"></iframe>
+</div>
+
+
+
+
+
+
+
+
+
+
   </div>
+
+
 
 
 
@@ -592,7 +604,9 @@ body {
       const lastname = registerForm.lastname.value.trim();
       const email = registerForm.email.value.trim();
       const password = registerForm.password.value;
+      const role = 'user'; // Rol por defecto al registrarse
 
+      
       if (!name || !lastname || !email || !password) {
         registerErrorDiv.textContent = 'Completa todos los campos.';
         registerErrorDiv.animate([{ transform: 'translateX(-5px)' }, { transform: 'translateX(5px)' }, { transform: 'translateX(0)' }], { duration: 300 });
@@ -614,7 +628,7 @@ body {
             name,
             lastname,
             email,
-            createdAt: Date.now()
+            role: role
           });
 
           showMessage('Registro exitoso. Bienvenido!', 'success');
@@ -625,10 +639,10 @@ body {
           let message = 'Error desconocido. Intenta nuevamente.';
           switch (error.code) {
             case 'auth/email-already-in-use':
-              message = 'Este correo ya está registrado.';
+              message = '⚠ Este correo ya está registrado.';
               break;
             case 'auth/invalid-email':
-              message = 'Correo inválido.';
+              message = '✉ Correo no válido.';
               break;
             case 'auth/weak-password':
               message = 'La contraseña es débil.';
@@ -665,7 +679,13 @@ auth.onAuthStateChanged(user => {
       } else {
       userInfoSpan.textContent = user.email; // fallback
       }
-
+  // Mostrar panel de administrador si corresponde
+        if (userData.role === "admin") {
+          const adminDiv = document.getElementById("admin");
+          adminDiv.classList.remove("hidden"); // Mostramos el panel admin
+          showMessage("Acceso concedido como administrador.", "success");
+        }
+      
     }).catch(() => {
       userInfoSpan.textContent = user.email;
     });
@@ -679,6 +699,8 @@ auth.onAuthStateChanged(user => {
   }
   document.body.style.visibility = 'visible';
 });
+   
+
 
 
   </script>
