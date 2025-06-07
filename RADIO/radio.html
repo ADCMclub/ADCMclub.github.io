@@ -271,10 +271,19 @@
   <!-- GALERÍA -->
   <section id="galeria" class="section-gradient py-16 px-6 animate-fade">
     <h3 class="text-3xl font-semibold text-center mb-10 bg-gradient-to-r from-yellow-400 via-yellow-200 to-yellow-500 bg-clip-text text-transparent" style="font-family: 'Poppins', 'Segoe UI', Arial, sans-serif;">📸 Galería</h3>
-    <div class="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-      <img src="https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=400&q=80" alt="Galería 1" class="rounded-xl shadow-lg hover:scale-105 transition-transform duration-300 animate-fade">
-      <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80" alt="Galería 2" class="rounded-xl shadow-lg hover:scale-105 transition-transform duration-300 animate-fade">
-      <img src="https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80" alt="Galería 3" class="rounded-xl shadow-lg hover:scale-105 transition-transform duration-300 animate-fade">
+    <div class="overflow-hidden" style="position:relative;">
+      <div 
+        id="playlist-scroll"
+        class="flex gap-8 items-center"
+        style="width: max-content; animation: scroll-x 40s linear infinite;"
+        onmouseover="this.style.animationPlayState='paused'"
+        onmouseout="this.style.animationPlayState='running'"
+      >
+        <!-- Solo cambia el data-youtube por el link de video o playlist -->
+        <div class="video-yt" data-youtube="https://www.youtube.com/watch?v=scsUlG-r73g"></div>
+        <div class="video-yt" data-youtube="https://www.youtube.com/playlist?list=PLMC9KNkIncKtPzgY-5rmhvj7fax8fdxoj"></div>
+        <!-- Puedes duplicar el div.video-yt y cambiar el link -->
+      </div>
     </div>
   </section>
 
@@ -355,6 +364,36 @@
         }
       },
       detectRetina: true
+    });
+  </script>
+
+  <style>
+    @keyframes scroll-x {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-60%); }
+    }
+  </style>
+  <script>
+    // Convierte links de video o playlist a embed automáticamente
+    document.addEventListener("DOMContentLoaded", function() {
+      document.querySelectorAll('.video-yt').forEach(function(div) {
+        const url = div.getAttribute('data-youtube');
+        let embed = '';
+        if (!url) return;
+        // Video individual
+        const videoMatch = url.match(/(?:v=|\/embed\/|\.be\/)([a-zA-Z0-9_-]{11})/);
+        // Playlist
+        const playlistMatch = url.match(/[?&]list=([a-zA-Z0-9_-]+)/);
+        if (playlistMatch && !videoMatch) {
+          embed = `https://www.youtube.com/embed/videoseries?list=${playlistMatch[1]}`;
+        } else if (videoMatch) {
+          embed = `https://www.youtube.com/embed/${videoMatch[1]}`;
+          if (playlistMatch) embed += `?list=${playlistMatch[1]}`;
+        }
+        if (embed) {
+          div.innerHTML = `<iframe width="560" height="315" src="${embed}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen class="rounded-xl shadow-lg"></iframe>`;
+        }
+      });
     });
   </script>
 </body>
