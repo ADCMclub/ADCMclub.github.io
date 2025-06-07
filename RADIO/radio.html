@@ -70,7 +70,13 @@
     .btn-anim {
       position: relative;
       overflow: hidden;
-      transition: background 0.3s;
+      transition: background 0.3s, color 0.3s, transform 0.2s;
+      background: linear-gradient(90deg, #bfa76a 0%, #fffbe6 100%);
+      color: #18181b;
+      border: none;
+      box-shadow: 0 2px 8px 0 #bfa76a44;
+      /* Animación de entrada */
+      animation: btn-fade-in 1s cubic-bezier(.4,0,.2,1);
     }
     .btn-anim::before {
       content: "";
@@ -79,19 +85,34 @@
       top: 0;
       width: 200%;
       height: 100%;
-      background: linear-gradient(90deg, #ec4899 0%, #06b6d4 100%);
-      opacity: 0.15;
+      background: linear-gradient(90deg, #fffbe6 0%, #bfa76a 100%);
+      opacity: 0.12;
       transform: skewX(-20deg);
       transition: left 0.4s;
       z-index: 0;
     }
     .btn-anim:hover::before {
       left: 0;
-      opacity: 0.25;
+      opacity: 0.22;
     }
     .btn-anim span {
       position: relative;
       z-index: 1;
+    }
+    /* Animación de escala y brillo al pasar el mouse */
+    .btn-anim:hover {
+      transform: scale(1.07) rotate(-1deg);
+      box-shadow: 0 4px 24px 0 #bfa76a99, 0 0 0 4px #fffbe633;
+      filter: brightness(1.08);
+    }
+    /* Animación de "pulse" suave */
+    @keyframes btn-fade-in {
+      from { opacity: 0; transform: scale(0.95);}
+      to { opacity: 1; transform: scale(1);}
+    }
+    .btn-anim:active {
+      transform: scale(0.97);
+      filter: brightness(0.98);
     }
     /* Tarjeta de tips */
     .tip-card {
@@ -207,6 +228,28 @@
     </div>
   </section>
 
+  <!-- EMISORAS -->
+  <section id="emisoras" class="section-gradient py-16 px-6 animate-fade">
+    <h3 class="text-3xl font-semibold text-center mb-10 bg-gradient-to-r from-yellow-400 via-yellow-200 to-yellow-500 bg-clip-text text-transparent" style="font-family: 'Poppins', 'Segoe UI', Arial, sans-serif;">
+      📻 Emisoras
+    </h3>
+    <div class="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+      <!-- Ejemplo de emisora -->
+      <a href="/RADIO/img_radio/DCRadioec_logo.jpg" target="_blank" class="block bg-white/80 rounded-xl shadow-lg hover:scale-105 hover:bg-yellow-100/80 transition-transform duration-300 animate-fade text-center p-6 group">
+        <img src="https://via.placeholder.com/120x120.png?text=Emisora+1" alt="Emisora 1" class="mx-auto mb-4 rounded-full border-4 border-yellow-400/40 shadow group-hover:border-yellow-500 transition">
+        <h4 class="font-bold text-lg text-gray-900 mb-2">Nombre de la Emisora</h4>
+        <span class="text-sm text-gray-700">Haz clic para escuchar</span>
+      </a>
+      <!-- Puedes duplicar este bloque para más emisoras -->
+      <a href="https://tulinkdemuestra2.com" target="_blank" class="block bg-white/80 rounded-xl shadow-lg hover:scale-105 hover:bg-yellow-100/80 transition-transform duration-300 animate-fade text-center p-6 group">
+        <img src="https://via.placeholder.com/120x120.png?text=Emisora+2" alt="Emisora 2" class="mx-auto mb-4 rounded-full border-4 border-yellow-400/40 shadow group-hover:border-yellow-500 transition">
+        <h4 class="font-bold text-lg text-gray-900 mb-2">Otra Emisora</h4>
+        <span class="text-sm text-gray-700">Haz clic para escuchar</span>
+      </a>
+      <!-- Más emisoras aquí -->
+    </div>
+  </section>
+  
   <!-- LOCUTORES -->
   <section id="locutores" class="section-gradient py-16 px-6 animate-fade">
     <h3 class="text-3xl font-semibold text-center mb-10 bg-gradient-to-r from-yellow-400 via-yellow-200 to-yellow-500 bg-clip-text text-transparent" style="font-family: 'Poppins', 'Segoe UI', Arial, sans-serif;">🎙 Locutores</h3>
@@ -249,6 +292,7 @@
       <button type="submit" class="btn-anim px-6 py-2 rounded-full bg-yellow-400/80 hover:bg-yellow-500 text-gray-900 font-semibold shadow-lg transition-all"><span>Enviar</span></button>
     </form>
   </section>
+
 
   <!-- FOOTER -->
   <footer class="bg-gradient-to-r from-black via-gray-900 to-black py-6 text-center text-sm text-gray-400 animate-fade" style="font-family: 'Poppins', 'Segoe UI', Arial, sans-serif;">
