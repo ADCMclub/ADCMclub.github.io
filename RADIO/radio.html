@@ -234,17 +234,13 @@
       📻 Emisoras
     </h3>
     <div class="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-      <!-- Ejemplo de emisora -->
-      <a href="/RADIO/img_radio/DCRadioec_logo.jpg" target="_blank" class="block bg-white/80 rounded-xl shadow-lg hover:scale-105 hover:bg-yellow-100/80 transition-transform duration-300 animate-fade text-center p-6 group">
-        <img src="https://via.placeholder.com/120x120.png?text=Emisora+1" alt="Emisora 1" class="mx-auto mb-4 rounded-full border-4 border-yellow-400/40 shadow group-hover:border-yellow-500 transition">
-        <h4 class="font-bold text-lg text-gray-900 mb-2">Nombre de la Emisora</h4>
-        <span class="text-sm text-gray-700">Haz clic para escuchar</span>
+      <!-- Ejemplo de emisora en rectángulo redondeado -->
+      <a href="/RADIO/img_radio/DCRadioec_logo.jpg" target="_blank" class="group bg-white/80 rounded-2xl shadow-lg hover:scale-105 hover:bg-yellow-100/80 transition-transform duration-300 animate-fade flex flex-col items-center justify-center p-6">
+        <img src="https://via.placeholder.com/120x120.png?text=Emisora+1" alt="Nombre de la Emisora" class="w-28 h-28 object-cover rounded-xl shadow mb-4 border-4 border-yellow-400/40 group-hover:border-yellow-500 transition">
       </a>
       <!-- Puedes duplicar este bloque para más emisoras -->
-      <a href="https://tulinkdemuestra2.com" target="_blank" class="block bg-white/80 rounded-xl shadow-lg hover:scale-105 hover:bg-yellow-100/80 transition-transform duration-300 animate-fade text-center p-6 group">
-        <img src="https://via.placeholder.com/120x120.png?text=Emisora+2" alt="Emisora 2" class="mx-auto mb-4 rounded-full border-4 border-yellow-400/40 shadow group-hover:border-yellow-500 transition">
-        <h4 class="font-bold text-lg text-gray-900 mb-2">Otra Emisora</h4>
-        <span class="text-sm text-gray-700">Haz clic para escuchar</span>
+      <a href="https://tulinkdemuestra2.com" target="_blank" class="group bg-white/80 rounded-2xl shadow-lg hover:scale-105 hover:bg-yellow-100/80 transition-transform duration-300 animate-fade flex flex-col items-center justify-center p-6">
+        <img src="https://via.placeholder.com/120x120.png?text=Emisora+2" alt="Otra Emisora" class="w-28 h-28 object-cover rounded-xl shadow mb-4 border-4 border-yellow-400/40 group-hover:border-yellow-500 transition">
       </a>
       <!-- Más emisoras aquí -->
     </div>
@@ -293,6 +289,22 @@
     </form>
   </section>
 
+  <!-- DESCARGAS -->
+  <section id="descargas" class="section-gradient py-16 px-6 animate-fade">
+    <h3 class="text-3xl font-semibold text-center mb-10 bg-gradient-to-r from-yellow-400 via-yellow-200 to-yellow-500 bg-clip-text text-transparent" style="font-family: 'Poppins', 'Segoe UI', Arial, sans-serif;">
+      📲 Descarga nuestras aplicaciones
+    </h3>
+    <div class="flex flex-col md:flex-row justify-center items-center gap-10 max-w-3xl mx-auto">
+      <!-- Android solo imagen y link -->
+      <a href="https://play.google.com/store" target="_blank" class="group rounded-xl hover:scale-110 transition-transform duration-300 animate-fade flex items-center justify-center">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" alt="Descargar en Android" class="w-40 md:w-48 shadow-lg rounded-xl">
+      </a>
+      <!-- iOS solo imagen y link -->
+      <a href="https://www.apple.com/app-store/" target="_blank" class="group rounded-xl hover:scale-110 transition-transform duration-300 animate-fade flex items-center justify-center">
+        <img src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg" alt="Descargar en iOS" class="w-40 md:w-48 shadow-lg rounded-xl">
+      </a>
+    </div>
+  </section>
 
   <!-- FOOTER -->
   <footer class="bg-gradient-to-r from-black via-gray-900 to-black py-6 text-center text-sm text-gray-400 animate-fade" style="font-family: 'Poppins', 'Segoe UI', Arial, sans-serif;">
