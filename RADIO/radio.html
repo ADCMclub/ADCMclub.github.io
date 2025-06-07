@@ -192,6 +192,19 @@
       50% { transform: rotate(3deg);}
     }
     .animate-wiggle { animation: wiggle 1.2s ease-in-out infinite; }
+
+    @keyframes radio-glow {
+
+      80% {
+        text-shadow: 0 0 18px #fffbe6cc, 0 0 12px #bfa76a;
+        filter: brightness(1.13) drop-shadow(0 0 12px #bfa76a88);
+      }
+    100% {
+        text-shadow: 0 0 18px #fffbe6cc, 0 0 12px #bfa76a;
+        filter: brightness(1.13) drop-shadow(0 0 12px #bfa76a88);
+      }
+    }
+   
   </style>
 </head>
 <body class="bg-black text-white font-sans relative">
@@ -233,7 +246,7 @@
   <section id="inicio" class="section-gradient text-center py-20 animate-fade-up">
     <div class="max-w-2xl mx-auto">
       <h2
-        class="text-4xl md:text-5xl font-extrabold mb-4 animate-shine select-none"
+        class="text-4xl md:text-5xl font-extrabold mb-4 animate-radio-glow select-none"
         style="
           font-family: 'Poppins', 'Segoe UI', Arial, sans-serif;
           color: #fff;
