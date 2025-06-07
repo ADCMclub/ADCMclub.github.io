@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Productora - Radio y Eventos</title>
+  <style>
+    /* Aquí va tu CSS, o enlaza radio.css */
+    body {
+      font-family: Arial, sans-serif;
+      background: #111;
+      color: #eee;
+      max-width: 900px;
+      margin: auto;
+      padding: 1rem;
+    }
+    h2 {
+      color: #ffdd57;
+      margin-top: 2rem;
+    }
+    .radio-list, .eventos-list, .noticias-list {
+      list-style: none;
+      padding-left: 0;
+    }
+    .radio-list li {
+      display: flex;
+      align-items: center;
+      margin-bottom: 1rem;
+      background: #222;
+      border-radius: 8px;
+      padding: 0.5rem;
+    }
+    .radio-logo {
+      width: 100px;
+      height: 60px;
+      object-fit: contain;
+      margin-right: 1rem;
+      border-radius: 6px;
+      background: #000;
+    }
+    .radio-info {
+      flex-grow: 1;
+    }
+    .radio-info strong {
+      font-size: 1.1rem;
+    }
+    .radio-info a {
+      color: #ffdd57;
+      text-decoration: none;
+      margin-top: 0.3rem;
+      display: inline-block;
+    }
+    .eventos-list li, .noticias-list li {
+      background: #222;
+      margin-bottom: 0.6rem;
+      padding: 0.5rem;
+      border-radius: 6px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Productora Radio & Eventos</h1>
+
+  <section id="radios">
+    <h2>Radios</h2>
+    <ul class="radio-list" id="radio-list"></ul>
+  </section>
+
+  <section id="eventos">
+    <h2>Eventos</h2>
+    <ul class="eventos-list" id="eventos-list"></ul>
+  </section>
+
+  <section id="noticias">
+    <h2>Noticias</h2>
+    <ul class="noticias-list" id="noticias-list"></ul>
+  </section>
+
+  <script>
+    // Función para cargar datos desde localStorage o retornar valor por defecto
+    function loadData(key, defaultValue) {
+      const data = localStorage.getItem(key);
+      if (!data) return defaultValue;
+      try {
+        return JSON.parse(data);
+      } catch {
+        return defaultValue;
+      }
+    }
+
+    // Cargar radios
+    const radios = loadData("radios", [
+      {name: "Radio 1", logo: "https://via.placeholder.com/120x80?text=Logo1", stream: "#"},
+      {name: "Radio 2", logo: "https://via.placeholder.com/120x80?text=Logo2", stream: "#"},
+    ]);
+
+    // Cargar eventos
+    const eventos = loadData("eventos", [
+      "Evento cultural el 15 de junio",
+      "Festival de música en julio"
+    ]);
+
+    // Cargar noticias
+    const noticias = loadData("noticias", [
+      "Nueva estación inaugurada",
+      "Productora ganadora de premio local."
+    ]);
+
+    // Renderizar radios
+    const radioList = document.getElementById("radio-list");
+    radioList.innerHTML = "";
+    radios.forEach(r => {
+      const li = document.createElement("li");
+      li.innerHTML = `
+        <img src="${r.logo}" alt="Logo ${r.name}" class="radio-logo" />
+        <div class="radio-info">
+          <strong>${r.name}</strong><br/>
+          <a href="${r.stream}" target="_blank" rel="noopener noreferrer">Escuchar</a>
+        </div>
+      `;
+      radioList.appendChild(li);
+    });
+
+    // Renderizar eventos
+    const eventosList = document.getElementById("eventos-list");
+    eventosList.innerHTML = "";
+    eventos.forEach(e => {
+      const li = document.createElement("li");
+      li.textContent = e;
+      eventosList.appendChild(li);
+    });
+
+    // Renderizar noticias
+    const noticiasList = document.getElementById("noticias-list");
+    noticiasList.innerHTML = "";
+    noticias.forEach(n => {
+      const li = document.createElement("li");
+      li.textContent = n;
+      noticiasList.appendChild(li);
+    });
+  </script>
+</body>
+</html>
