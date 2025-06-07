@@ -680,13 +680,7 @@ auth.onAuthStateChanged(user => {
   document.body.style.visibility = 'visible';
 });
 
-db.ref('users/' + uid).set({
-  name,
-  lastname,
-  email,
-  createdAt: Date.now(),
-  role: 'user' // por defecto usuario normal
-});
+
   </script>
 </body>
 </html>
