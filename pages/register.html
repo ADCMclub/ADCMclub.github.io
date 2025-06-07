@@ -385,6 +385,14 @@ body {
     padding: 10px 20px;
   }
 }
+#admin {
+  display: none; /* oculto por defecto */
+}
+
+#admin.visible {
+  display: block; /* visible cuando tiene la clase */
+}
+
 
   </style>
 </head>
@@ -433,25 +441,13 @@ body {
 
     <!-- Aquí puedes añadir contenido privado -->
 
-<!-- HTML -->
-<div id="admin" class="hidden" role="main" aria-live="polite" aria-atomic="true">
-  <h2>Panel de Administración</h2>
-  <iframe src="/RADIO/admradio.html" width="100%" height="600px" style="border:none;"></iframe>
-</div>
-
-
-
-
-
-
-
-
-
-
   </div>
 
 
-
+<div id="admin" class="admin-panel" >
+  <h2>Panel de Administración</h2>
+  <iframe src="/RADIO/admradio.html" width="100%" height="600px" style="border:none;"></iframe>
+</div>
 
 
 
@@ -680,11 +676,16 @@ auth.onAuthStateChanged(user => {
       userInfoSpan.textContent = user.email; // fallback
       }
   // Mostrar panel de administrador si corresponde
-        if (userData.role === "admin") {
-          const adminDiv = document.getElementById("admin");
-          adminDiv.classList.remove("hidden"); // Mostramos el panel admin
-          showMessage("Acceso concedido como administrador.", "success");
-        }
+if (userData.role === "admin") {
+  const adminDiv = document.getElementById("admin");
+  adminDiv.classList.add("visible"); // Mostrar panel admin
+  showMessage("Acceso concedido como administrador.", "success");
+} else {
+  // Por si acaso, ocultar el panel para otros roles
+  const adminDiv = document.getElementById("admin");
+  adminDiv.classList.remove("visible");
+}
+
       
     }).catch(() => {
       userInfoSpan.textContent = user.email;
