@@ -10,6 +10,9 @@
   <!-- tsParticles CDN para fondo animado -->
   <script src="https://cdn.jsdelivr.net/npm/tsparticles@3.3.0/tsparticles.bundle.min.js"></script>
   <style>
+    html {
+      scroll-behavior: smooth;
+    }
     html, body {
       height: 100%;
       margin: 0;
@@ -210,10 +213,10 @@
 <body class="bg-black text-white font-sans relative">
 
   <!-- Fondo animado de partículas -->
-  <div id="tsparticles"></div>
+  <div id="tsparticles" class="animate-fade-up"></div>
 
   <!-- NAV -->
-  <header class="bg-gradient-to-r from-black via-gray-900 to-black shadow-lg animate-fade">
+  <header class="bg-gradient-to-r from-black via-gray-900 to-black shadow-lg animate-fade-up">
     <div class="container mx-auto px-6 py-4 flex justify-between items-center">
       <div class="flex items-center space-x-3">
         <img src="/RADIO/img_radio/logo_rdcrsound_sf.png" alt="Logo RDC Sound" class="w-12 h-12 rounded-full shadow-lg" />
@@ -273,20 +276,7 @@
       🎧 Programación
     </h3>
     <div class="relative overflow-x-auto" style="position:relative;">
-      <!-- Flecha izquierda -->
-      <button id="progScrollLeft" type="button"
-        class="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-yellow-400/80 hover:bg-yellow-500 text-gray-900 rounded-full shadow-lg p-2 transition-all hidden md:flex items-center justify-center animate-float"
-        aria-label="Desplazar a la izquierda"
-        style="margin: 0 auto;">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 animate-wiggle" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
-      </button>
-      <!-- Flecha derecha -->
-      <button id="progScrollRight" type="button"
-        class="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-yellow-400/80 hover:bg-yellow-500 text-gray-900 rounded-full shadow-lg p-2 transition-all hidden md:flex items-center justify-center animate-float"
-        aria-label="Desplazar a la derecha"
-        style="margin: 0 auto;">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 animate-wiggle" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
-      </button>
+      <!-- Flechas eliminadas -->
       <div 
         id="prog-scroll"
         class="flex gap-8 items-center py-6 justify-center"
@@ -418,20 +408,7 @@
       📻 Emisoras
     </h3>
     <div class="relative overflow-x-auto" style="position:relative;">
-      <!-- Flecha izquierda -->
-      <button id="emisoraScrollLeft" type="button"
-        class="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-yellow-400/80 hover:bg-yellow-500 text-gray-900 rounded-full shadow-lg p-2 transition-all hidden md:flex items-center justify-center animate-float"
-        aria-label="Desplazar a la izquierda"
-        style="margin: 0 auto;">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 animate-wiggle" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
-      </button>
-      <!-- Flecha derecha -->
-      <button id="emisoraScrollRight" type="button"
-        class="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-yellow-400/80 hover:bg-yellow-500 text-gray-900 rounded-full shadow-lg p-2 transition-all hidden md:flex items-center justify-center animate-float"
-        aria-label="Desplazar a la derecha"
-        style="margin: 0 auto;">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 animate-wiggle" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
-      </button>
+      <!-- Flechas eliminadas -->
       <div 
         id="emisora-scroll"
         class="flex gap-8 items-center py-6 justify-center"
@@ -590,24 +567,13 @@
   </section>
 
   <!-- GALERÍA -->
-  <section id="galeria" class="section-gradient py-16 px-6 animate-fade">
+  <section id="galeria" class="section-gradient py-16 px-6 animate-fade-up">
     <h3 class="text-3xl font-semibold text-center mb-10 bg-gradient-to-r from-yellow-400 via-yellow-200 to-yellow-500 bg-clip-text text-transparent select-none"
         style="font-family: 'Poppins', 'Segoe UI', Arial, sans-serif;">
       📸 Galería
     </h3>
     <div class="relative overflow-x-auto" style="position:relative;">
-      <!-- Flecha izquierda -->
-      <button id="scrollLeft" type="button"
-        class="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-yellow-400/80 hover:bg-yellow-500 text-gray-900 rounded-full shadow-lg p-2 transition-all hidden md:block"
-        aria-label="Desplazar a la izquierda">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
-      </button>
-      <!-- Flecha derecha -->
-      <button id="scrollRight" type="button"
-        class="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-yellow-400/80 hover:bg-yellow-500 text-gray-900 rounded-full shadow-lg p-2 transition-all hidden md:block"
-        aria-label="Desplazar a la derecha">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
-      </button>
+      <!-- Flechas eliminadas -->
       <div 
         id="playlist-scroll"
         class="flex gap-8 items-center py-6"
@@ -742,7 +708,7 @@
   </script>
 
   <!-- CONTACTO -->
-  <section id="contacto" class="section-gradient py-16 px-6 animate-fade">
+  <section id="contacto" class="section-gradient py-16 px-6 animate-fade-up">
     <h3 class="text-3xl font-semibold text-center mb-10 bg-gradient-to-r from-yellow-400 via-yellow-200 to-yellow-500 bg-clip-text text-transparent select-none"
         style="font-family: 'Poppins', 'Segoe UI', Arial, sans-serif;">
       ✉️ Contacto
@@ -756,7 +722,7 @@
   </section>
 
   <!-- DESCARGAS -->
-  <section id="descargas" class="section-gradient py-16 px-6 animate-fade">
+  <section id="descargas" class="section-gradient py-16 px-6 animate-fade-up">
     <h3 class="text-3xl font-semibold text-center mb-10 bg-gradient-to-r from-yellow-400 via-yellow-200 to-yellow-500 bg-clip-text text-transparent select-none"
         style="font-family: 'Poppins', 'Segoe UI', Arial, sans-serif;">
       📲 Descarga nuestras aplicaciones
@@ -774,7 +740,7 @@
   </section>
 
   <!-- FOOTER -->
-  <footer class="bg-gradient-to-r from-black via-gray-900 to-black py-6 text-center text-sm text-gray-400 animate-fade" style="font-family: 'Poppins', 'Segoe UI', Arial, sans-serif;">
+  <footer class="bg-gradient-to-r from-black via-gray-900 to-black py-6 text-center text-sm text-gray-400 animate-fade-up" style="font-family: 'Poppins', 'Segoe UI', Arial, sans-serif;">
     <p>© 2025 RDCR SOUND - Todos los derechos reservados.</p>
     <div class="mt-2 flex justify-center space-x-4">
       <a href="#" class="hover:text-yellow-400 transition">Facebook</a>
@@ -824,5 +790,184 @@
       detectRetina: true
     });
   </script>
+
+  <!-- Agrega esto al final de tu <head> o antes de </body> -->
+  <style>
+  /* Animación de fade-up ya existe, solo aseguramos que esté bien definida */
+  .animate-fade-up {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 1.1s cubic-bezier(.4,0,.2,1), transform 1.1s cubic-bezier(.4,0,.2,1);
+  }
+  .animate-fade-up.visible {
+    opacity: 1 !important;
+    transform: translateY(0) !important;
+  }
+  </style>
+  <script>
+  document.addEventListener("DOMContentLoaded", function() {
+    // Selecciona todas las secciones y elementos con animate-fade-up
+    const fadeEls = document.querySelectorAll('.animate-fade-up');
+    const options = {
+      threshold: 0.18
+    };
+    const onIntersect = (entries, observer) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target); // Solo una vez
+        }
+      });
+    };
+    const observer = new window.IntersectionObserver(onIntersect, options);
+    fadeEls.forEach(el => observer.observe(el));
+
+    // --- Scroll suave para los enlaces del menú ---
+    document.querySelectorAll('a[href^="#"]').forEach(link => {
+      link.addEventListener('click', function(e) {
+        const targetId = this.getAttribute('href').slice(1);
+        const target = document.getElementById(targetId);
+        if (target) {
+          e.preventDefault();
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    });
+  });
+  </script>
+
+  <!-- Agrega o reemplaza este bloque justo antes de </body> -->
+  <style>
+/* Fade-up animación para aparición desde abajo */
+.animate-fade-up {
+  opacity: 0;
+  transform: translateY(40px) scale(0.98);
+  transition:
+    opacity 0.8s cubic-bezier(.4,0,.2,1),
+    transform 0.8s cubic-bezier(.4,0,.2,1);
+  will-change: opacity, transform;
+}
+.animate-fade-up.visible {
+  opacity: 1 !important;
+  transform: translateY(0) scale(1) !important;
+}
+
+/* Fade-in lateral para elementos secundarios */
+.animate-fade-left {
+  opacity: 0;
+  transform: translateX(-40px) scale(0.98);
+  transition:
+    opacity 0.8s cubic-bezier(.4,0,.2,1),
+    transform 0.8s cubic-bezier(.4,0,.2,1);
+  will-change: opacity, transform;
+}
+.animate-fade-left.visible {
+  opacity: 1 !important;
+  transform: translateX(0) scale(1) !important;
+}
+
+/* Fade-in lateral derecha */
+.animate-fade-right {
+  opacity: 0;
+  transform: translateX(40px) scale(0.98);
+  transition:
+    opacity 0.8s cubic-bezier(.4,0,.2,1),
+    transform 0.8s cubic-bezier(.4,0,.2,1);
+  will-change: opacity, transform;
+}
+.animate-fade-right.visible {
+  opacity: 1 !important;
+  transform: translateX(0) scale(1) !important;
+}
+
+/* Mejora el scroll suave para todo el sitio */
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 80px; /* Ajusta si tienes header fijo */
+}
+</style>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  // --- Animación de aparición al hacer scroll (solo una vez) ---
+  const fadeEls = document.querySelectorAll('.animate-fade-up, .animate-fade-left, .animate-fade-right');
+  const options = { threshold: 0.13 };
+  const onIntersect = (entries, observer) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target); // Solo una vez
+      }
+    });
+  };
+  const observer = new window.IntersectionObserver(onIntersect, options);
+  fadeEls.forEach(el => observer.observe(el));
+
+  // --- Scroll suave mejorado para los enlaces del menú ---
+  document.querySelectorAll('a[href^="#"]').forEach(link => {
+    link.addEventListener('click', function(e) {
+      const targetId = this.getAttribute('href').slice(1);
+      const target = document.getElementById(targetId);
+      if (target) {
+        e.preventDefault();
+        // Ajusta el desplazamiento si tienes un header fijo
+        const header = document.querySelector('header');
+        const headerHeight = header ? header.offsetHeight : 0;
+        const targetPosition = target.getBoundingClientRect().top + window.pageYOffset - headerHeight + 1;
+
+        // Suaviza el scroll con una función personalizada
+        smoothScrollTo(window.scrollY, targetPosition, 600);
+      }
+    });
+  });
+
+  // Función de scroll suave personalizada
+  function smoothScrollTo(start, end, duration) {
+    const change = end - start;
+    const startTime = performance.now();
+
+    function animateScroll(currentTime) {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      // EaseInOutQuad
+      const ease = progress < 0.5
+        ? 2 * progress * progress
+        : -1 + (4 - 2 * progress) * progress;
+      window.scrollTo(0, start + change * ease);
+      if (progress < 1) {
+        requestAnimationFrame(animateScroll);
+      }
+    }
+    requestAnimationFrame(animateScroll);
+  }
+});
+</script>
+
+  /* Barra de desplazamiento global elegante y personalizada */
+  ::-webkit-scrollbar {
+    width: 10px;
+    background: #18181b;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #bfa76a 0%, #232526 100%);
+    border-radius: 8px;
+    border: 2px solid #232526;
+    transition: background 0.3s;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, #e6d9b4 0%, #bfa76a 100%);
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #18181b;
+    border-radius: 8px;
+  }
+
+  /* Firefox */
+  html {
+    scrollbar-width: thin;
+    scrollbar-color: #bfa76a #18181b;
+  }
 </body>
 </html>
