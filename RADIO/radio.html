@@ -291,10 +291,10 @@
         onmouseover="this.style.animationPlayState && (this.style.animationPlayState='paused')"
         onmouseout="this.style.animationPlayState && (this.style.animationPlayState='running')"
       >
-        <!-- Solo cambia el data-youtube por el link de video o playlist -->
-        <div class="video-yt" data-youtube="https://www.youtube.com/watch?v=ID_DEL_VIDEO"></div>
-        <div class="video-yt" data-youtube="https://www.youtube.com/playlist?list=ID_DE_LA_PLAYLIST"></div>
-        <!-- Puedes duplicar el div.video-yt y cambiar el link -->
+        <!-- Solo pon tus iframes aquí, puedes duplicar y cambiar el src -->
+        <iframe width="560" height="315" src="https://www.youtube.com/embed/scsUlG-r73g?si=Ft_gaWIykBhkEz6E" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen class="rounded-xl shadow-lg"></iframe>
+        <iframe width="560" height="315" src="https://www.youtube.com/embed/videoseries?list=PLMC9KNkIncKtPzgY-5rmhvj7fax8fdxoj" title="YouTube playlist" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen class="rounded-xl shadow-lg"></iframe>
+        <!-- Más iframes aquí -->
       </div>
     </div>
   </section>
@@ -408,12 +408,10 @@
       const btnRight = document.getElementById('scrollRight');
       if (btnLeft && btnRight && scroll) {
         btnLeft.addEventListener('click', () => {
-          scroll.scrollBy({ left: -340, behavior: 'smooth' });
-          scroll.style.animationPlayState = 'paused';
+          scroll.scrollBy({ left: -580, behavior: 'smooth' });
         });
         btnRight.addEventListener('click', () => {
-          scroll.scrollBy({ left: 340, behavior: 'smooth' });
-          scroll.style.animationPlayState = 'paused';
+          scroll.scrollBy({ left: 580, behavior: 'smooth' });
         });
       }
     });
