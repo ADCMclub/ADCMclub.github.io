@@ -1302,7 +1302,9 @@ document.addEventListener("DOMContentLoaded", function() {
 </script>
 <!-- ...existing code... -->
 <style>
-/* Mejor scroll horizontal para móviles: permite swipe natural y oculta scrollbars */
+/* ...otros estilos... */
+
+/* Mejora la adaptación móvil y el scroll horizontal en todas las secciones con scroll */
 #prog-scroll,
 #playlist-scroll,
 #emisora-scroll,
@@ -1313,39 +1315,28 @@ document.addEventListener("DOMContentLoaded", function() {
   scrollbar-width: thin;
   scrollbar-color: #bfa76a #232526;
   touch-action: pan-x;
+  gap: 2rem;
+  padding-left: 32px;
+  padding-right: 32px;
 }
-#prog-scroll::-webkit-scrollbar,
-#playlist-scroll::-webkit-scrollbar,
-#emisora-scroll::-webkit-scrollbar,
-#locutores-scroll::-webkit-scrollbar {
-  height: 8px;
+#prog-scroll > *,
+#playlist-scroll > *,
+#emisora-scroll > *,
+#locutores-scroll > * {
+  min-width: 340px;
+  max-width: 400px;
+  flex-shrink: 0;
 }
-#prog-scroll::-webkit-scrollbar-thumb,
-#playlist-scroll::-webkit-scrollbar-thumb,
-#emisora-scroll::-webkit-scrollbar-thumb,
-#locutores-scroll::-webkit-scrollbar-thumb {
-  background: #bfa76a;
-  border-radius: 4px;
-}
-#prog-scroll::-webkit-scrollbar-track,
-#playlist-scroll::-webkit-scrollbar-track,
-#emisora-scroll::-webkit-scrollbar-track,
-#locutores-scroll::-webkit-scrollbar-track {
-  background: #232526;
-}
-
-/* Scroll-snap para móviles en todas las secciones horizontales */
 @media (max-width: 900px) {
   #prog-scroll,
   #playlist-scroll,
   #emisora-scroll,
   #locutores-scroll {
-    gap: 1rem !important;
-    padding-left: 8px !important;
-    padding-right: 8px !important;
+    gap: 1.2rem !important;
+    padding-left: 10vw !important;
+    padding-right: 10vw !important;
     scroll-snap-type: x mandatory;
     flex-wrap: nowrap !important;
-    overflow-x: auto !important;
     display: flex !important;
   }
   #prog-scroll > *,
@@ -1353,11 +1344,10 @@ document.addEventListener("DOMContentLoaded", function() {
   #emisora-scroll > *,
   #locutores-scroll > * {
     scroll-snap-align: start;
-    min-width: 80vw !important;
-    max-width: 90vw !important;
+    min-width: clamp(80vw, 90vw, 98vw) !important;
+    max-width: 98vw !important;
     flex-shrink: 0 !important;
   }
-  /* Oculta scrollbars en mobile para un look más limpio */
   #prog-scroll::-webkit-scrollbar,
   #playlist-scroll::-webkit-scrollbar,
   #emisora-scroll::-webkit-scrollbar,
@@ -1371,20 +1361,124 @@ document.addEventListener("DOMContentLoaded", function() {
     scrollbar-width: none !important;
   }
 }
+@media (max-width: 600px) {
+  #prog-scroll,
+  #playlist-scroll,
+  #emisora-scroll,
+  #locutores-scroll {
+    gap: 0.7rem !important;
+    padding-left: 4vw !important;
+    padding-right: 4vw !important;
+  }
+  #prog-scroll > *,
+  #playlist-scroll > *,
+  #emisora-scroll > *,
+  #locutores-scroll > * {
+    min-width: 96vw !important;
+    max-width: 98vw !important;
+  }
+}
+
+/* Mejora el botón de volver arriba en móviles */
+#backToTop {
+  width: 56px;
+  height: 56px;
+  right: 1rem;
+  bottom: 1.2rem;
+}
+@media (max-width: 600px) {
+  #backToTop {
+    width: 44px;
+    height: 44px;
+    right: 0.5rem;
+    bottom: 0.7rem;
+  }
+}
+
+/* Mejora la visibilidad de los formularios en móviles */
+@media (max-width: 600px) {
+  form.max-w-xl {
+    padding: 1.5rem !important;
+    font-size: 1rem !important;
+  }
+}
+
+/* Mejora la visualización de las tarjetas de programación y locutores en móviles */
+@media (max-width: 900px) {
+  .max-w-xs, .max-w-2xl, .max-w-3xl, .max-w-6xl {
+    max-width: 98vw !important;
+  }
+}
+
+/* Mejora la visualización de los iframes de galería en móviles */
+@media (max-width: 900px) {
+  #playlist-scroll iframe {
+    width: 90vw !important;
+    height: 50vw !important;
+    min-width: 320px !important;
+    max-width: 98vw !important;
+    min-height: 180px !important;
+    max-height: 320px !important;
+  }
+}
+@media (max-width: 600px) {
+  #playlist-scroll iframe {
+    width: 98vw !important;
+    height: 56vw !important;
+    min-width: 220px !important;
+    max-width: 99vw !important;
+    min-height: 120px !important;
+    max-height: 220px !important;
+  }
+}
+
+/* Mejora la visualización de las imágenes de emisoras en móviles */
+@media (max-width: 600px) {
+  #emisora-scroll img {
+    width: 80vw !important;
+    height: 80vw !important;
+    min-width: 120px !important;
+    max-width: 98vw !important;
+    min-height: 120px !important;
+    max-height: 98vw !important;
+    aspect-ratio: 1/1;
+  }
+}
+
+/* Mejora la visualización de los nombres de emisoras y locutores en móviles */
+@media (max-width: 600px) {
+  .emisora-nombre, .font-bold.text-xl, .font-bold.text-lg {
+    font-size: 1.1rem !important;
+    text-align: center !important;
+    word-break: break-word;
+  }
+}
+
+/* Mejora la experiencia de scroll horizontal en iOS/Android */
+#prog-scroll,
+#playlist-scroll,
+#emisora-scroll,
+#locutores-scroll {
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+  overscroll-behavior-x: contain;
+}
 </style>
+<!-- ...existing code... -->
 <script>
 /**
- * Auto-scroll horizontal en bucle con diferenciador visual al reiniciar.
- * Ahora también aplica auto-scroll en móviles para #prog-scroll, #playlist-scroll, #emisora-scroll y #locutores-scroll.
- * Corrige el bug: al hacer scroll manual hacia atrás, el primer elemento se muestra completo.
+ * Scroll horizontal auto/manual mejorado y unificado para todas las secciones con scroll.
+ * - Auto-scroll en bucle si hay overflow.
+ * - Pausa/resume tras interacción manual.
+ * - Adaptado para móviles y PC.
+ * - Corrige bugs de scroll y visibilidad.
  */
 document.addEventListener("DOMContentLoaded", function() {
-  // IDs de secciones horizontales con auto-scroll en desktop y mobile
+  // Incluye emisora-scroll y locutores-scroll en el auto-scroll
   const scrollIds = ['prog-scroll', 'playlist-scroll', 'emisora-scroll', 'locutores-scroll'];
   const duration = 40000;
   const resumeDelay = 5000;
 
-  // Diferenciador visual: flash rápido al reiniciar bucle
   function flash(container) {
     container.style.boxShadow = '0 0 0 4px #fde047, 0 0 32px #fde04788';
     container.style.transition = 'box-shadow 0.25s';
@@ -1408,132 +1502,4 @@ document.addEventListener("DOMContentLoaded", function() {
       if (!start) start = timestamp;
       if (paused) return;
       const maxScroll = getMaxScroll();
-      if (maxScroll <= 0) return;
-      const elapsed = timestamp - start + progress;
-      let percent = (elapsed % duration) / duration;
-      container.scrollLeft = percent * maxScroll;
-
-      // Detecta el reinicio del bucle y aplica flash
-      if (percent < 0.02 && !lastLoop) {
-        flash(container);
-        lastLoop = true;
-      }
-      if (percent > 0.02) {
-        lastLoop = false;
-      }
-
-      animationFrame = requestAnimationFrame(step);
-    }
-
-    function startAnim() {
-      if (animationFrame) cancelAnimationFrame(animationFrame);
-      paused = false;
-      start = null;
-      animationFrame = requestAnimationFrame(step);
-    }
-
-    function pauseAnim() {
-      paused = true;
-      if (animationFrame) cancelAnimationFrame(animationFrame);
-      const maxScroll = getMaxScroll();
-      progress = (container.scrollLeft / (maxScroll || 1)) * duration;
-    }
-
-    function stopAnimAndReset() {
-      paused = true;
-      if (animationFrame) cancelAnimationFrame(animationFrame);
-      progress = 0;
-    }
-
-    // Ahora auto-scroll SIEMPRE, también en mobile
-    function hasOverflow() {
-      return container.scrollWidth > container.clientWidth + 10;
-    }
-
-    function checkOverflowAndStart() {
-      if (hasOverflow()) {
-        startAnim();
-        enableManualScroll();
-      } else {
-        stopAnimAndReset();
-        disableManualScroll();
-      }
-    }
-
-    // Permite scroll manual (drag, wheel, touch)
-    function enableManualScroll() {
-      container.style.pointerEvents = "auto";
-      // Drag con mouse solo en PC
-      let isDown = false, startX, scrollLeft;
-      container.onmousedown = function(e) {
-        if (!hasOverflow()) return;
-        isDown = true;
-        startX = e.pageX - container.offsetLeft;
-        scrollLeft = container.scrollLeft;
-        pauseAnimAndResume();
-      };
-      container.onmouseleave = function() { isDown = false; };
-      container.onmouseup = function() { isDown = false; };
-      container.onmousemove = function(e) {
-        if (!isDown) return;
-        e.preventDefault();
-        const x = e.pageX - container.offsetLeft;
-        const walk = (x - startX) * 1.5;
-        container.scrollLeft = scrollLeft - walk;
-        if (container.scrollLeft < 0) container.scrollLeft = 0;
-        pauseAnimAndResume();
-      };
-      container.onwheel = function(e) {
-        if (!hasOverflow()) return;
-        setTimeout(() => {
-          if (container.scrollLeft < 0) container.scrollLeft = 0;
-        }, 0);
-        pauseAnimAndResume();
-      };
-      // Touch (ambos)
-      let touchStartX = 0, touchScrollLeft = 0;
-      container.ontouchstart = function(e) {
-        if (!hasOverflow()) return;
-        isDown = true;
-        touchStartX = e.touches[0].pageX;
-        touchScrollLeft = container.scrollLeft;
-        pauseAnimAndResume();
-      };
-      container.ontouchend = function() { isDown = false; };
-      container.ontouchmove = function(e) {
-        if (!isDown) return;
-        const x = e.touches[0].pageX;
-        const walk = (x - touchStartX) * 1.5;
-        container.scrollLeft = touchScrollLeft - walk;
-        if (container.scrollLeft < 0) container.scrollLeft = 0;
-        pauseAnimAndResume();
-      };
-    }
-
-    // Deshabilita scroll manual
-    function disableManualScroll() {
-      container.style.pointerEvents = "none";
-      container.onmousedown = e => e.preventDefault();
-      container.ontouchstart = e => e.preventDefault();
-      container.onwheel = e => e.preventDefault();
-      container.onmousemove = null;
-      container.onmouseup = null;
-      container.onmouseleave = null;
-      container.ontouchend = null;
-      container.ontouchmove = null;
-    }
-
-    // Pausa auto-scroll y lo reanuda después de X ms sin interacción
-    function pauseAnimAndResume() {
-      pauseAnim();
-      if (resumeTimeout) clearTimeout(resumeTimeout);
-      resumeTimeout = setTimeout(() => {
-        if (hasOverflow()) startAnim();
-      }, resumeDelay);
-    }
-
-    window.addEventListener('resize', checkOverflowAndStart);
-    checkOverflowAndStart();
-  });
-});
-</script>
+      if
