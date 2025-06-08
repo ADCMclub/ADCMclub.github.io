@@ -217,7 +217,7 @@
 
   <!-- NAV -->
   <header class="bg-gradient-to-r from-black via-gray-900 to-black shadow-lg animate-fade-up">
-    <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+    <div class="container mx-auto px-6 py-4 flex justify-between items-center relative">
       <div class="flex items-center space-x-3">
         <img src="/RADIO/img_radio/logo_rdcrsound_sf.png" alt="Logo RDC Sound" class="w-12 h-12 rounded-full shadow-lg" />
         <h1
@@ -235,15 +235,54 @@
           RDCR Sound
         </h1>
       </div>
-      <nav class="space-x-4 text-sm font-semibold">
+      <!-- Desktop nav -->
+      <nav class="space-x-4 text-sm font-semibold desktop-nav">
         <a href="#inicio" class="hover:text-yellow-400 transition-colors">Inicio</a>
         <a href="#programacion" class="hover:text-yellow-400 transition-colors">Programación</a>
         <a href="#locutores" class="hover:text-yellow-400 transition-colors">Locutores</a>
         <a href="#galeria" class="hover:text-yellow-400 transition-colors">Galería</a>
         <a href="#contacto" class="hover:text-yellow-400 transition-colors">Contacto</a>
       </nav>
+      <!-- Hamburger -->
+      <div class="hamburger" id="hamburger" aria-label="Abrir menú" tabindex="0">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+      <!-- Mobile nav -->
+      <nav class="mobile-nav" id="mobileNav" aria-label="Menú móvil">
+        <a href="#inicio" onclick="closeMobileNav()">Inicio</a>
+        <a href="#programacion" onclick="closeMobileNav()">Programación</a>
+        <a href="#locutores" onclick="closeMobileNav()">Locutores</a>
+        <a href="#galeria" onclick="closeMobileNav()">Galería</a>
+        <a href="#contacto" onclick="closeMobileNav()">Contacto</a>
+      </nav>
     </div>
   </header>
+
+  <script>
+    // Menú hamburguesa
+    const hamburger = document.getElementById('hamburger');
+    const mobileNav = document.getElementById('mobileNav');
+    function closeMobileNav() {
+      mobileNav.classList.remove('open');
+      document.body.classList.remove('mobile-menu-open');
+    }
+    hamburger.addEventListener('click', function() {
+      mobileNav.classList.toggle('open');
+      document.body.classList.toggle('mobile-menu-open');
+    });
+    // Cierra menú al hacer click fuera
+    document.addEventListener('click', function(e) {
+      if (mobileNav.classList.contains('open') && !mobileNav.contains(e.target) && !hamburger.contains(e.target)) {
+        closeMobileNav();
+      }
+    });
+    // Cierra menú con ESC
+    document.addEventListener('keydown', function(e) {
+      if (e.key === "Escape") closeMobileNav();
+    });
+  </script>
 
   <!-- HERO -->
   <section id="inicio" class="section-gradient text-center py-20 animate-fade-up" style="position:relative; overflow:hidden;">
