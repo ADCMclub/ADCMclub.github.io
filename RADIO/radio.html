@@ -223,32 +223,45 @@
   .mobile-nav { display: none; }
   @media (max-width: 900px) {
     nav.desktop-nav { display: none !important; }
-    .hamburger { display: flex !important; flex-direction: column; justify-content: center; width: 40px; height: 40px; cursor: pointer; z-index: 120; }
-    .hamburger span { height: 4px; width: 28px; background: #fde047; margin: 4px 0; border-radius: 2px; transition: all 0.3s; display: block; }
+    .hamburger { display: flex !important; }
     .mobile-nav {
       display: flex !important;
-      flex-direction: column;
-      position: fixed;
-      top: 0; right: 0;
-      width: 80vw; max-width: 320px; height: 100vh;
+      flex-direction: row !important;
+      overflow-x: auto !important;
+      overflow-y: hidden;
+      width: 100vw !important;
+      max-width: 100vw !important;
+      height: 60px !important;
+      position: static !important;
       background: linear-gradient(135deg, #18181b 80%, #bfa76a 100%);
-      box-shadow: -4px 0 24px #bfa76a33;
+      box-shadow: 0 2px 12px #bfa76a33;
       z-index: 110;
-      padding: 2.5rem 1.5rem 1.5rem 2rem;
-      transform: translateX(100%);
-      transition: transform 0.35s cubic-bezier(.4,0,.2,1);
+      padding: 0 0.5rem !important;
+      align-items: center;
+      gap: 0.5rem;
+      scrollbar-width: thin;
+      scrollbar-color: #bfa76a #232526;
+      transform: none !important;
+      transition: none !important;
     }
-    .mobile-nav.open { transform: translateX(0); }
     .mobile-nav a {
-      font-size: 1.25rem;
-      margin-bottom: 1.5rem;
+      font-size: 1rem;
+      margin: 0 0.5rem;
       color: #fffbe6;
       font-weight: 600;
       letter-spacing: 1px;
-      transition: color 0.2s;
+      white-space: nowrap;
+      padding: 0.5rem 1rem;
+      border-radius: 9999px;
+      background: none;
+      transition: background 0.2s, color 0.2s;
     }
-    .mobile-nav a:hover { color: #fde047; }
-    body.mobile-menu-open { overflow: hidden !important; }
+    .mobile-nav a:hover, .mobile-nav a.active {
+      background: #fde04733;
+      color: #fde047;
+    }
+    .hamburger { display: none !important; }
+    body.mobile-menu-open { overflow: auto !important; }
   }
 </style>
 <header class="bg-gradient-to-r from-black via-gray-900 to-black shadow-lg animate-fade-up">
@@ -279,42 +292,38 @@
       <a href="#galeria" class="hover:text-yellow-400 transition-colors">Galería</a>
       <a href="#contacto" class="hover:text-yellow-400 transition-colors">Contacto</a>
     </nav>
-    <!-- Hamburger -->
-    <div class="hamburger" id="hamburger" aria-label="Abrir menú" tabindex="0">
-      <span></span>
-      <span></span>
-      <span></span>
-    </div>
-    <!-- Mobile nav -->
+    <!-- Mobile nav horizontal scroll -->
     <nav class="mobile-nav" id="mobileNav" aria-label="Menú móvil">
-      <a href="#inicio" onclick="closeMobileNav()">Inicio</a>
-      <a href="#programacion" onclick="closeMobileNav()">Programación</a>
-      <a href="#emisoras" onclick="closeMobileNav()">Emisoras</a>
-      <a href="#locutores" onclick="closeMobileNav()">Locutores</a>
-      <a href="#galeria" onclick="closeMobileNav()">Galería</a>
-      <a href="#contacto" onclick="closeMobileNav()">Contacto</a>
+      <a href="#inicio">Inicio</a>
+      <a href="#programacion">Programación</a>
+      <a href="#emisoras">Emisoras</a>
+      <a href="#locutores">Locutores</a>
+      <a href="#galeria">Galería</a>
+      <a href="#contacto">Contacto</a>
     </nav>
   </div>
 </header>
 <script>
-  // Menú hamburguesa
-  const hamburger = document.getElementById('hamburger');
-  const mobileNav = document.getElementById('mobileNav');
-  function closeMobileNav() {
-    mobileNav.classList.remove('open');
-    document.body.classList.remove('mobile-menu-open');
-  }
-  hamburger.addEventListener('click', function() {
-    mobileNav.classList.toggle('open');
-    document.body.classList.toggle('mobile-menu-open');
-  });
-  document.addEventListener('click', function(e) {
-    if (mobileNav.classList.contains('open') && !mobileNav.contains(e.target) && !hamburger.contains(e.target)) {
-      closeMobileNav();
+  // Resalta el enlace activo en mobile nav
+  document.addEventListener("DOMContentLoaded", function() {
+    function setActiveNav() {
+      const links = document.querySelectorAll('.mobile-nav a');
+      const scrollPos = window.scrollY || window.pageYOffset;
+      links.forEach(link => {
+        const section = document.querySelector(link.getAttribute('href'));
+        if (section) {
+          const top = section.offsetTop - 80;
+          const bottom = top + section.offsetHeight;
+          if (scrollPos >= top && scrollPos < bottom) {
+            link.classList.add('active');
+          } else {
+            link.classList.remove('active');
+          }
+        }
+      });
     }
-  });
-  document.addEventListener('keydown', function(e) {
-    if (e.key === "Escape") closeMobileNav();
+    window.addEventListener('scroll', setActiveNav);
+    setActiveNav();
   });
 </script>
 
@@ -586,11 +595,11 @@
       style="font-family: 'Poppins', 'Segoe UI', Arial, sans-serif;">
     📻 Emisoras
   </h3>
-  <div class="relative overflow-x-auto" style="position:relative;">
+  <div class="relative" style="position:relative;">
     <div 
       id="emisora-scroll"
-      class="flex gap-8 items-center py-6 justify-center"
-      style="width: max-content; margin: 0 auto; flex-wrap: wrap;"
+      class="flex gap-8 items-center py-6"
+      tabindex="0"
     >
       <!-- Solo imagen, sin nombre -->
       <a href="https://via.placeholder.com/120x120.png?text=Emisora+1" target="_blank" class="group">
@@ -604,180 +613,180 @@
   </div>
 </section>
 
-  <!-- LOCUTORES MEJORADO FONDO OSCURO OLD MONEY -->
-  <section id="locutores" class="section-gradient py-16 px-6 animate-fade-up" style="background: linear-gradient(120deg, #232526 0%, #3a2f1d 100%); color: #e6d9b4;">
-    <h3 class="text-3xl font-semibold text-center mb-10 animate-shine select-none"
-        style="
-          font-family: 'Poppins', 'Segoe UI', Arial, sans-serif; 
-          letter-spacing: 1px;
-          background: linear-gradient(90deg, #e6d9b4 10%, #bfa76a 50%, #e6d9b4 90%);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          background-clip: text;
-          text-fill-color: transparent;
-          filter: none;
-        ">
-      🎙 Locutores
-    </h3>
-    <div class="flex flex-wrap justify-center gap-12 max-w-6xl mx-auto">
-      <!-- Locutor 1 -->
-      <div class="text-center bg-[#23221c]/90 rounded-3xl shadow-xl p-10 border-2 border-[#bfa76a] hover:scale-105 hover:-translate-y-2 hover:bg-[#2e2718]/90 transition-all duration-300 animate-fade-up group max-w-xs"
-           style="box-shadow: 0 2px 16px 0 #bfa76a22, 0 2px 8px 0 #e6d9b444;">
-        <img src="https://via.placeholder.com/150" alt="Locutor" class="mx-auto rounded-full w-32 h-32 mb-5 border-2 border-[#bfa76a] shadow group-hover:border-[#e6d9b4] transition-all duration-300 animate-float" style="background: #2e2718;">
-        <h4 class="font-bold text-xl text-[#e6d9b4] group-hover:text-[#bfa76a] transition-colors duration-300 tracking-wide animate-shine">Dario Castellanos</h4>
-        <p class="text-base text-[#bfa76a] group-hover:text-[#e6d9b4] transition-colors duration-300 mt-1 font-medium animate-fade-in">OWNER</p>
-      </div>
-      <!-- Locutor 2 -->
-      <div class="text-center bg-[#23221c]/90 rounded-3xl shadow-xl p-10 border-2 border-[#bfa76a] hover:scale-105 hover:-translate-y-2 hover:bg-[#2e2718]/90 transition-all duration-300 animate-fade-up group max-w-xs"
-           style="box-shadow: 0 2px 16px 0 #bfa76a22, 0 2px 8px 0 #e6d9b444;">
-        <img src="/RADIO/img_radio/Andy.jpeg" alt="Locutor" class="mx-auto rounded-full w-32 h-32 mb-5 border-2 border-[#bfa76a] shadow group-hover:border-[#e6d9b4] transition-all duration-300 animate-float" style="background: #2e2718;">
-        <h4 class="font-bold text-xl text-[#e6d9b4] group-hover:text-[#bfa76a] transition-colors duration-300 tracking-wide animate-shine">Andy Castellanos</h4>
-        <p class="text-base text-[#bfa76a] group-hover:text-[#e6d9b4] transition-colors duration-300 mt-1 font-medium animate-fade-in">Producción</p>
-      </div>
-      <!-- Agrega más locutores aquí duplicando el bloque -->
+<!-- LOCUTORES MEJORADO FONDO OSCURO OLD MONEY -->
+<section id="locutores" class="section-gradient py-16 px-6 animate-fade-up" style="background: linear-gradient(120deg, #232526 0%, #3a2f1d 100%); color: #e6d9b4;">
+  <h3 class="text-3xl font-semibold text-center mb-10 animate-shine select-none"
+      style="
+        font-family: 'Poppins', 'Segoe UI', Arial, sans-serif; 
+        letter-spacing: 1px;
+        background: linear-gradient(90deg, #e6d9b4 10%, #bfa76a 50%, #e6d9b4 90%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        text-fill-color: transparent;
+        filter: none;
+      ">
+    🎙 Locutores
+  </h3>
+  <div class="flex flex-wrap justify-center gap-12 max-w-6xl mx-auto">
+    <!-- Locutor 1 -->
+    <div class="text-center bg-[#23221c]/90 rounded-3xl shadow-xl p-10 border-2 border-[#bfa76a] hover:scale-105 hover:-translate-y-2 hover:bg-[#2e2718]/90 transition-all duration-300 animate-fade-up group max-w-xs"
+         style="box-shadow: 0 2px 16px 0 #bfa76a22, 0 2px 8px 0 #e6d9b444;">
+      <img src="https://via.placeholder.com/150" alt="Locutor" class="mx-auto rounded-full w-32 h-32 mb-5 border-2 border-[#bfa76a] shadow group-hover:border-[#e6d9b4] transition-all duration-300 animate-float" style="background: #2e2718;">
+      <h4 class="font-bold text-xl text-[#e6d9b4] group-hover:text-[#bfa76a] transition-colors duration-300 tracking-wide animate-shine">Dario Castellanos</h4>
+      <p class="text-base text-[#bfa76a] group-hover:text-[#e6d9b4] transition-colors duration-300 mt-1 font-medium animate-fade-in">OWNER</p>
     </div>
-  </section>
-
-  <!-- GALERÍA -->
-  <section id="galeria" class="section-gradient py-16 px-6 animate-fade-up">
-    <h3 class="text-3xl font-semibold text-center mb-10 bg-gradient-to-r from-yellow-400 via-yellow-200 to-yellow-500 bg-clip-text text-transparent select-none"
-        style="font-family: 'Poppins', 'Segoe UI', Arial, sans-serif;">
-      📸 Galería
-    </h3>
-    <div class="relative overflow-x-auto" style="position:relative;">
-      <!-- Flechas eliminadas -->
-      <div 
-        id="playlist-scroll"
-        class="flex gap-8 items-center py-6"
-        style="width: max-content;"
-        onmouseover="this.style.animationPlayState && (this.style.animationPlayState='paused')"
-        onmouseout="this.style.animationPlayState && (this.style.animationPlayState='running')"
-      >
-        <!-- Solo pon tus iframes aquí, puedes duplicar y cambiar el src -->
-        <iframe width="560" height="315" src="https://www.youtube.com/embed/scsUlG-r73g?si=Ft_gaWIykBhkEz6E" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen class="rounded-xl shadow-lg"></iframe>
-        <iframe width="560" height="315" src="https://www.youtube.com/embed/videoseries?list=PLMC9KNkIncKtPzgY-5rmhvj7fax8fdxoj" title="YouTube playlist" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen class="rounded-xl shadow-lg"></iframe>
-        <!-- Más iframes aquí -->
-      </div>
+    <!-- Locutor 2 -->
+    <div class="text-center bg-[#23221c]/90 rounded-3xl shadow-xl p-10 border-2 border-[#bfa76a] hover:scale-105 hover:-translate-y-2 hover:bg-[#2e2718]/90 transition-all duration-300 animate-fade-up group max-w-xs"
+         style="box-shadow: 0 2px 16px 0 #bfa76a22, 0 2px 8px 0 #e6d9b444;">
+      <img src="/RADIO/img_radio/Andy.jpeg" alt="Locutor" class="mx-auto rounded-full w-32 h-32 mb-5 border-2 border-[#bfa76a] shadow group-hover:border-[#e6d9b4] transition-all duration-300 animate-float" style="background: #2e2718;">
+      <h4 class="font-bold text-xl text-[#e6d9b4] group-hover:text-[#bfa76a] transition-colors duration-300 tracking-wide animate-shine">Andy Castellanos</h4>
+      <p class="text-base text-[#bfa76a] group-hover:text-[#e6d9b4] transition-colors duration-300 mt-1 font-medium animate-fade-in">Producción</p>
     </div>
-  </section>
+    <!-- Agrega más locutores aquí duplicando el bloque -->
+  </div>
+</section>
 
-  <style>
-    @keyframes scroll-x {
-      0% { transform: translateX(0); }
-      100% { transform: translateX(-60%); }
-    }
-    #playlist-scroll {
-      cursor: grab;
-      user-select: none;
-      scrollbar-width: thin;
-      scrollbar-color: #bfa76a #232526;
-    }
-    #playlist-scroll::-webkit-scrollbar {
-      height: 8px;
-    }
-    #playlist-scroll::-webkit-scrollbar-thumb {
-      background: #bfa76a;
-      border-radius: 4px;
-    }
-    #playlist-scroll::-webkit-scrollbar-track {
-      background: #232526;
-    }
-  </style>
-  <script>
-    document.addEventListener("DOMContentLoaded", function() {
-      // --- EMBED ---
-      document.querySelectorAll('.video-yt').forEach(function(div) {
-        const url = div.getAttribute('data-youtube');
-        let embed = '';
-        if (!url) return;
-        // Video individual
-        const videoMatch = url.match(/(?:v=|\/embed\/|\.be\/)([a-zA-Z0-9_-]{11})/);
-        // Playlist
-        const playlistMatch = url.match(/[?&]list=([a-zA-Z0-9_-]+)/);
-        if (playlistMatch && !videoMatch) {
-          embed = `https://www.youtube.com/embed/videoseries?list=${playlistMatch[1]}&rel=0&modestbranding=1&showinfo=0&controls=1`;
-        } else if (videoMatch) {
-          embed = `https://www.youtube.com/embed/${videoMatch[1]}?rel=0&modestbranding=1&showinfo=0&controls=1`;
-          if (playlistMatch) embed += `&list=${playlistMatch[1]}`;
-        }
-        if (embed) {
-          div.innerHTML = `<iframe width="320" height="180" src="${embed}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen class="rounded-xl shadow-lg"></iframe>`;
-        }
-      });
+<!-- GALERÍA -->
+<section id="galeria" class="section-gradient py-16 px-6 animate-fade-up">
+  <h3 class="text-3xl font-semibold text-center mb-10 bg-gradient-to-r from-yellow-400 via-yellow-200 to-yellow-500 bg-clip-text text-transparent select-none"
+      style="font-family: 'Poppins', 'Segoe UI', Arial, sans-serif;">
+    📸 Galería
+  </h3>
+  <div class="relative overflow-x-auto" style="position:relative;">
+    <!-- Flechas eliminadas -->
+    <div 
+      id="playlist-scroll"
+      class="flex gap-8 items-center py-6"
+      style="width: max-content;"
+      onmouseover="this.style.animationPlayState && (this.style.animationPlayState='paused')"
+      onmouseout="this.style.animationPlayState && (this.style.animationPlayState='running')"
+    >
+      <!-- Solo pon tus iframes aquí, puedes duplicar y cambiar el src -->
+      <iframe width="560" height="315" src="https://www.youtube.com/embed/scsUlG-r73g?si=Ft_gaWIykBhkEz6E" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen class="rounded-xl shadow-lg"></iframe>
+      <iframe width="560" height="315" src="https://www.youtube.com/embed/videoseries?list=PLMC9KNkIncKtPzgY-5rmhvj7fax8fdxoj" title="YouTube playlist" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen class="rounded-xl shadow-lg"></iframe>
+      <!-- Más iframes aquí -->
+    </div>
+  </div>
+</section>
 
-      // --- AUTO SCROLL SOLO SI HAY OVERFLOW ---
-      function checkAndAnimateScroll() {
-        const scroll = document.getElementById('playlist-scroll');
-        if (!scroll) return;
-        scroll.style.animation = '';
-        if (scroll.scrollWidth > scroll.parentElement.offsetWidth + 10) {
-          scroll.style.animation = 'scroll-x 40s linear infinite';
-          document.getElementById('scrollLeft').style.display = 'block';
-          document.getElementById('scrollRight').style.display = 'block';
-        } else {
-          document.getElementById('scrollLeft').style.display = 'none';
-          document.getElementById('scrollRight').style.display = 'none';
-        }
+<style>
+  @keyframes scroll-x {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-60%); }
+  }
+  #playlist-scroll {
+    cursor: grab;
+    user-select: none;
+    scrollbar-width: thin;
+    scrollbar-color: #bfa76a #232526;
+  }
+  #playlist-scroll::-webkit-scrollbar {
+    height: 8px;
+  }
+  #playlist-scroll::-webkit-scrollbar-thumb {
+    background: #bfa76a;
+    border-radius: 4px;
+  }
+  #playlist-scroll::-webkit-scrollbar-track {
+    background: #232526;
+  }
+</style>
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    // --- EMBED ---
+    document.querySelectorAll('.video-yt').forEach(function(div) {
+      const url = div.getAttribute('data-youtube');
+      let embed = '';
+      if (!url) return;
+      // Video individual
+      const videoMatch = url.match(/(?:v=|\/embed\/|\.be\/)([a-zA-Z0-9_-]{11})/);
+      // Playlist
+      const playlistMatch = url.match(/[?&]list=([a-zA-Z0-9_-]+)/);
+      if (playlistMatch && !videoMatch) {
+        embed = `https://www.youtube.com/embed/videoseries?list=${playlistMatch[1]}&rel=0&modestbranding=1&showinfo=0&controls=1`;
+      } else if (videoMatch) {
+        embed = `https://www.youtube.com/embed/${videoMatch[1]}?rel=0&modestbranding=1&showinfo=0&controls=1`;
+        if (playlistMatch) embed += `&list=${playlistMatch[1]}`;
       }
-      window.addEventListener('resize', checkAndAnimateScroll);
-      setTimeout(checkAndAnimateScroll, 400);
-
-      // --- DRAG SCROLL CON MOUSE ---
-      const scroll = document.getElementById('playlist-scroll');
-      let isDown = false, startX, scrollLeft;
-      if (scroll) {
-        scroll.addEventListener('mousedown', (e) => {
-          isDown = true;
-          scroll.classList.add('dragging');
-          startX = e.pageX - scroll.offsetLeft;
-          scrollLeft = scroll.scrollLeft;
-        });
-        scroll.addEventListener('mouseleave', () => {
-          isDown = false;
-          scroll.classList.remove('dragging');
-        });
-        scroll.addEventListener('mouseup', () => {
-          isDown = false;
-          scroll.classList.remove('dragging');
-        });
-        scroll.addEventListener('mousemove', (e) => {
-          if (!isDown) return;
-          e.preventDefault();
-          const x = e.pageX - scroll.offsetLeft;
-          const walk = (x - startX) * 1.5;
-          scroll.scrollLeft = scrollLeft - walk;
-          scroll.style.animationPlayState = 'paused';
-        });
-        // Touch para móviles
-        let touchStartX = 0, touchScrollLeft = 0;
-        scroll.addEventListener('touchstart', (e) => {
-          isDown = true;
-          touchStartX = e.touches[0].pageX;
-          touchScrollLeft = scroll.scrollLeft;
-        });
-        scroll.addEventListener('touchend', () => { isDown = false; });
-        scroll.addEventListener('touchmove', (e) => {
-          if (!isDown) return;
-          const x = e.touches[0].pageX;
-          const walk = (x - touchStartX) * 1.5;
-          scroll.scrollLeft = touchScrollLeft - walk;
-          scroll.style.animationPlayState = 'paused';
-        });
-      }
-
-      // --- BOTONES DE DESPLAZAMIENTO ---
-      const btnLeft = document.getElementById('scrollLeft');
-      const btnRight = document.getElementById('scrollRight');
-      if (btnLeft && btnRight && scroll) {
-        btnLeft.addEventListener('click', () => {
-          scroll.scrollBy({ left: -580, behavior: 'smooth' });
-        });
-        btnRight.addEventListener('click', () => {
-          scroll.scrollBy({ left: 580, behavior: 'smooth' });
-        });
+      if (embed) {
+        div.innerHTML = `<iframe width="320" height="180" src="${embed}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen class="rounded-xl shadow-lg"></iframe>`;
       }
     });
-  </script>
+
+    // --- AUTO SCROLL SOLO SI HAY OVERFLOW ---
+    function checkAndAnimateScroll() {
+      const scroll = document.getElementById('playlist-scroll');
+      if (!scroll) return;
+      scroll.style.animation = '';
+      if (scroll.scrollWidth > scroll.parentElement.offsetWidth + 10) {
+        scroll.style.animation = 'scroll-x 40s linear infinite';
+        document.getElementById('scrollLeft').style.display = 'block';
+        document.getElementById('scrollRight').style.display = 'block';
+      } else {
+        document.getElementById('scrollLeft').style.display = 'none';
+        document.getElementById('scrollRight').style.display = 'none';
+      }
+    }
+    window.addEventListener('resize', checkAndAnimateScroll);
+    setTimeout(checkAndAnimateScroll, 400);
+
+    // --- DRAG SCROLL CON MOUSE ---
+    const scroll = document.getElementById('playlist-scroll');
+    let isDown = false, startX, scrollLeft;
+    if (scroll) {
+      scroll.addEventListener('mousedown', (e) => {
+        isDown = true;
+        scroll.classList.add('dragging');
+        startX = e.pageX - scroll.offsetLeft;
+        scrollLeft = scroll.scrollLeft;
+      });
+      scroll.addEventListener('mouseleave', () => {
+        isDown = false;
+        scroll.classList.remove('dragging');
+      });
+      scroll.addEventListener('mouseup', () => {
+        isDown = false;
+        scroll.classList.remove('dragging');
+      });
+      scroll.addEventListener('mousemove', (e) => {
+        if (!isDown) return;
+        e.preventDefault();
+        const x = e.pageX - scroll.offsetLeft;
+        const walk = (x - startX) * 1.5;
+        scroll.scrollLeft = scrollLeft - walk;
+        scroll.style.animationPlayState = 'paused';
+      });
+      // Touch para móviles
+      let touchStartX = 0, touchScrollLeft = 0;
+      scroll.addEventListener('touchstart', (e) => {
+        isDown = true;
+        touchStartX = e.touches[0].pageX;
+        touchScrollLeft = scroll.scrollLeft;
+      });
+      scroll.addEventListener('touchend', () => { isDown = false; });
+      scroll.addEventListener('touchmove', (e) => {
+        if (!isDown) return;
+        const x = e.touches[0].pageX;
+        const walk = (x - touchStartX) * 1.5;
+        scroll.scrollLeft = touchScrollLeft - walk;
+        scroll.style.animationPlayState = 'paused';
+      });
+    }
+
+    // --- BOTONES DE DESPLAZAMIENTO ---
+    const btnLeft = document.getElementById('scrollLeft');
+    const btnRight = document.getElementById('scrollRight');
+    if (btnLeft && btnRight && scroll) {
+      btnLeft.addEventListener('click', () => {
+        scroll.scrollBy({ left: -580, behavior: 'smooth' });
+      });
+      btnRight.addEventListener('click', () => {
+        scroll.scrollBy({ left: 580, behavior: 'smooth' });
+      });
+    }
+  });
+</script>
 
   <!-- CONTACTO -->
   <section id="contacto" class="section-gradient py-16 px-6 animate-fade-up">
@@ -1014,8 +1023,8 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 </script>
 
-  <!-- ...en tu <head> o antes de </body> -->
-  <style>
+<!-- ...en tu <head> o antes de </body> -->
+<style>
     /* ...otros estilos... */
 
     /* Barra de desplazamiento global elegante y personalizada */
