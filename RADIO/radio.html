@@ -348,29 +348,41 @@
 
   <!-- HERO -->
   <section id="inicio" class="section-gradient text-center py-20 animate-fade-up" style="position:relative; overflow:hidden;">
-    <!-- Ondas animadas de música en el fondo, mejoradas y más vistosas -->
-    <div aria-hidden="true" style="position:absolute; left:0; right:0; top:0; height:100%; z-index:0; pointer-events:none; overflow:hidden; width:100%;">
-      <svg width="100%" height="130" viewBox="0 0 1440 130" preserveAspectRatio="none" style="width:100%; height:100%; display:block;">
+    <!-- Ondas SVG decorativas en el fondo -->
+    <div aria-hidden="true" style="position:absolute; left:0; right:0; top:0; bottom:0; width:100%; height:100%; z-index:0; pointer-events:none; overflow:hidden;">
+      <svg viewBox="0 0 1440 320" width="100%" height="100%" preserveAspectRatio="none" style="position:absolute; left:0; right:0; top:0; width:100%; height:100%;">
         <defs>
-          <linearGradient id="waveGradient1" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="#fde047" stop-opacity="0.22"/>
-            <stop offset="100%" stop-color="#bfa76a" stop-opacity="0.09"/>
+          <linearGradient id="wave1-gradient" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#fde047" stop-opacity="0.18"/>
+            <stop offset="100%" stop-color="#bfa76a" stop-opacity="0.08"/>
           </linearGradient>
-          <linearGradient id="waveGradient2" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stop-color="#fffbe6" stop-opacity="0.13"/>
-            <stop offset="100%" stop-color="#bfa76a" stop-opacity="0.07"/>
-          </linearGradient>
-          <linearGradient id="waveGradient3" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stop-color="#fde047" stop-opacity="0.10"/>
-            <stop offset="100%" stop-color="#fffbe6" stop-opacity="0.04"/>
+          <linearGradient id="wave2-gradient" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#fffbe6" stop-opacity="0.10"/>
+            <stop offset="100%" stop-color="#fde047" stop-opacity="0.04"/>
           </linearGradient>
         </defs>
-        <!-- Onda principal dorada -->
-        <path id="wave1" fill="url(#waveGradient1)" opacity="0"></path>
-        <!-- Onda secundaria blanca/dorada -->
-        <path id="wave2" fill="url(#waveGradient2)" opacity="0.7"></path>
-        <!-- Onda decorativa extra, más sutil -->
-        <path id="wave3" fill="url(#waveGradient3)" opacity="0.5"></path>
+        <!-- Onda principal -->
+        <path d="M0,160 C360,240 1080,80 1440,160 L1440,320 L0,320 Z"
+          fill="url(#wave1-gradient)" opacity="0.7">
+          <animate attributeName="d" dur="8s" repeatCount="indefinite"
+            values="
+              M0,160 C360,240 1080,80 1440,160 L1440,320 L0,320 Z;
+              M0,180 C400,120 1040,220 1440,140 L1440,320 L0,320 Z;
+              M0,160 C360,240 1080,80 1440,160 L1440,320 L0,320 Z
+            "
+          />
+        </path>
+        <!-- Onda secundaria -->
+        <path d="M0,200 C480,320 960,40 1440,200 L1440,320 L0,320 Z"
+          fill="url(#wave2-gradient)" opacity="0.5">
+          <animate attributeName="d" dur="10s" repeatCount="indefinite"
+            values="
+              M0,200 C480,320 960,40 1440,200 L1440,320 L0,320 Z;
+              M0,220 C520,180 920,280 1440,180 L1440,320 L0,320 Z;
+              M0,200 C480,320 960,40 1440,200 L1440,320 L0,320 Z
+            "
+          />
+        </path>
       </svg>
     </div>
     <div class="max-w-2xl mx-auto relative z-10">
@@ -1645,4 +1657,37 @@ document.addEventListener("DOMContentLoaded", function() {
         if (!isDown) return;
         const x = e.touches[0].pageX;
         const walk = (x - touchStartX) * 1.5;
-        container.scrollLeft = touchScroll
+        container.scrollLeft = touchScrollLeft - walk;
+        // --- CORRECCIÓN: Si el usuario retrocede al inicio, ajusta para mostrar el primer elemento completo
+        if (container.scrollLeft < 0) container.scrollLeft = 0;
+        pauseAnimAndResume();
+      };
+    }
+
+    // Deshabilita scroll manual
+    function disableManualScroll() {
+      container.style.pointerEvents = "none";
+      container.onmousedown = e => e.preventDefault();
+      container.ontouchstart = e => e.preventDefault();
+      container.onwheel = e => e.preventDefault();
+      container.onmousemove = null;
+      container.onmouseup = null;
+      container.onmouseleave = null;
+      container.ontouchend = null;
+      container.ontouchmove = null;
+    }
+
+    // Pausa auto-scroll y lo reanuda después de X ms sin interacción
+    function pauseAnimAndResume() {
+      pauseAnim();
+      if (resumeTimeout) clearTimeout(resumeTimeout);
+      resumeTimeout = setTimeout(() => {
+        if (hasOverflow()) startAnim();
+      }, resumeDelay);
+    }
+
+    window.addEventListener('resize', checkOverflowAndStart);
+    checkOverflowAndStart();
+  });
+});
+</script>
