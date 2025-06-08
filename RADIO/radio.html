@@ -219,12 +219,33 @@
   <!-- NAV: Elimina la duplicidad de menús y mejora el responsive -->
 <style>
   /* Menú hamburguesa y mobile nav */
-  .hamburger { display: none; }
+  .hamburger {
+    display: none;
+    position: relative; /* Asegura que esté sobre el header */
+    z-index: 120;
+  }
   .mobile-nav { display: none; }
   @media (max-width: 900px) {
     nav.desktop-nav { display: none !important; }
-    .hamburger { display: flex !important; flex-direction: column; justify-content: center; width: 40px; height: 40px; cursor: pointer; z-index: 120; }
-    .hamburger span { height: 4px; width: 28px; background: #fde047; margin: 4px 0; border-radius: 2px; transition: all 0.3s; display: block; }
+    .hamburger {
+      display: flex !important;
+      flex-direction: column;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      cursor: pointer;
+      position: relative; /* Mantén relative para que respete el stacking context del header */
+      z-index: 120;
+    }
+    .hamburger span {
+      height: 4px;
+      width: 28px;
+      background: #fde047;
+      margin: 4px 0;
+      border-radius: 2px;
+      transition: all 0.3s;
+      display: block;
+    }
     .mobile-nav {
       display: flex !important;
       flex-direction: column;
@@ -250,8 +271,15 @@
     .mobile-nav a:hover { color: #fde047; }
     body.mobile-menu-open { overflow: hidden !important; }
   }
+  /* Asegura que el header esté sobre el resto del contenido */
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: inherit;
+  }
 </style>
-<header class="bg-gradient-to-r from-black via-gray-900 to-black shadow-lg animate-fade-up">
+<header class="bg-gradient-to-r from-black via-gray-900 to-black shadow-lg animate-fade-up" style="position:sticky;top:0;z-index:100;">
   <div class="container mx-auto px-6 py-4 flex justify-between items-center relative">
     <div class="flex items-center space-x-3">
       <img src="/RADIO/img_radio/logo_rdcrsound_sf.png" alt="Logo RDC Sound" class="w-12 h-12 rounded-full shadow-lg" />
@@ -1502,4 +1530,119 @@ document.addEventListener("DOMContentLoaded", function() {
       if (!start) start = timestamp;
       if (paused) return;
       const maxScroll = getMaxScroll();
-      if
+      if (maxScroll <= 0) return;
+      const elapsed = timestamp - start + progress;
+      let percent = (elapsed % duration) / duration;
+      container.scrollLeft = percent * maxScroll;
+
+      // Si está al final, vuelve al inicio suavemente (bucle)
+      if (container.scrollLeft >= maxScroll - 2) {
+        // Suaviza el salto al inicio
+        container.scrollLeft = 0;
+        start = timestamp;
+        progress = 0;
+      }
+
+      animationFrame = requestAnimationFrame(step);
+    }
+
+    function startAnim() {
+      if (animationFrame) cancelAnimationFrame(animationFrame);
+      paused = false;
+      start = null;
+      animationFrame = requestAnimationFrame(step);
+    }
+
+    function pauseAnim() {
+      paused = true;
+      if (animationFrame) cancelAnimationFrame(animationFrame);
+      const maxScroll = getMaxScroll();
+      progress = (container.scrollLeft / (maxScroll || 1)) * duration;
+    }
+
+    function stopAnimAndReset() {
+      paused = true;
+      if (animationFrame) cancelAnimationFrame(animationFrame);
+      progress = 0;
+      // No reiniciar scrollLeft, mantener donde está
+    }
+
+    function isPC() {
+      return window.innerWidth > 900;
+    }
+
+    function hasOverflow() {
+      return container.scrollWidth > container.clientWidth + 10;
+    }
+
+    function checkOverflowAndStart() {
+      if (isPC()) {
+        if (hasOverflow()) {
+          startAnim();
+          enableManualScroll();
+        } else {
+          stopAnimAndReset();
+          disableManualScroll();
+        }
+      } else {
+        stopAnimAndReset();
+        enableManualScroll();
+      }
+    }
+
+    // Permite scroll manual (drag, wheel, touch)
+    function enableManualScroll() {
+      container.style.pointerEvents = "auto";
+      // Drag con mouse solo en PC
+      let isDown = false, startX, scrollLeft;
+      if (isPC()) {
+        container.onmousedown = function(e) {
+          if (!hasOverflow()) return;
+          isDown = true;
+          startX = e.pageX - container.offsetLeft;
+          scrollLeft = container.scrollLeft;
+          pauseAnimAndResume();
+        };
+        container.onmouseleave = function() { isDown = false; };
+        container.onmouseup = function() { isDown = false; };
+        container.onmousemove = function(e) {
+          if (!isDown) return;
+          e.preventDefault();
+          const x = e.pageX - container.offsetLeft;
+          const walk = (x - startX) * 1.5;
+          container.scrollLeft = scrollLeft - walk;
+          // --- CORRECCIÓN: Si el usuario retrocede al inicio, ajusta para mostrar el primer elemento completo
+          if (container.scrollLeft < 0) container.scrollLeft = 0;
+          pauseAnimAndResume();
+        };
+        container.onwheel = function(e) {
+          if (!hasOverflow()) return;
+          // --- CORRECCIÓN: Si el usuario retrocede al inicio, ajusta para mostrar el primer elemento completo
+          setTimeout(() => {
+            if (container.scrollLeft < 0) container.scrollLeft = 0;
+          }, 0);
+          pauseAnimAndResume();
+        };
+      } else {
+        // En móvil: solo swipe nativo, sin drag JS, sin auto-scroll
+        container.onmousedown = null;
+        container.onmouseleave = null;
+        container.onmouseup = null;
+        container.onmousemove = null;
+        container.onwheel = null;
+      }
+      // Touch (ambos)
+      let touchStartX = 0, touchScrollLeft = 0;
+      container.ontouchstart = function(e) {
+        if (!hasOverflow()) return;
+        isDown = true;
+        touchStartX = e.touches[0].pageX;
+        touchScrollLeft = container.scrollLeft;
+        pauseAnimAndResume();
+      };
+      container.ontouchend = function() { isDown = false; };
+      container.ontouchmove = function(e) {
+        if (!isDown) return;
+        const x = e.touches[0].pageX;
+        const walk = (x - touchStartX) * 1.5;
+        container.scrollLeft = touchScroll
