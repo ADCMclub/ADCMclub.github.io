@@ -216,73 +216,107 @@
   <div id="tsparticles" class="animate-fade-up"></div>
 
   <!-- NAV -->
-  <header class="bg-gradient-to-r from-black via-gray-900 to-black shadow-lg animate-fade-up">
-    <div class="container mx-auto px-6 py-4 flex justify-between items-center relative">
-      <div class="flex items-center space-x-3">
-        <img src="/RADIO/img_radio/logo_rdcrsound_sf.png" alt="Logo RDC Sound" class="w-12 h-12 rounded-full shadow-lg" />
-        <h1
-          class="text-2xl md:text-3xl font-extrabold tracking-wide select-none"
-          style="
-            font-family: 'Poppins', 'Segoe UI', Arial, sans-serif;
-            background: linear-gradient(90deg, #bfa76a 10%, #f6e27a 50%, #bfa76a 90%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            text-fill-color: transparent;
-            filter: drop-shadow(0 0 8px #f6e27a88);
-          "
-        >
-          RDCR Sound
-        </h1>
-      </div>
-      <!-- Desktop nav -->
-      <nav class="space-x-4 text-sm font-semibold desktop-nav">
-        <a href="#inicio" class="hover:text-yellow-400 transition-colors">Inicio</a>
-        <a href="#programacion" class="hover:text-yellow-400 transition-colors">Programación</a>
-        <a href="#locutores" class="hover:text-yellow-400 transition-colors">Locutores</a>
-        <a href="#galeria" class="hover:text-yellow-400 transition-colors">Galería</a>
-        <a href="#contacto" class="hover:text-yellow-400 transition-colors">Contacto</a>
-      </nav>
-      <!-- Hamburger -->
-      <div class="hamburger" id="hamburger" aria-label="Abrir menú" tabindex="0">
-        <span></span>
-        <span></span>
-        <span></span>
-      </div>
-      <!-- Mobile nav -->
-      <nav class="mobile-nav" id="mobileNav" aria-label="Menú móvil">
-        <a href="#inicio" onclick="closeMobileNav()">Inicio</a>
-        <a href="#programacion" onclick="closeMobileNav()">Programación</a>
-        <a href="#locutores" onclick="closeMobileNav()">Locutores</a>
-        <a href="#galeria" onclick="closeMobileNav()">Galería</a>
-        <a href="#contacto" onclick="closeMobileNav()">Contacto</a>
-      </nav>
-    </div>
-  </header>
-
-  <script>
-    // Menú hamburguesa
-    const hamburger = document.getElementById('hamburger');
-    const mobileNav = document.getElementById('mobileNav');
-    function closeMobileNav() {
-      mobileNav.classList.remove('open');
-      document.body.classList.remove('mobile-menu-open');
+  <!-- NAV: Elimina la duplicidad de menús y mejora el responsive -->
+<style>
+  /* Menú hamburguesa y mobile nav */
+  .hamburger { display: none; }
+  .mobile-nav { display: none; }
+  @media (max-width: 900px) {
+    nav.desktop-nav { display: none !important; }
+    .hamburger { display: flex !important; flex-direction: column; justify-content: center; width: 40px; height: 40px; cursor: pointer; z-index: 120; }
+    .hamburger span { height: 4px; width: 28px; background: #fde047; margin: 4px 0; border-radius: 2px; transition: all 0.3s; display: block; }
+    .mobile-nav {
+      display: flex !important;
+      flex-direction: column;
+      position: fixed;
+      top: 0; right: 0;
+      width: 80vw; max-width: 320px; height: 100vh;
+      background: linear-gradient(135deg, #18181b 80%, #bfa76a 100%);
+      box-shadow: -4px 0 24px #bfa76a33;
+      z-index: 110;
+      padding: 2.5rem 1.5rem 1.5rem 2rem;
+      transform: translateX(100%);
+      transition: transform 0.35s cubic-bezier(.4,0,.2,1);
     }
-    hamburger.addEventListener('click', function() {
-      mobileNav.classList.toggle('open');
-      document.body.classList.toggle('mobile-menu-open');
-    });
-    // Cierra menú al hacer click fuera
-    document.addEventListener('click', function(e) {
-      if (mobileNav.classList.contains('open') && !mobileNav.contains(e.target) && !hamburger.contains(e.target)) {
-        closeMobileNav();
-      }
-    });
-    // Cierra menú con ESC
-    document.addEventListener('keydown', function(e) {
-      if (e.key === "Escape") closeMobileNav();
-    });
-  </script>
+    .mobile-nav.open { transform: translateX(0); }
+    .mobile-nav a {
+      font-size: 1.25rem;
+      margin-bottom: 1.5rem;
+      color: #fffbe6;
+      font-weight: 600;
+      letter-spacing: 1px;
+      transition: color 0.2s;
+    }
+    .mobile-nav a:hover { color: #fde047; }
+    body.mobile-menu-open { overflow: hidden !important; }
+  }
+</style>
+<header class="bg-gradient-to-r from-black via-gray-900 to-black shadow-lg animate-fade-up">
+  <div class="container mx-auto px-6 py-4 flex justify-between items-center relative">
+    <div class="flex items-center space-x-3">
+      <img src="/RADIO/img_radio/logo_rdcrsound_sf.png" alt="Logo RDC Sound" class="w-12 h-12 rounded-full shadow-lg" />
+      <h1
+        class="text-2xl md:text-3xl font-extrabold tracking-wide select-none"
+        style="
+          font-family: 'Poppins', 'Segoe UI', Arial, sans-serif;
+          background: linear-gradient(90deg, #bfa76a 10%, #f6e27a 50%, #bfa76a 90%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+          text-fill-color: transparent;
+          filter: drop-shadow(0 0 8px #f6e27a88);
+        "
+      >
+        RDCR Sound
+      </h1>
+    </div>
+    <!-- Desktop nav -->
+    <nav class="space-x-4 text-sm font-semibold desktop-nav">
+      <a href="#inicio" class="hover:text-yellow-400 transition-colors">Inicio</a>
+      <a href="#programacion" class="hover:text-yellow-400 transition-colors">Programación</a>
+      <a href="#emisoras" class="hover:text-yellow-400 transition-colors">Emisoras</a>
+      <a href="#locutores" class="hover:text-yellow-400 transition-colors">Locutores</a>
+      <a href="#galeria" class="hover:text-yellow-400 transition-colors">Galería</a>
+      <a href="#contacto" class="hover:text-yellow-400 transition-colors">Contacto</a>
+    </nav>
+    <!-- Hamburger -->
+    <div class="hamburger" id="hamburger" aria-label="Abrir menú" tabindex="0">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+    <!-- Mobile nav -->
+    <nav class="mobile-nav" id="mobileNav" aria-label="Menú móvil">
+      <a href="#inicio" onclick="closeMobileNav()">Inicio</a>
+      <a href="#programacion" onclick="closeMobileNav()">Programación</a>
+      <a href="#emisoras" onclick="closeMobileNav()">Emisoras</a>
+      <a href="#locutores" onclick="closeMobileNav()">Locutores</a>
+      <a href="#galeria" onclick="closeMobileNav()">Galería</a>
+      <a href="#contacto" onclick="closeMobileNav()">Contacto</a>
+    </nav>
+  </div>
+</header>
+<script>
+  // Menú hamburguesa
+  const hamburger = document.getElementById('hamburger');
+  const mobileNav = document.getElementById('mobileNav');
+  function closeMobileNav() {
+    mobileNav.classList.remove('open');
+    document.body.classList.remove('mobile-menu-open');
+  }
+  hamburger.addEventListener('click', function() {
+    mobileNav.classList.toggle('open');
+    document.body.classList.toggle('mobile-menu-open');
+  });
+  document.addEventListener('click', function(e) {
+    if (mobileNav.classList.contains('open') && !mobileNav.contains(e.target) && !hamburger.contains(e.target)) {
+      closeMobileNav();
+    }
+  });
+  document.addEventListener('keydown', function(e) {
+    if (e.key === "Escape") closeMobileNav();
+  });
+</script>
 
   <!-- HERO -->
   <section id="inicio" class="section-gradient text-center py-20 animate-fade-up" style="position:relative; overflow:hidden;">
@@ -466,135 +500,109 @@
   </script>
 
   <!-- EMISORAS -->
-  <section id="emisoras" class="section-gradient py-16 px-6 animate-fade-up">
-    <h3 class="text-3xl font-semibold text-center mb-10 bg-gradient-to-r from-yellow-400 via-yellow-200 to-yellow-500 bg-clip-text text-transparent animate-shine select-none"
-        style="font-family: 'Poppins', 'Segoe UI', Arial, sans-serif;">
-      📻 Emisoras
-    </h3>
-    <div class="relative overflow-x-auto" style="position:relative;">
-      <!-- Flechas eliminadas -->
-      <div 
-        id="emisora-scroll"
-        class="flex gap-8 items-center py-6 justify-center"
-        style="width: max-content; margin: 0 auto;"
-        onmouseover="this.style.animationPlayState && (this.style.animationPlayState='paused')"
-        onmouseout="this.style.animationPlayState && (this.style.animationPlayState='running')"
-      >
-        <!-- Solo imagen decorada, sin texto ni overlay -->
-        <a href="https://via.placeholder.com/120x120.png?text=Emisora+1" target="_blank"
-          class="bg-white/80 rounded-2xl shadow-lg p-4 flex items-center justify-center hover:scale-105 transition-transform duration-300 animate-fade-up group w-44 h-44">
-          <img src="/RADIO/img_radio/DCRadioec_logo.jpg" alt="Emisora 1"
-            class="w-32 h-32 object-cover rounded-xl shadow border-4 border-yellow-400/60 group-hover:border-yellow-500 transition-all duration-300 animate-float">
-        </a>
-        <!-- Duplica este bloque para más emisoras -->
-        <a href="https://tulinkdemuestra2.com" target="_blank"
-          class="bg-white/80 rounded-2xl shadow-lg p-4 flex items-center justify-center hover:scale-105 transition-transform duration-300 animate-fade-up group w-44 h-44">
-          <img src="https://via.placeholder.com/120x120.png?text=Emisora+2" alt="Emisora 2"
-            class="w-32 h-32 object-cover rounded-xl shadow border-4 border-yellow-400/60 group-hover:border-yellow-500 transition-all duration-300 animate-float">
-        </a>
-        <!-- Más emisoras aquí -->
-      </div>
-    </div>
-  </section>
-
-  <style>
-    @keyframes emisora-scroll-x {
-      0% { transform: translateX(0); }
-      100% { transform: translateX(-60%); }
-    }
+  <!-- RADIOS: Mejora visual para PC y mobile -->
+<style>
+  /* Radios responsive grid */
+  #emisora-scroll {
+    flex-wrap: wrap;
+    gap: 2.5rem;
+    justify-content: center;
+  }
+  @media (max-width: 900px) {
     #emisora-scroll {
-      cursor: grab;
-      user-select: none;
-      scrollbar-width: thin;
-      scrollbar-color: #bfa76a #232526;
-      justify-content: center;
+      gap: 1.5rem;
     }
-    #emisora-scroll::-webkit-scrollbar {
-      height: 8px;
+  }
+  @media (max-width: 600px) {
+    #emisora-scroll {
+      flex-direction: column !important;
+      align-items: center !important;
+      gap: 1.25rem !important;
     }
-    #emisora-scroll::-webkit-scrollbar-thumb {
-      background: #bfa76a;
-      border-radius: 4px;
+    #emisora-scroll a {
+      width: 90vw !important;
+      max-width: 320px !important;
+      min-width: 0 !important;
+      height: auto !important;
     }
-    #emisora-scroll::-webkit-scrollbar-track {
-      background: #232526;
+    #emisora-scroll img {
+      width: 100% !important;
+      height: auto !important;
+      min-width: 0 !important;
+      max-width: 100% !important;
+      aspect-ratio: 1/1;
     }
-  </style>
-  <script>
-    document.addEventListener("DOMContentLoaded", function() {
-      // --- AUTO SCROLL SOLO SI HAY OVERFLOW ---
-      function checkAndAnimateEmisoraScroll() {
-        const scroll = document.getElementById('emisora-scroll');
-        if (!scroll) return;
-        scroll.style.animation = '';
-        if (scroll.scrollWidth > scroll.parentElement.offsetWidth + 10) {
-          scroll.style.animation = 'emisora-scroll-x 40s linear infinite';
-          document.getElementById('emisoraScrollLeft').style.display = 'block';
-          document.getElementById('emisoraScrollRight').style.display = 'block';
-        } else {
-          document.getElementById('emisoraScrollLeft').style.display = 'none';
-          document.getElementById('emisoraScrollRight').style.display = 'none';
-        }
-      }
-      window.addEventListener('resize', checkAndAnimateEmisoraScroll);
-      setTimeout(checkAndAnimateEmisoraScroll, 400);
-
-      // --- DRAG SCROLL CON MOUSE ---
-      const scroll = document.getElementById('emisora-scroll');
-      let isDown = false, startX, scrollLeft;
-      if (scroll) {
-        scroll.addEventListener('mousedown', (e) => {
-          isDown = true;
-          scroll.classList.add('dragging');
-          startX = e.pageX - scroll.offsetLeft;
-          scrollLeft = scroll.scrollLeft;
-        });
-        scroll.addEventListener('mouseleave', () => {
-          isDown = false;
-          scroll.classList.remove('dragging');
-        });
-        scroll.addEventListener('mouseup', () => {
-          isDown = false;
-          scroll.classList.remove('dragging');
-        });
-        scroll.addEventListener('mousemove', (e) => {
-          if (!isDown) return;
-          e.preventDefault();
-          const x = e.pageX - scroll.offsetLeft;
-          const walk = (x - startX) * 1.5;
-          scroll.scrollLeft = scrollLeft - walk;
-          scroll.style.animationPlayState = 'paused';
-        });
-        // Touch para móviles
-        let touchStartX = 0, touchScrollLeft = 0;
-        scroll.addEventListener('touchstart', (e) => {
-          isDown = true;
-          touchStartX = e.touches[0].pageX;
-          touchScrollLeft = scroll.scrollLeft;
-        });
-        scroll.addEventListener('touchend', () => { isDown = false; });
-        scroll.addEventListener('touchmove', (e) => {
-          if (!isDown) return;
-          const x = e.touches[0].pageX;
-          const walk = (x - touchStartX) * 1.5;
-          scroll.scrollLeft = touchScrollLeft - walk;
-          scroll.style.animationPlayState = 'paused';
-        });
-      }
-
-      // --- BOTONES DE DESPLAZAMIENTO ---
-      const btnLeft = document.getElementById('emisoraScrollLeft');
-      const btnRight = document.getElementById('emisoraScrollRight');
-      if (btnLeft && btnRight && scroll) {
-        btnLeft.addEventListener('click', () => {
-          scroll.scrollBy({ left: -220, behavior: 'smooth' });
-        });
-        btnRight.addEventListener('click', () => {
-          scroll.scrollBy({ left: 220, behavior: 'smooth' });
-        });
-      }
-    });
-  </script>
+  }
+  #emisora-scroll a {
+    background: rgba(255,255,255,0.01);
+    border-radius: 1.5rem;
+    box-shadow: 0 2px 16px 0 #bfa76a22, 0 2px 8px 0 #e6d9b444;
+    transition: transform 0.22s, box-shadow 0.22s;
+    padding: 1.2rem 1.2rem 0.7rem 1.2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 180px;
+    height: 180px;
+    position: relative;
+    overflow: hidden;
+  }
+  #emisora-scroll a:hover {
+    transform: scale(1.07) translateY(-6px);
+    box-shadow: 0 4px 32px #bfa76a55, 0 0 0 4px #fffbe633;
+    background: linear-gradient(135deg, #fffbe6 0%, #bfa76a22 100%);
+  }
+  #emisora-scroll img {
+    border-radius: 1rem;
+    border: 3px solid #fde04788;
+    box-shadow: 0 2px 12px #bfa76a33;
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    background: #232526;
+    transition: border 0.2s, box-shadow 0.2s;
+  }
+  #emisora-scroll a:hover img {
+    border-color: #fde047;
+    box-shadow: 0 4px 24px #fde04755;
+  }
+  #emisora-scroll .emisora-nombre {
+    margin-top: 0.7rem;
+    font-weight: 700;
+    color: #bfa76a;
+    font-size: 1.1rem;
+    text-align: center;
+    letter-spacing: 0.5px;
+    text-shadow: 0 1px 8px #fffbe6cc;
+    background: none;
+    filter: none;
+    user-select: none;
+  }
+</style>
+<!-- EMISORAS -->
+<!-- Solo imágenes, sin nombres -->
+<section id="emisoras" class="section-gradient py-16 px-6 animate-fade-up">
+  <h3 class="text-3xl font-semibold text-center mb-10 bg-gradient-to-r from-yellow-400 via-yellow-200 to-yellow-500 bg-clip-text text-transparent animate-shine select-none"
+      style="font-family: 'Poppins', 'Segoe UI', Arial, sans-serif;">
+    📻 Emisoras
+  </h3>
+  <div class="relative overflow-x-auto" style="position:relative;">
+    <div 
+      id="emisora-scroll"
+      class="flex gap-8 items-center py-6 justify-center"
+      style="width: max-content; margin: 0 auto; flex-wrap: wrap;"
+    >
+      <!-- Solo imagen, sin nombre -->
+      <a href="https://via.placeholder.com/120x120.png?text=Emisora+1" target="_blank" class="group">
+        <img src="/RADIO/img_radio/DCRadioec_logo.jpg" alt="Emisora 1" class="animate-float">
+      </a>
+      <a href="https://tulinkdemuestra2.com" target="_blank" class="group">
+        <img src="https://via.placeholder.com/120x120.png?text=Emisora+2" alt="Emisora 2" class="animate-float">
+      </a>
+      <!-- Agrega más emisoras aquí -->
+    </div>
+  </div>
+</section>
 
   <!-- LOCUTORES MEJORADO FONDO OSCURO OLD MONEY -->
   <section id="locutores" class="section-gradient py-16 px-6 animate-fade-up" style="background: linear-gradient(120deg, #232526 0%, #3a2f1d 100%); color: #e6d9b4;">
