@@ -1014,8 +1014,8 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 </script>
 
-  <!-- ...en tu <head> o antes de </body> -->
-  <style>
+<!-- ...en tu <head> o antes de </body> -->
+<style>
     /* ...otros estilos... */
 
     /* Barra de desplazamiento global elegante y personalizada */
@@ -1124,5 +1124,416 @@ html::-webkit-scrollbar {
     }
   }
 </style>
-</body>
-</html>
+<script>
+/**
+ * Vincula el desplazamiento automático con el manual:
+ * - Si el usuario hace scroll manual (drag, wheel o touch), el auto-scroll se pausa.
+ * - Si el usuario no interactúa por 5 segundos, el auto-scroll se reanuda (solo en PC y si hay overflow).
+ * - En móvil nunca hay auto-scroll, solo manual.
+ * - El auto-scroll es en bucle infinito: cuando llega al final, vuelve al inicio suavemente.
+ */
+document.addEventListener("DOMContentLoaded", function() {
+  const scrollIds = ['prog-scroll', 'playlist-scroll'];
+  const duration = 40000;
+  const resumeDelay = 5000; // ms para reanudar auto-scroll tras interacción
+
+  scrollIds.forEach(containerId => {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
+    let animationFrame, start, paused = false, progress = 0, resumeTimeout = null;
+
+    function getMaxScroll() {
+      return container.scrollWidth - container.clientWidth;
+    }
+
+    function step(timestamp) {
+      if (!start) start = timestamp;
+      if (paused) return;
+      const maxScroll = getMaxScroll();
+      if (maxScroll <= 0) return;
+      const elapsed = timestamp - start + progress;
+      let percent = (elapsed % duration) / duration;
+      container.scrollLeft = percent * maxScroll;
+
+      // Si está al final, vuelve al inicio suavemente (bucle)
+      if (container.scrollLeft >= maxScroll - 2) {
+        // Suaviza el salto al inicio
+        container.scrollLeft = 0;
+        start = timestamp;
+        progress = 0;
+      }
+
+      animationFrame = requestAnimationFrame(step);
+    }
+
+    function startAnim() {
+      if (animationFrame) cancelAnimationFrame(animationFrame);
+      paused = false;
+      start = null;
+      animationFrame = requestAnimationFrame(step);
+    }
+
+    function pauseAnim() {
+      paused = true;
+      if (animationFrame) cancelAnimationFrame(animationFrame);
+      const maxScroll = getMaxScroll();
+      progress = (container.scrollLeft / (maxScroll || 1)) * duration;
+    }
+
+    function stopAnimAndReset() {
+      paused = true;
+      if (animationFrame) cancelAnimationFrame(animationFrame);
+      progress = 0;
+      // No reiniciar scrollLeft, mantener donde está
+    }
+
+    function isPC() {
+      return window.innerWidth > 900;
+    }
+
+    function hasOverflow() {
+      return container.scrollWidth > container.clientWidth + 10;
+    }
+
+    function checkOverflowAndStart() {
+      if (isPC()) {
+        if (hasOverflow()) {
+          startAnim();
+          enableManualScroll();
+        } else {
+          stopAnimAndReset();
+          disableManualScroll();
+        }
+      } else {
+        stopAnimAndReset();
+        enableManualScroll();
+      }
+    }
+
+    // Permite scroll manual (drag, wheel, touch)
+    function enableManualScroll() {
+      container.style.pointerEvents = "auto";
+      // Drag con mouse solo en PC
+      let isDown = false, startX, scrollLeft;
+      if (isPC()) {
+        container.onmousedown = function(e) {
+          if (!hasOverflow()) return;
+          isDown = true;
+          startX = e.pageX - container.offsetLeft;
+          scrollLeft = container.scrollLeft;
+          pauseAnimAndResume();
+        };
+        container.onmouseleave = function() { isDown = false; };
+        container.onmouseup = function() { isDown = false; };
+        container.onmousemove = function(e) {
+          if (!isDown) return;
+          e.preventDefault();
+          const x = e.pageX - container.offsetLeft;
+          const walk = (x - startX) * 1.5;
+          container.scrollLeft = scrollLeft - walk;
+          // --- CORRECCIÓN: Si el usuario retrocede al inicio, ajusta para mostrar el primer elemento completo
+          if (container.scrollLeft < 0) container.scrollLeft = 0;
+          pauseAnimAndResume();
+        };
+        container.onwheel = function(e) {
+          if (!hasOverflow()) return;
+          // --- CORRECCIÓN: Si el usuario retrocede al inicio, ajusta para mostrar el primer elemento completo
+          setTimeout(() => {
+            if (container.scrollLeft < 0) container.scrollLeft = 0;
+          }, 0);
+          pauseAnimAndResume();
+        };
+      } else {
+        // En móvil: solo swipe nativo, sin drag JS, sin auto-scroll
+        container.onmousedown = null;
+        container.onmouseleave = null;
+        container.onmouseup = null;
+        container.onmousemove = null;
+        container.onwheel = null;
+      }
+      // Touch (ambos)
+      let touchStartX = 0, touchScrollLeft = 0;
+      container.ontouchstart = function(e) {
+        if (!hasOverflow()) return;
+        isDown = true;
+        touchStartX = e.touches[0].pageX;
+        touchScrollLeft = container.scrollLeft;
+        pauseAnimAndResume();
+      };
+      container.ontouchend = function() { isDown = false; };
+      container.ontouchmove = function(e) {
+        if (!isDown) return;
+        const x = e.touches[0].pageX;
+        const walk = (x - touchStartX) * 1.5;
+        container.scrollLeft = touchScrollLeft - walk;
+        // --- CORRECCIÓN: Si el usuario retrocede al inicio, ajusta para mostrar el primer elemento completo
+        if (container.scrollLeft < 0) container.scrollLeft = 0;
+        pauseAnimAndResume();
+      };
+    }
+
+    // Deshabilita scroll manual
+    function disableManualScroll() {
+      container.style.pointerEvents = "none";
+      container.onmousedown = e => e.preventDefault();
+      container.ontouchstart = e => e.preventDefault();
+      container.onwheel = e => e.preventDefault();
+      container.onmousemove = null;
+      container.onmouseup = null;
+      container.onmouseleave = null;
+      container.ontouchend = null;
+      container.ontouchmove = null;
+    }
+
+    // Pausa auto-scroll y lo reanuda después de X ms sin interacción
+    function pauseAnimAndResume() {
+      pauseAnim();
+      if (resumeTimeout) clearTimeout(resumeTimeout);
+      resumeTimeout = setTimeout(() => {
+        if (hasOverflow()) startAnim();
+      }, resumeDelay);
+    }
+
+    window.addEventListener('resize', checkOverflowAndStart);
+    checkOverflowAndStart();
+  });
+});
+</script>
+<!-- ...existing code... -->
+<style>
+/* Mejor scroll horizontal para móviles: permite swipe natural y oculta scrollbars */
+#prog-scroll,
+#playlist-scroll,
+#emisora-scroll,
+#locutores-scroll {
+  overflow-x: auto !important;
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: #bfa76a #232526;
+  touch-action: pan-x;
+}
+#prog-scroll::-webkit-scrollbar,
+#playlist-scroll::-webkit-scrollbar,
+#emisora-scroll::-webkit-scrollbar,
+#locutores-scroll::-webkit-scrollbar {
+  height: 8px;
+}
+#prog-scroll::-webkit-scrollbar-thumb,
+#playlist-scroll::-webkit-scrollbar-thumb,
+#emisora-scroll::-webkit-scrollbar-thumb,
+#locutores-scroll::-webkit-scrollbar-thumb {
+  background: #bfa76a;
+  border-radius: 4px;
+}
+#prog-scroll::-webkit-scrollbar-track,
+#playlist-scroll::-webkit-scrollbar-track,
+#emisora-scroll::-webkit-scrollbar-track,
+#locutores-scroll::-webkit-scrollbar-track {
+  background: #232526;
+}
+
+/* Scroll-snap para móviles en todas las secciones horizontales */
+@media (max-width: 900px) {
+  #prog-scroll,
+  #playlist-scroll,
+  #emisora-scroll,
+  #locutores-scroll {
+    gap: 1rem !important;
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+    scroll-snap-type: x mandatory;
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    display: flex !important;
+  }
+  #prog-scroll > *,
+  #playlist-scroll > *,
+  #emisora-scroll > *,
+  #locutores-scroll > * {
+    scroll-snap-align: start;
+    min-width: 80vw !important;
+    max-width: 90vw !important;
+    flex-shrink: 0 !important;
+  }
+  /* Oculta scrollbars en mobile para un look más limpio */
+  #prog-scroll::-webkit-scrollbar,
+  #playlist-scroll::-webkit-scrollbar,
+  #emisora-scroll::-webkit-scrollbar,
+  #locutores-scroll::-webkit-scrollbar {
+    display: none !important;
+  }
+  #prog-scroll,
+  #playlist-scroll,
+  #emisora-scroll,
+  #locutores-scroll {
+    scrollbar-width: none !important;
+  }
+}
+</style>
+<script>
+/**
+ * Auto-scroll horizontal en bucle con diferenciador visual al reiniciar.
+ * Ahora también aplica auto-scroll en móviles para #prog-scroll, #playlist-scroll, #emisora-scroll y #locutores-scroll.
+ * Corrige el bug: al hacer scroll manual hacia atrás, el primer elemento se muestra completo.
+ */
+document.addEventListener("DOMContentLoaded", function() {
+  // IDs de secciones horizontales con auto-scroll en desktop y mobile
+  const scrollIds = ['prog-scroll', 'playlist-scroll', 'emisora-scroll', 'locutores-scroll'];
+  const duration = 40000;
+  const resumeDelay = 5000;
+
+  // Diferenciador visual: flash rápido al reiniciar bucle
+  function flash(container) {
+    container.style.boxShadow = '0 0 0 4px #fde047, 0 0 32px #fde04788';
+    container.style.transition = 'box-shadow 0.25s';
+    setTimeout(() => {
+      container.style.boxShadow = '';
+      container.style.transition = '';
+    }, 250);
+  }
+
+  scrollIds.forEach(containerId => {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
+    let animationFrame, start, paused = false, progress = 0, resumeTimeout = null, lastLoop = false;
+
+    function getMaxScroll() {
+      return container.scrollWidth - container.clientWidth;
+    }
+
+    function step(timestamp) {
+      if (!start) start = timestamp;
+      if (paused) return;
+      const maxScroll = getMaxScroll();
+      if (maxScroll <= 0) return;
+      const elapsed = timestamp - start + progress;
+      let percent = (elapsed % duration) / duration;
+      container.scrollLeft = percent * maxScroll;
+
+      // Detecta el reinicio del bucle y aplica flash
+      if (percent < 0.02 && !lastLoop) {
+        flash(container);
+        lastLoop = true;
+      }
+      if (percent > 0.02) {
+        lastLoop = false;
+      }
+
+      animationFrame = requestAnimationFrame(step);
+    }
+
+    function startAnim() {
+      if (animationFrame) cancelAnimationFrame(animationFrame);
+      paused = false;
+      start = null;
+      animationFrame = requestAnimationFrame(step);
+    }
+
+    function pauseAnim() {
+      paused = true;
+      if (animationFrame) cancelAnimationFrame(animationFrame);
+      const maxScroll = getMaxScroll();
+      progress = (container.scrollLeft / (maxScroll || 1)) * duration;
+    }
+
+    function stopAnimAndReset() {
+      paused = true;
+      if (animationFrame) cancelAnimationFrame(animationFrame);
+      progress = 0;
+    }
+
+    // Ahora auto-scroll SIEMPRE, también en mobile
+    function hasOverflow() {
+      return container.scrollWidth > container.clientWidth + 10;
+    }
+
+    function checkOverflowAndStart() {
+      if (hasOverflow()) {
+        startAnim();
+        enableManualScroll();
+      } else {
+        stopAnimAndReset();
+        disableManualScroll();
+      }
+    }
+
+    // Permite scroll manual (drag, wheel, touch)
+    function enableManualScroll() {
+      container.style.pointerEvents = "auto";
+      // Drag con mouse solo en PC
+      let isDown = false, startX, scrollLeft;
+      container.onmousedown = function(e) {
+        if (!hasOverflow()) return;
+        isDown = true;
+        startX = e.pageX - container.offsetLeft;
+        scrollLeft = container.scrollLeft;
+        pauseAnimAndResume();
+      };
+      container.onmouseleave = function() { isDown = false; };
+      container.onmouseup = function() { isDown = false; };
+      container.onmousemove = function(e) {
+        if (!isDown) return;
+        e.preventDefault();
+        const x = e.pageX - container.offsetLeft;
+        const walk = (x - startX) * 1.5;
+        container.scrollLeft = scrollLeft - walk;
+        if (container.scrollLeft < 0) container.scrollLeft = 0;
+        pauseAnimAndResume();
+      };
+      container.onwheel = function(e) {
+        if (!hasOverflow()) return;
+        setTimeout(() => {
+          if (container.scrollLeft < 0) container.scrollLeft = 0;
+        }, 0);
+        pauseAnimAndResume();
+      };
+      // Touch (ambos)
+      let touchStartX = 0, touchScrollLeft = 0;
+      container.ontouchstart = function(e) {
+        if (!hasOverflow()) return;
+        isDown = true;
+        touchStartX = e.touches[0].pageX;
+        touchScrollLeft = container.scrollLeft;
+        pauseAnimAndResume();
+      };
+      container.ontouchend = function() { isDown = false; };
+      container.ontouchmove = function(e) {
+        if (!isDown) return;
+        const x = e.touches[0].pageX;
+        const walk = (x - touchStartX) * 1.5;
+        container.scrollLeft = touchScrollLeft - walk;
+        if (container.scrollLeft < 0) container.scrollLeft = 0;
+        pauseAnimAndResume();
+      };
+    }
+
+    // Deshabilita scroll manual
+    function disableManualScroll() {
+      container.style.pointerEvents = "none";
+      container.onmousedown = e => e.preventDefault();
+      container.ontouchstart = e => e.preventDefault();
+      container.onwheel = e => e.preventDefault();
+      container.onmousemove = null;
+      container.onmouseup = null;
+      container.onmouseleave = null;
+      container.ontouchend = null;
+      container.ontouchmove = null;
+    }
+
+    // Pausa auto-scroll y lo reanuda después de X ms sin interacción
+    function pauseAnimAndResume() {
+      pauseAnim();
+      if (resumeTimeout) clearTimeout(resumeTimeout);
+      resumeTimeout = setTimeout(() => {
+        if (hasOverflow()) startAnim();
+      }, resumeDelay);
+    }
+
+    window.addEventListener('resize', checkOverflowAndStart);
+    checkOverflowAndStart();
+  });
+});
+</script>
