@@ -565,7 +565,32 @@
   </script>
 
   <!-- EMISORAS -->
-  <!-- RADIOS: Mejora visual para PC y mobile -->
+  <!-- Animadas, sin fondo en los logos -->
+<section id="emisoras" class="section-gradient py-16 px-6 animate-fade-up">
+  <h3 class="text-3xl font-semibold text-center mb-10 bg-gradient-to-r from-yellow-400 via-yellow-200 to-yellow-500 bg-clip-text text-transparent animate-shine select-none"
+      style="font-family: 'Poppins', 'Segoe UI', Arial, sans-serif;">
+    📻 Emisoras
+  </h3>
+  <div class="relative overflow-x-auto" style="position:relative;">
+    <div 
+      id="emisora-scroll"
+      class="flex gap-8 items-center py-6 justify-center"
+      style="width: max-content; margin: 0 auto; flex-wrap: wrap;"
+    >
+      <!-- Emisoras animadas, sin fondo -->
+      <a href="https://via.placeholder.com/120x120.png?text=Emisora+1" target="_blank" class="emisora-anim group">
+        <img src="/RADIO/img_radio/DCRadioec_logo.jpg" alt="DC Radio EC" class="emisora-img" />
+      </a>
+      <a href="https://via.placeholder.com/120x120.png?text=Emisora+2" target="_blank" class="emisora-anim group">
+        <img src="/RADIO/img_radio/dcmix_logo.jpg" alt="DC Mix EC" class="emisora-img" />
+      </a>
+      <a href="https://tulinkdemuestra2.com" target="_blank" class="emisora-anim group">
+        <img src="/RADIO/img_radio/dcclasicos_logo.jpg" alt="DC Clasicos EC" class="emisora-img" />
+      </a>
+      <!-- Agrega más emisoras aquí -->
+    </div>
+  </div>
+</section>
 <style>
   /* Radios responsive grid */
   #emisora-scroll {
@@ -599,49 +624,73 @@
     }
   }
   #emisora-scroll a {
-    background: rgba(255,255,255,0.01);
+    background: none !important; /* Sin fondo */
     border-radius: 1.5rem;
-    box-shadow: 0 2px 16px 0 #bfa76a22, 0 2px 8px 0 #e6d9b444;
+    box-shadow: none;
     transition: transform 0.22s, box-shadow 0.22s;
-    padding: 1.2rem 1.2rem 0.7rem 1.2rem;
+    padding: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
     width: 180px;
     height: 180px;
     position: relative;
-    overflow: hidden;
+    overflow: visible;
   }
-  #emisora-scroll a:hover {
-    transform: scale(1.07) translateY(-6px);
-    box-shadow: 0 4px 32px #bfa76a55, 0 0 0 4px #fffbe633;
-    background: linear-gradient(135deg, #fffbe6 0%, #bfa76a22 100%);
-  }
-  #emisora-scroll img {
-    border-radius: 1rem;
-    border: 3px solid #fde04788;
-    box-shadow: 0 2px 12px #bfa76a33;
+  .emisora-img {
+    border-radius: 1.2rem;
+    border: none;
+    box-shadow: 0 4px 32px 0 #bfa76a33, 0 0 0 0 #fffbe600;
     width: 120px;
     height: 120px;
-    object-fit: cover;
-    background: #232526;
-    transition: border 0.2s, box-shadow 0.2s;
+    object-fit: contain;
+    background: transparent !important;
+    transition: 
+      transform 0.35s cubic-bezier(.4,0,.2,1),
+      box-shadow 0.35s cubic-bezier(.4,0,.2,1),
+      filter 0.35s cubic-bezier(.4,0,.2,1);
+    /* Animación inicial */
+    animation: emisora-float 3.2s ease-in-out infinite alternate;
+    will-change: transform, filter;
   }
-  #emisora-scroll a:hover img {
-    border-color: #fde047;
-    box-shadow: 0 4px 24px #fde04755;
+  .emisora-anim:hover .emisora-img,
+  .emisora-anim:focus .emisora-img {
+    transform: scale(1.13) rotate(-6deg);
+    filter: brightness(1.15) drop-shadow(0 0 16px #fde047cc);
+    box-shadow: 0 8px 32px #fde04788, 0 0 0 6px #bfa76a33;
+    z-index: 2;
   }
-  #emisora-scroll .emisora-nombre {
-    margin-top: 0.7rem;
-    font-weight: 700;
-    color: #bfa76a;
-    font-size: 1.1rem;
-    text-align: center;
-    letter-spacing: 0.5px;
-    text-shadow: 0 1px 8px #fffbe6cc;
-    background: none;
-    filter: none;
-    user-select: none;
+  .emisora-anim:active .emisora-img {
+    transform: scale(0.97) rotate(2deg);
+    filter: brightness(0.98);
+  }
+  @keyframes emisora-float {
+    0%   { transform: translateY(0) scale(1) rotate(-2deg);}
+    20%  { transform: translateY(-8px) scale(1.04) rotate(2deg);}
+    40%  { transform: translateY(0) scale(1.01) rotate(-3deg);}
+    60%  { transform: translateY(7px) scale(1.03) rotate(3deg);}
+    80%  { transform: translateY(-5px) scale(1.02) rotate(-2deg);}
+    100% { transform: translateY(0) scale(1) rotate(0deg);}
+  }
+  @media (max-width: 600px) {
+    #emisora-scroll {
+      gap: 1.25rem !important;
+    }
+    #emisora-scroll a {
+      width: 90vw !important;
+      max-width: 320px !important;
+      min-width: 0 !important;
+      height: auto !important;
+    }
+    .emisora-img {
+      width: 80vw !important;
+      height: 80vw !important;
+      min-width: 120px !important;
+      max-width: 98vw !important;
+      min-height: 120px !important;
+      max-height: 98vw !important;
+      aspect-ratio: 1/1;
+    }
   }
 </style>
 <!-- EMISORAS -->
@@ -659,10 +708,13 @@
     >
       <!-- Solo imagen, sin nombre -->
       <a href="https://via.placeholder.com/120x120.png?text=Emisora+1" target="_blank" class="group">
-        <img src="/RADIO/img_radio/DCRadioec_logo.jpg" alt="Emisora 1" class="animate-float">
+        <img src="/RADIO/img_radio/DCRadioec_logo.jpg" alt="DC Radio EC" class="animate-float">
+      </a>
+      <a href="https://via.placeholder.com/120x120.png?text=Emisora+1" target="_blank" class="group">
+        <img src="/RADIO/img_radio/dcmix_logo.jpg" alt="DC Mix EC" class="animate-float">
       </a>
       <a href="https://tulinkdemuestra2.com" target="_blank" class="group">
-        <img src="https://via.placeholder.com/120x120.png?text=Emisora+2" alt="Emisora 2" class="animate-float">
+        <img src="/RADIO/img_radio/dcclasicos_logo.jpg" alt="DC Clasicos EC" class="animate-float">
       </a>
       <!-- Agrega más emisoras aquí -->
     </div>
@@ -1365,358 +1417,6 @@ document.addEventListener("DOMContentLoaded", function() {
   });
 });
 </script>
-<!-- ...existing code... -->
-<style>
-/* ...otros estilos... */
-
-/* Mejora la adaptación móvil y el scroll horizontal en todas las secciones con scroll */
-#prog-scroll,
-#playlist-scroll,
-#emisora-scroll,
-#locutores-scroll {
-  overflow-x: auto !important;
-  -webkit-overflow-scrolling: touch;
-  scroll-behavior: smooth;
-  scrollbar-width: thin;
-  scrollbar-color: #bfa76a #232526;
-  touch-action: pan-x;
-  gap: 2rem;
-  padding-left: 32px;
-  padding-right: 32px;
-}
-#prog-scroll > *,
-#playlist-scroll > *,
-#emisora-scroll > *,
-#locutores-scroll > * {
-  min-width: 340px;
-  max-width: 400px;
-  flex-shrink: 0;
-}
-@media (max-width: 900px) {
-  #prog-scroll,
-  #playlist-scroll,
-  #emisora-scroll,
-  #locutores-scroll {
-    gap: 1.2rem !important;
-    padding-left: 10vw !important;
-    padding-right: 10vw !important;
-    scroll-snap-type: x mandatory;
-    flex-wrap: nowrap !important;
-    display: flex !important;
-  }
-  #prog-scroll > *,
-  #playlist-scroll > *,
-  #emisora-scroll > *,
-  #locutores-scroll > * {
-    scroll-snap-align: start;
-    min-width: clamp(80vw, 90vw, 98vw) !important;
-    max-width: 98vw !important;
-    flex-shrink: 0 !important;
-  }
-  #prog-scroll::-webkit-scrollbar,
-  #playlist-scroll::-webkit-scrollbar,
-  #emisora-scroll::-webkit-scrollbar,
-  #locutores-scroll::-webkit-scrollbar {
-    display: none !important;
-  }
-  #prog-scroll,
-  #playlist-scroll,
-  #emisora-scroll,
-  #locutores-scroll {
-    scrollbar-width: none !important;
-  }
-}
-@media (max-width: 600px) {
-  #prog-scroll,
-  #playlist-scroll,
-  #emisora-scroll,
-  #locutores-scroll {
-    gap: 0.7rem !important;
-    padding-left: 4vw !important;
-    padding-right: 4vw !important;
-  }
-  #prog-scroll > *,
-  #playlist-scroll > *,
-  #emisora-scroll > *,
-  #locutores-scroll > * {
-    min-width: 96vw !important;
-    max-width: 98vw !important;
-  }
-}
-
-/* Mejora el botón de volver arriba en móviles */
-#backToTop {
-  width: 56px;
-  height: 56px;
-  right: 1rem;
-  bottom: 1.2rem;
-}
-@media (max-width: 600px) {
-  #backToTop {
-    width: 44px;
-    height: 44px;
-    right: 0.5rem;
-    bottom: 0.7rem;
-  }
-}
-
-/* Mejora la visibilidad de los formularios en móviles */
-@media (max-width: 600px) {
-  form.max-w-xl {
-    padding: 1.5rem !important;
-    font-size: 1rem !important;
-  }
-}
-
-/* Mejora la visualización de las tarjetas de programación y locutores en móviles */
-@media (max-width: 900px) {
-  .max-w-xs, .max-w-2xl, .max-w-3xl, .max-w-6xl {
-    max-width: 98vw !important;
-  }
-}
-
-/* Mejora la visualización de los iframes de galería en móviles */
-@media (max-width: 900px) {
-  #playlist-scroll iframe {
-    width: 90vw !important;
-    height: 50vw !important;
-    min-width: 320px !important;
-    max-width: 98vw !important;
-    min-height: 180px !important;
-    max-height: 320px !important;
-  }
-}
-@media (max-width: 600px) {
-  #playlist-scroll iframe {
-    width: 98vw !important;
-    height: 56vw !important;
-    min-width: 220px !important;
-    max-width: 99vw !important;
-    min-height: 120px !important;
-    max-height: 220px !important;
-  }
-}
-
-/* Mejora la visualización de las imágenes de emisoras en móviles */
-@media (max-width: 600px) {
-  #emisora-scroll img {
-    width: 80vw !important;
-    height: 80vw !important;
-    min-width: 120px !important;
-    max-width: 98vw !important;
-    min-height: 120px !important;
-    max-height: 98vw !important;
-    aspect-ratio: 1/1;
-  }
-}
-
-/* Mejora la visualización de los nombres de emisoras y locutores en móviles */
-@media (max-width: 600px) {
-  .emisora-nombre, .font-bold.text-xl, .font-bold.text-lg {
-    font-size: 1.1rem !important;
-    text-align: center !important;
-    word-break: break-word;
-  }
-}
-
-/* Mejora la experiencia de scroll horizontal en iOS/Android */
-#prog-scroll,
-#playlist-scroll,
-#emisora-scroll,
-#locutores-scroll {
-  -webkit-overflow-scrolling: touch;
-  scroll-behavior: smooth;
-  overscroll-behavior-x: contain;
-}
-</style>
-<!-- ...existing code... -->
-<script>
-/**
- * Scroll horizontal auto/manual mejorado y unificado para todas las secciones con scroll.
- * - Auto-scroll en bucle si hay overflow.
- * - Pausa/resume tras interacción manual.
- * - Adaptado para móviles y PC.
- * - Corrige bugs de scroll y visibilidad.
- */
-document.addEventListener("DOMContentLoaded", function() {
-  // Incluye emisora-scroll y locutores-scroll en el auto-scroll
-  const scrollIds = ['prog-scroll', 'playlist-scroll', 'emisora-scroll', 'locutores-scroll'];
-  const duration = 40000;
-  const resumeDelay = 5000;
-
-  function flash(container) {
-    container.style.boxShadow = '0 0 0 4px #fde047, 0 0 32px #fde04788';
-    container.style.transition = 'box-shadow 0.25s';
-    setTimeout(() => {
-      container.style.boxShadow = '';
-      container.style.transition = '';
-    }, 250);
-  }
-
-  scrollIds.forEach(containerId => {
-    const container = document.getElementById(containerId);
-    if (!container) return;
-
-    let animationFrame, start, paused = false, progress = 0, resumeTimeout = null, lastLoop = false;
-
-    function getMaxScroll() {
-      return container.scrollWidth - container.clientWidth;
-    }
-
-    function step(timestamp) {
-      if (!start) start = timestamp;
-      if (paused) return;
-      const maxScroll = getMaxScroll();
-      if (maxScroll <= 0) return;
-      const elapsed = timestamp - start + progress;
-      let percent = (elapsed % duration) / duration;
-      container.scrollLeft = percent * maxScroll;
-
-      // Si está al final, vuelve al inicio suavemente (bucle)
-      if (container.scrollLeft >= maxScroll - 2) {
-        // Suaviza el salto al inicio
-        container.scrollLeft = 0;
-        start = timestamp;
-        progress = 0;
-      }
-
-      animationFrame = requestAnimationFrame(step);
-    }
-
-    function startAnim() {
-      if (animationFrame) cancelAnimationFrame(animationFrame);
-      paused = false;
-      start = null;
-      animationFrame = requestAnimationFrame(step);
-    }
-
-    function pauseAnim() {
-      paused = true;
-      if (animationFrame) cancelAnimationFrame(animationFrame);
-      const maxScroll = getMaxScroll();
-      progress = (container.scrollLeft / (maxScroll || 1)) * duration;
-    }
-
-    function stopAnimAndReset() {
-      paused = true;
-      if (animationFrame) cancelAnimationFrame(animationFrame);
-      progress = 0;
-      // No reiniciar scrollLeft, mantener donde está
-    }
-
-    function isPC() {
-      return window.innerWidth > 900;
-    }
-
-    function hasOverflow() {
-      return container.scrollWidth > container.clientWidth + 10;
-    }
-
-    function checkOverflowAndStart() {
-      if (isPC()) {
-        if (hasOverflow()) {
-          startAnim();
-          enableManualScroll();
-        } else {
-          stopAnimAndReset();
-          disableManualScroll();
-        }
-      } else {
-        stopAnimAndReset();
-        enableManualScroll();
-      }
-    }
-
-    // Permite scroll manual (drag, wheel, touch)
-    function enableManualScroll() {
-      container.style.pointerEvents = "auto";
-      // Drag con mouse solo en PC
-      let isDown = false, startX, scrollLeft;
-      if (isPC()) {
-        container.onmousedown = function(e) {
-          if (!hasOverflow()) return;
-          isDown = true;
-          startX = e.pageX - container.offsetLeft;
-          scrollLeft = container.scrollLeft;
-          pauseAnimAndResume();
-        };
-        container.onmouseleave = function() { isDown = false; };
-        container.onmouseup = function() { isDown = false; };
-        container.onmousemove = function(e) {
-          if (!isDown) return;
-          e.preventDefault();
-          const x = e.pageX - container.offsetLeft;
-          const walk = (x - startX) * 1.5;
-          container.scrollLeft = scrollLeft - walk;
-          // --- CORRECCIÓN: Si el usuario retrocede al inicio, ajusta para mostrar el primer elemento completo
-          if (container.scrollLeft < 0) container.scrollLeft = 0;
-          pauseAnimAndResume();
-        };
-        container.onwheel = function(e) {
-          if (!hasOverflow()) return;
-          // --- CORRECCIÓN: Si el usuario retrocede al inicio, ajusta para mostrar el primer elemento completo
-          setTimeout(() => {
-            if (container.scrollLeft < 0) container.scrollLeft = 0;
-          }, 0);
-          pauseAnimAndResume();
-        };
-      } else {
-        // En móvil: solo swipe nativo, sin drag JS, sin auto-scroll
-        container.onmousedown = null;
-        container.onmouseleave = null;
-        container.onmouseup = null;
-        container.onmousemove = null;
-        container.onwheel = null;
-      }
-      // Touch (ambos)
-      let touchStartX = 0, touchScrollLeft = 0;
-      container.ontouchstart = function(e) {
-        if (!hasOverflow()) return;
-        isDown = true;
-        touchStartX = e.touches[0].pageX;
-        touchScrollLeft = container.scrollLeft;
-        pauseAnimAndResume();
-      };
-      container.ontouchend = function() { isDown = false; };
-      container.ontouchmove = function(e) {
-        if (!isDown) return;
-        const x = e.touches[0].pageX;
-        const walk = (x - touchStartX) * 1.5;
-        container.scrollLeft = touchScrollLeft - walk;
-        // --- CORRECCIÓN: Si el usuario retrocede al inicio, ajusta para mostrar el primer elemento completo
-        if (container.scrollLeft < 0) container.scrollLeft = 0;
-        pauseAnimAndResume();
-      };
-    }
-
-    // Deshabilita scroll manual
-    function disableManualScroll() {
-      container.style.pointerEvents = "none";
-      container.onmousedown = e => e.preventDefault();
-      container.ontouchstart = e => e.preventDefault();
-      container.onwheel = e => e.preventDefault();
-      container.onmousemove = null;
-      container.onmouseup = null;
-      container.onmouseleave = null;
-      container.ontouchend = null;
-      container.ontouchmove = null;
-    }
-
-    // Pausa auto-scroll y lo reanuda después de X ms sin interacción
-    function pauseAnimAndResume() {
-      pauseAnim();
-      if (resumeTimeout) clearTimeout(resumeTimeout);
-      resumeTimeout = setTimeout(() => {
-        if (hasOverflow()) startAnim();
-      }, resumeDelay);
-    }
-
-    window.addEventListener('resize', checkOverflowAndStart);
-    checkOverflowAndStart();
-  });
-});
-</script>
-
 <!-- Botón flotante de WhatsApp -->
 <a href="https://api.whatsapp.com/send/?phone=593961480654&text=Bienvenido+a+RDCR+LA+PRODUCTORA+en+que+puedo+ayudarte%3F+%EF%BF%BD&type=phone_number&app_absent=0"
    target="_blank" rel="noopener" id="whatsapp-float" aria-label="Contáctanos por WhatsApp">
@@ -1766,6 +1466,8 @@ document.addEventListener("DOMContentLoaded", function() {
 #whatsapp-float span {
   white-space: nowrap;
 }
+
+
 
 @media (max-width: 600px) {
   #whatsapp-float {
