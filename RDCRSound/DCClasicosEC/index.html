@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DCClasicosEC</title>
+  <!-- Iconos para añadir a pantalla de inicio en móviles (iOS y Android) -->
+  <link rel="apple-touch-icon" sizes="180x180" href="/RDCRSound/img_radio/RDCRSOUND_LOGO.jpg">
+  <link rel="icon" type="image/png" sizes="192x192" href="/RDCRSound/img_radio/RDCRSOUND_LOGO.jpg">
+  <link rel="icon" type="image/png" sizes="512x512" href="/RDCRSound/img_radio/RDCRSOUND_LOGO.jpg">
+  <link rel="manifest" href="/RDCRSound/manifest.json">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="DCClasicosEC">
+  <meta name="theme-color" content="#0d0d0d">
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: Arial, sans-serif;
+      color: white;
+      overflow-x: hidden;
+    }
+    #particles-js {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      background: #0d0d0d;
+    }
+    .content {
+      position: relative;
+      padding: 2rem;
+      z-index: 1;
+    }
+    h1 {
+      text-align: center;
+      font-size: 2.5rem;
+      font-family: 'Poppins', Arial, sans-serif;
+      font-weight: 800;
+      letter-spacing: 2px;
+      margin-top: 1.5rem;
+      margin-bottom: 0.5rem;
+      background: linear-gradient(90deg, #ffe082 10%, #bfa76a 90%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-fill-color: transparent;
+      filter: drop-shadow(0 2px 12px #bfa76a55);
+      animation: title-fade-in 1.1s cubic-bezier(.4,0,.2,1);
+      user-select: none;
+    }
+    @keyframes title-fade-in {
+      from { opacity: 0; transform: translateY(30px) scale(0.97);}
+      to { opacity: 1; transform: translateY(0) scale(1);}
+    }
+    .subtitle-modern {
+      text-align: center;
+      font-size: 1.35rem;
+      font-family: 'Poppins', Arial, sans-serif;
+      font-weight: 600;
+      letter-spacing: 1px;
+      margin-bottom: 2.2rem;
+      color: #ffe082;
+      text-shadow: 0 2px 8px #bfa76a55;
+      animation: subtitle-fade-in 1.2s cubic-bezier(.4,0,.2,1);
+      user-select: none;
+    }
+    @keyframes subtitle-fade-in {
+      from { opacity: 0; transform: translateY(20px);}
+      to { opacity: 1; transform: translateY(0);}
+    }
+    .radio-section h2 {
+      text-align: center;
+      font-size: 2rem;
+      font-family: 'Poppins', Arial, sans-serif;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      margin-bottom: 1.2rem;
+      background: linear-gradient(90deg, #bfa76a 10%, #ffe082 90%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-fill-color: transparent;
+      filter: drop-shadow(0 2px 8px #bfa76a55);
+      animation: radio-title-fade-in 1.1s cubic-bezier(.4,0,.2,1);
+      user-select: none;
+    }
+    @keyframes radio-title-fade-in {
+      from { opacity: 0; transform: translateY(20px);}
+      to { opacity: 1; transform: translateY(0);}
+    }
+    .pdf-container {
+      width: 100%;
+      height: 340px;
+      margin-top: 2rem;
+    }
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      pointer-events: none; /* Disables interaction like download */
+    }
+    .radio-section {
+      margin-top: 4rem;
+    }
+    .radio-section h2 {
+      text-align: center;
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+    .radio-players {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1rem;
+    }
+    .radio-players iframe {
+      width: 100%;
+      height: 150px;
+    }
+    @media (max-width: 600px) {
+      .pdf-container, .radio-players iframe {
+        border: none !important;
+        box-shadow: none !important;
+      }
+      .pdf-container {
+        height: 140px !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div id="particles-js"></div>
+
+<div class="content">
+  <h1>DCClasicosEC</h1>
+  <div class="subtitle-modern">🎶 La mejor selección de clásicos en un solo lugar</div>
+  <div class="pdf-container" style="width:90%;max-width:600px;margin-left:auto;margin-right:auto;">
+    <iframe src="your-pdf-url.pdf#toolbar=0&navpanes=0&scrollbar=0"></iframe>
+  </div>
+  <!-- Integración del sitio externo debajo del PDF, menos ancho -->
+  <div style="width:90%;max-width:600px;height:340px;margin:1.5rem auto 0 auto;box-shadow:0 2px 12px #bfa76a33;border-radius:1.1rem;overflow:hidden;">
+    <iframe src="https://andydcm.github.io/dcclasicos.github.io/" style="width:100%;height:100%;border:none;" loading="lazy"></iframe>
+  </div>
+
+  <div class="radio-section">
+    <h2>Escúchanos también en:</h2>
+    <div class="radio-players">
+<iframe src="https://tunein.com/embed/player/s342661/" style="width:100%; height:100px;" scrolling="no" frameborder="no"></iframe>
+<iframe src="https://player.raddios.com/1/?r=17769&rand=245680614#play" style="width:100%; height:100px;" scrolling="no" frameborder="no"></iframe>
+<iframe src="http://e.mytuner-radio.com/embed/dc-radio-480874" style="width:100%; height:100px;" scrolling="no" frameborder="no"></iframe>
+<iframe src="https://zeno.fm/radio/dcradioec-shnu/" style="width:100%; height:100px;" scrolling="no" frameborder="no"></iframe>
+    </div>
+  </div>
+</div>
+
+<!-- Particles.js library -->
+<script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+<script>
+  particlesJS('particles-js', {
+    "particles": {
+      "number": { "value": 80 },
+      "color": { "value": ["#ffe082", "#fffbe6", "#fff9c4", "#fffde7"] },
+      "shape": { "type": "circle" },
+      "opacity": { "value": 0.7, "random": true },
+      "size": { "value": 3, "random": { "enable": true, "minimumValue": 1 } },
+      "line_linked": { "enable": true, "distance": 150, "color": "#ffe082", "opacity": 0.35, "width": 1.2 },
+      "move": { "enable": true, "speed": 3 }
+    },
+    "interactivity": {
+      "events": {
+        "onhover": { "enable": false },
+        "onclick": { "enable": false }
+      }
+    },
+    "retina_detect": true
+  });
+</script>
+
+</body>
+</html>
