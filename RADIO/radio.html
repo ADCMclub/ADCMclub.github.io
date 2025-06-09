@@ -677,19 +677,39 @@
 .emisora-card-leave {
   animation: carousel-fade-out 0.5s cubic-bezier(.4,0,.2,1) forwards;
 }
-#emisora-indicators button {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background: #bfa76a55;
-  border: none;
-  margin: 0 2px;
-  transition: background 0.2s;
-  cursor: pointer;
+/* --- Tamaño controlable para todas las emisoras --- */
+.emisora-img {
+  width: 120px;
+  height: 120px;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: 1rem;
+  box-shadow: 0 2px 12px #bfa76a33;
+  transition: width 0.3s, height 0.3s, box-shadow 0.3s;
 }
-#emisora-indicators button.active {
-  background: #fde047;
-  box-shadow: 0 0 0 2px #bfa76a55;
+.emisora-card-center .emisora-img {
+  width: 160px;
+  height: 160px;
+  box-shadow: 0 8px 32px #fde04799, 0 0 0 6px #bfa76a33;
+}
+.emisora-card-side .emisora-img {
+  width: 100px;
+  height: 100px;
+}
+@media (max-width: 900px) {
+  .emisora-img {
+    width: 80px;
+    height: 80px;
+  }
+  .emisora-card-center .emisora-img {
+    width: 110px;
+    height: 110px;
+  }
+  .emisora-card-side .emisora-img {
+    width: 70px;
+    height: 70px;
+  }
 }
 @media (max-width: 600px) {
   #emisora-carousel {
@@ -698,6 +718,18 @@
   .emisora-card {
     min-width: 90px !important;
     max-width: 120px !important;
+  }
+  .emisora-img {
+    width: 60px;
+    height: 60px;
+  }
+  .emisora-card-center .emisora-img {
+    width: 80px;
+    height: 80px;
+  }
+  .emisora-card-side .emisora-img {
+    width: 50px;
+    height: 50px;
   }
 }
 </style>
@@ -1431,7 +1463,7 @@ document.addEventListener("DOMContentLoaded", function() {
     border: none;
     border-radius: 50%;
     width: 64px;
-    height: 64px;
+       height: 64px;
     box-shadow: 0 4px 24px #bfa76a55;
     display: none;
     align-items: center;
