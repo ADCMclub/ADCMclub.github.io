@@ -989,9 +989,9 @@ document.addEventListener("DOMContentLoaded", function() {
 }
 </style>
 <script>
-// Galeria: horizontal scroll, no reload, highlight active, scroll to active
+// Galeria: solo manual, con flechas amigables y sin auto-cambio
 const galeriaCount = 3;
-let galeriaCenter = 0, galeriaInterval = null, galeriaPaused = false;
+let galeriaCenter = 0;
 
 function updateGaleriaActive(centerIdx, scroll = true) {
   const cards = document.querySelectorAll('#galeria-carousel .galeria-card');
@@ -999,11 +999,13 @@ function updateGaleriaActive(centerIdx, scroll = true) {
     if (idx === centerIdx) card.classList.add('active');
     else card.classList.remove('active');
   });
+  // Solo hacer scroll si fue por acción del usuario
   if (scroll) {
-    // Scroll the active card into view (centered if possible)
     const active = cards[centerIdx];
-    if (active && typeof active.scrollIntoView === 'function') {
-      active.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest', scrollMode: 'if-needed' });
+    if (active) {
+      const carousel = document.getElementById('galeria-carousel');
+      const scrollLeft = active.offsetLeft - (carousel.clientWidth / 2) + (active.clientWidth / 2);
+      carousel.scrollTo({ left: scrollLeft, behavior: 'smooth' });
     }
   }
 }
@@ -1016,40 +1018,73 @@ function renderGaleriaIndicators(centerIdx) {
   Array.from(indicators.children).forEach((btn, idx) => {
     btn.onclick = () => {
       galeriaCenter = idx;
-      updateGaleriaActive(galeriaCenter);
+      updateGaleriaActive(galeriaCenter, true);
       renderGaleriaIndicators(galeriaCenter);
-      resetGaleriaInterval();
     };
   });
 }
 
-function nextGaleriaCarousel() {
-  galeriaCenter = (galeriaCenter + 1) % galeriaCount;
-  updateGaleriaActive(galeriaCenter);
-  renderGaleriaIndicators(galeriaCenter);
-}
-
-function startGaleriaInterval() {
-  if (galeriaInterval) clearInterval(galeriaInterval);
-  galeriaInterval = setInterval(() => {
-    if (!galeriaPaused) nextGaleriaCarousel();
-  }, 3200);
-}
-function resetGaleriaInterval() {
-  startGaleriaInterval();
+// Flechas amigables para navegar
+function renderGaleriaArrows() {
+  let arrows = document.getElementById('galeria-arrows');
+  if (!arrows) {
+    arrows = document.createElement('div');
+    arrows.id = 'galeria-arrows';
+    arrows.style.display = 'flex';
+    arrows.style.justifyContent = 'center';
+    arrows.style.alignItems = 'center';
+    arrows.style.gap = '1.5rem';
+    arrows.style.margin = '1.5rem 0 0 0';
+    const parent = document.querySelector('#galeria .relative.flex.flex-col.items-center');
+    parent.appendChild(arrows);
+  }
+  arrows.innerHTML = `
+    <button id="galeria-prev" aria-label="Anterior video" class="galeria-arrow-btn">
+      <svg width="36" height="36" viewBox="0 0 36 36"><circle cx="18" cy="18" r="18" fill="#fde047"/><path d="M22 26L14 18L22 10" stroke="#bfa76a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <button id="galeria-next" aria-label="Siguiente video" class="galeria-arrow-btn">
+      <svg width="36" height="36" viewBox="0 0 36 36"><circle cx="18" cy="18" r="18" fill="#fde047"/><path d="M14 26L22 18L14 10" stroke="#bfa76a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+  `;
+  document.getElementById('galeria-prev').onclick = () => {
+    galeriaCenter = (galeriaCenter - 1 + galeriaCount) % galeriaCount;
+    updateGaleriaActive(galeriaCenter, true);
+    renderGaleriaIndicators(galeriaCenter);
+  };
+  document.getElementById('galeria-next').onclick = () => {
+    galeriaCenter = (galeriaCenter + 1) % galeriaCount;
+    updateGaleriaActive(galeriaCenter, true);
+    renderGaleriaIndicators(galeriaCenter);
+  };
 }
 
 document.addEventListener("DOMContentLoaded", function() {
   updateGaleriaActive(galeriaCenter, false);
   renderGaleriaIndicators(galeriaCenter);
-  startGaleriaInterval();
-  // Pause on hover
-  const galeriaCarousel = document.getElementById('galeria-carousel');
-  galeriaCarousel.addEventListener('mouseenter', () => { galeriaPaused = true; });
-  galeriaCarousel.addEventListener('mouseleave', () => { galeriaPaused = false; });
+  renderGaleriaArrows();
 });
 </script>
-
+<style>
+/* ...existing code... */
+.galeria-arrow-btn {
+  background: none;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  transition: transform 0.18s;
+  padding: 0.2rem;
+  border-radius: 50%;
+}
+.galeria-arrow-btn:hover, .galeria-arrow-btn:focus {
+  transform: scale(1.13);
+  box-shadow: 0 0 0 4px #fde04755;
+  background: #fffbe6cc;
+}
+#galeria-arrows svg {
+  display: block;
+  filter: drop-shadow(0 2px 8px #bfa76a33);
+}
+</style>
   <!-- CONTACTO -->
   <section id="contacto" class="section-gradient py-16 px-6 animate-fade-up">
     <h3 class="text-3xl font-semibold text-center mb-10 bg-gradient-to-r from-yellow-400 via-yellow-200 to-yellow-500 bg-clip-text text-transparent select-none"
@@ -1511,7 +1546,7 @@ document.addEventListener("DOMContentLoaded", function() {
           if (!hasOverflow()) return;
           // --- CORRECCIÓN: Si el usuario retrocede al inicio, ajusta para mostrar el primer elemento completo
           setTimeout(() => {
-            if (container.scrollLeft < 0) container.scrollLeft = 0;
+            if (container.scrollLeft < 0) container.scrollLeft =  0;
           }, 0);
           pauseAnimAndResume();
         };
@@ -1665,5 +1700,83 @@ document.addEventListener("DOMContentLoaded", function() {
   }
 }
 </style>
+
+<!-- CREDENCIALES -->
+<section id="credenciales" class="section-gradient py-16 px-6 animate-fade-up">
+  <h3 class="text-3xl font-semibold text-center mb-10 bg-gradient-to-r from-yellow-400 via-yellow-200 to-yellow-500 bg-clip-text text-transparent animate-shine select-none"
+      style="font-family: 'Poppins', 'Segoe UI', Arial, sans-serif;">
+    🪪 Credenciales
+  </h3>
+  <div class="flex flex-col items-center justify-center">
+    <div class="relative w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden animate-fade-up pdf-container"
+         style="background: linear-gradient(120deg, #fffbe6 60%, #bfa76a 100%); border: 4px solid #fde047;">
+      <!-- PDF Viewer -->
+      <iframe
+        id="pdf-viewer"
+        src="https://docs.google.com/gview?url=https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf&embedded=true"
+        style="width:100%; min-height:480px; border:none; transition: box-shadow 0.4s;"
+        class="transition-all duration-500"
+        allowfullscreen
+      ></iframe>
+      <!-- Animación decorativa -->
+      <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-yellow-300 via-yellow-100 to-yellow-400 animate-cred-bar"></div>
+    </div>
+    <div class="flex gap-4 mt-6">
+      <button onclick="prevPdfPage()" class="btn-anim px-4 py-2 rounded-full bg-yellow-400/80 hover:bg-yellow-500 text-gray-900 font-semibold shadow transition-all"><span>&larr; Anterior</span></button>
+      <button onclick="nextPdfPage()" class="btn-anim px-4 py-2 rounded-full bg-yellow-400/80 hover:bg-yellow-500 text-gray-900 font-semibold shadow transition-all"><span>Siguiente &rarr;</span></button>
+      <a href="https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf" target="_blank" class="btn-anim px-4 py-2 rounded-full bg-yellow-200/80 hover:bg-yellow-300 text-gray-900 font-semibold shadow transition-all"><span>Descargar PDF</span></a>
+    </div>
+  </div>
+</section>
+<style>
+/* Animación de barra decorativa arriba del PDF */
+@keyframes cred-bar-move {
+  0% { background-position-x: 0; }
+  100% { background-position-x: 200px; }
+}
+.animate-cred-bar {
+  height: 8px !important;
+  background-size: 200px 8px;
+  animation: cred-bar-move 2.5s linear infinite;
+  border-radius: 0 0 16px 16px;
+  opacity: 0.7;
+}
+.pdf-container {
+  box-shadow: 0 8px 32px #fde04755, 0 0 0 6px #bfa76a33;
+  transition: box-shadow 0.4s;
+}
+.pdf-container:hover {
+  box-shadow: 0 12px 48px #fde04799, 0 0 0 8px #bfa76a55;
+  transition: box-shadow 0.4s;
+}
+@media (max-width: 800px) {
+  .pdf-container {
+    min-width: 0;
+    max-width: 98vw;
+  }
+  #pdf-viewer {
+    min-height: 320px !important;
+  }
+}
+</style>
+<script>
+// PDF dinámico: cambiar página (solo si el visor soporta, aquí solo recarga el PDF demo)
+let pdfPage = 1;
+const pdfUrl = "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf";
+function setPdfPage(page) {
+  // Google Docs Viewer no soporta navegación de página, pero si usas PDF.js puedes cambiar la página aquí.
+  // Para demo, solo recarga el PDF.
+  document.getElementById('pdf-viewer').src =
+    "https://docs.google.com/gview?url=" + encodeURIComponent(pdfUrl) + "&embedded=true";
+}
+function prevPdfPage() {
+  if (pdfPage > 1) pdfPage--;
+  setPdfPage(pdfPage);
+}
+function nextPdfPage() {
+  pdfPage++;
+  setPdfPage(pdfPage);
+}
+</script>
 
 
