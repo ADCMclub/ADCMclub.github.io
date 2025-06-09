@@ -901,155 +901,154 @@ document.addEventListener("DOMContentLoaded", function() {
 
   <!-- GALERÍA -->
   <section id="galeria" class="section-gradient py-16 px-6 animate-fade-up">
-    <h3 class="text-3xl font-semibold text-center mb-10 bg-gradient-to-r from-yellow-400 via-yellow-200 to-yellow-500 bg-clip-text text-transparent select-none"
-        style="font-family: 'Poppins', 'Segoe UI', Arial, sans-serif;">
-      📸 Galería
-    </h3>
-    <div class="relative flex flex-col items-center">
-      <div class="flex items-center justify-center gap-2 w-full max-w-4xl mx-auto">
-        <div id="galeria-carousel" class="flex items-center justify-center gap-2 w-full overflow-visible">
-          <!-- Galeria items render here -->
+  <h3 class="text-3xl font-semibold text-center mb-10 bg-gradient-to-r from-yellow-400 via-yellow-200 to-yellow-500 bg-clip-text text-transparent select-none"
+      style="font-family: 'Poppins', 'Segoe UI', Arial, sans-serif;">
+    📸 Galería
+  </h3>
+  <div class="relative flex flex-col items-center">
+    <div class="flex items-center justify-center gap-2 w-full max-w-4xl mx-auto">
+      <div id="galeria-carousel" class="flex gap-6 overflow-x-auto w-full px-2" style="scroll-behavior:smooth;">
+        <!-- Todos los iframes se renderizan horizontalmente -->
+        <div class="galeria-card" data-idx="0">
+          <iframe width="460" height="215" src="https://www.youtube.com/embed/MDUpPdssSMY?si=_-jySlk2tqA3gJ4F" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen loading="lazy"></iframe>
+        </div>
+        <div class="galeria-card" data-idx="1">
+          <iframe width="460" height="215" src="https://www.youtube.com/embed/RwvKQtD6zGQ?si=wxf9bkJthhibF3TV" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen loading="lazy"></iframe>
+        </div>
+        <div class="galeria-card" data-idx="2">
+          <iframe width="460" height="215" src="https://www.youtube.com/embed/Wck0vDgQW7o?si=LMrGX-xBGNcxnXXD" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen loading="lazy"></iframe>
         </div>
       </div>
-      <div id="galeria-indicators" class="flex justify-center mt-4 gap-2"></div>
     </div>
-  </section>
-  <style>
-  /* Carousel effect for galeria */
+    <div id="galeria-indicators" class="flex justify-center mt-4 gap-2"></div>
+  </div>
+</section>
+<style>
+/* ...existing code... */
+#galeria-carousel {
+  min-height: 220px;
+  position: relative;
+  /* horizontal scroll */
+  display: flex;
+  flex-direction: row;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  /* hide scrollbar for aesthetics */
+  scrollbar-width: none;
+}
+#galeria-carousel::-webkit-scrollbar {
+  display: none;
+}
+.galeria-card {
+  flex: 0 0 auto;
+  width: 460px;
+  max-width: 90vw;
+  margin-right: 0.5rem;
+  margin-left: 0.5rem;
+  background: #fffbe6cc;
+  border-radius: 1.25rem;
+  box-shadow: 0 2px 12px #bfa76a22;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: box-shadow 0.3s;
+  /* highlight effect for center */
+  border: 3px solid transparent;
+}
+.galeria-card.active {
+  box-shadow: 0 8px 32px #fde04799, 0 0 0 6px #bfa76a33;
+  border-color: #fde047;
+  background: #fff;
+}
+#galeria-indicators button {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #bfa76a55;
+  border: none;
+  margin: 0 2px;
+  transition: background 0.2s;
+  cursor: pointer;
+}
+#galeria-indicators button.active {
+  background: #fde047;
+  box-shadow: 0 0 0 2px #bfa76a55;
+}
+@media (max-width: 600px) {
   #galeria-carousel {
-    min-height: 220px;
-    position: relative;
+    min-height: 120px;
   }
   .galeria-card {
-    opacity: 0.6;
-    transform: scale(0.82) translateY(0);
-    transition:
-      transform 0.5s cubic-bezier(.4,0,.2,1),
-      opacity 0.5s cubic-bezier(.4,0,.2,1),
-      box-shadow 0.5s cubic-bezier(.4,0,.2,1);
-    z-index: 1;
-    pointer-events: none;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    width: 220px !important;
+    max-width: 95vw !important;
   }
-  .galeria-card-center {
-    opacity: 1;
-    transform: scale(1.13) translateY(0);
-    box-shadow: 0 8px 32px #fde04799, 0 0 0 6px #bfa76a33;
-    z-index: 2;
-    pointer-events: auto;
-    animation: carousel-pop-in 0.7s cubic-bezier(.4,0,.2,1);
+  .galeria-card iframe {
+    width: 220px !important;
+    height: 120px !important;
   }
-  .galeria-card-side {
-    opacity: 0.85;
-    transform: scale(0.95) translateY(0);
-    z-index: 1;
-    pointer-events: auto;
-  }
-  .galeria-card-leave {
-    animation: carousel-fade-out 0.5s cubic-bezier(.4,0,.2,1) forwards;
-  }
-  #galeria-indicators button {
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    background: #bfa76a55;
-    border: none;
-    margin: 0 2px;
-    transition: background 0.2s;
-    cursor: pointer;
-  }
-  #galeria-indicators button.active {
-    background: #fde047;
-    box-shadow: 0 0 0 2px #bfa76a55;
-  }
-  @media (max-width: 600px) {
-    #galeria-carousel {
-      min-height: 120px;
-    }
-    .galeria-card {
-      min-width: 90px !important;
-      max-width: 120px !important;
-    }
-    .galeria-card-center iframe {
-      width: 220px !important;
-      height: 120px !important;
-    }
-  }
-  </style>
-  <script>
-  const galeriaData = [
-    {
-      iframe: `<iframe width="460" height="215" src="https://www.youtube.com/embed/MDUpPdssSMY?si=_-jySlk2tqA3gJ4F" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>`
-    },
-    {
-      iframe: `<iframe width="460" height="215" src="https://www.youtube.com/embed/RwvKQtD6zGQ?si=wxf9bkJthhibF3TV" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>`
-    },
-    {
-      iframe: `<iframe width="460" height="215" src="https://www.youtube.com/embed/Wck0vDgQW7o?si=LMrGX-xBGNcxnXXD" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>`
-    }
-  ];
-  let galeriaCenter = 0, galeriaInterval = null, galeriaPaused = false, galeriaLastIdx = 0;
-  function renderGaleriaCarousel(centerIdx, direction = 1) {
-    const container = document.getElementById('galeria-carousel');
-    // Animate out old center card
-    const oldCards = container.querySelectorAll('.galeria-card-center');
-    oldCards.forEach(card => {
-      card.classList.remove('galeria-card-center');
-      card.classList.add('galeria-card-leave');
-      setTimeout(() => card.remove(), 480);
-    });
+}
+</style>
+<script>
+// Galeria: horizontal scroll, no reload, highlight active, scroll to active
+const galeriaCount = 3;
+let galeriaCenter = 0, galeriaInterval = null, galeriaPaused = false;
 
-    container.innerHTML = '';
-    for (let i = 0; i < galeriaData.length; i++) {
-      let cls = "galeria-card";
-      if (i === centerIdx) cls += " galeria-card-center";
-      else if (i === (centerIdx - 1 + galeriaData.length) % galeriaData.length || i === (centerIdx + 1) % galeriaData.length) cls += " galeria-card-side";
-      container.innerHTML += `<div class="${cls}">${galeriaData[i].iframe}</div>`;
-    }
-    // Indicators
-    const indicators = document.getElementById('galeria-indicators');
-    if (galeriaData.length > 1) {
-      indicators.innerHTML = galeriaData.map((_, idx) =>
-        `<button class="${idx === centerIdx ? 'active' : ''}" aria-label="Ir a video ${idx+1}"></button>`
-      ).join('');
-      Array.from(indicators.children).forEach((btn, idx) => {
-        btn.onclick = () => {
-          galeriaCenter = idx;
-          renderGaleriaCarousel(galeriaCenter, idx > galeriaLastIdx ? 1 : -1);
-          galeriaLastIdx = galeriaCenter;
-          resetGaleriaInterval();
-        };
-      });
-    } else {
-      indicators.innerHTML = '';
-    }
-    galeriaLastIdx = centerIdx;
-  }
-  function nextGaleriaCarousel() {
-    let nextIdx = (galeriaCenter + 1) % galeriaData.length;
-    renderGaleriaCarousel(nextIdx, 1);
-    galeriaCenter = nextIdx;
-  }
-  function startGaleriaInterval() {
-    if (galeriaInterval) clearInterval(galeriaInterval);
-    galeriaInterval = setInterval(() => {
-      if (!galeriaPaused) nextGaleriaCarousel();
-    }, 3200);
-  }
-  function resetGaleriaInterval() {
-    startGaleriaInterval();
-  }
-  document.addEventListener("DOMContentLoaded", function() {
-    renderGaleriaCarousel(galeriaCenter);
-    startGaleriaInterval();
-    // Pause on hover
-    const galeriaCarousel = document.getElementById('galeria-carousel');
-    galeriaCarousel.addEventListener('mouseenter', () => { galeriaPaused = true; });
-    galeriaCarousel.addEventListener('mouseleave', () => { galeriaPaused = false; });
+function updateGaleriaActive(centerIdx, scroll = true) {
+  const cards = document.querySelectorAll('#galeria-carousel .galeria-card');
+  cards.forEach((card, idx) => {
+    if (idx === centerIdx) card.classList.add('active');
+    else card.classList.remove('active');
   });
-  </script>
+  if (scroll) {
+    // Scroll the active card into view (centered if possible)
+    const active = cards[centerIdx];
+    if (active && typeof active.scrollIntoView === 'function') {
+      active.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest', scrollMode: 'if-needed' });
+    }
+  }
+}
+
+function renderGaleriaIndicators(centerIdx) {
+  const indicators = document.getElementById('galeria-indicators');
+  indicators.innerHTML = Array.from({length: galeriaCount}).map((_, idx) =>
+    `<button class="${idx === centerIdx ? 'active' : ''}" aria-label="Ir a video ${idx+1}"></button>`
+  ).join('');
+  Array.from(indicators.children).forEach((btn, idx) => {
+    btn.onclick = () => {
+      galeriaCenter = idx;
+      updateGaleriaActive(galeriaCenter);
+      renderGaleriaIndicators(galeriaCenter);
+      resetGaleriaInterval();
+    };
+  });
+}
+
+function nextGaleriaCarousel() {
+  galeriaCenter = (galeriaCenter + 1) % galeriaCount;
+  updateGaleriaActive(galeriaCenter);
+  renderGaleriaIndicators(galeriaCenter);
+}
+
+function startGaleriaInterval() {
+  if (galeriaInterval) clearInterval(galeriaInterval);
+  galeriaInterval = setInterval(() => {
+    if (!galeriaPaused) nextGaleriaCarousel();
+  }, 3200);
+}
+function resetGaleriaInterval() {
+  startGaleriaInterval();
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+  updateGaleriaActive(galeriaCenter, false);
+  renderGaleriaIndicators(galeriaCenter);
+  startGaleriaInterval();
+  // Pause on hover
+  const galeriaCarousel = document.getElementById('galeria-carousel');
+  galeriaCarousel.addEventListener('mouseenter', () => { galeriaPaused = true; });
+  galeriaCarousel.addEventListener('mouseleave', () => { galeriaPaused = false; });
+});
+</script>
 
   <!-- CONTACTO -->
   <section id="contacto" class="section-gradient py-16 px-6 animate-fade-up">
