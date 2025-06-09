@@ -440,11 +440,9 @@
     </h3>
     <div class="relative flex flex-col items-center">
       <div class="flex items-center justify-center gap-2 w-full max-w-4xl mx-auto">
-        <!-- Flechas eliminadas -->
         <div id="prog-carousel" class="flex items-center justify-center gap-2 w-full overflow-visible">
           <!-- Cards will be rendered here -->
         </div>
-        <!-- Flechas eliminadas -->
       </div>
       <div id="prog-indicators" class="flex justify-center mt-4 gap-2"></div>
     </div>
@@ -453,14 +451,15 @@
   /* Carousel effect for programacion */
   #prog-carousel {
     min-height: 220px;
+    position: relative;
   }
   .prog-card {
     opacity: 0.6;
-    transform: scale(0.82);
-    transition: 
-      transform 0.35s cubic-bezier(.4,0,.2,1),
-      opacity 0.35s cubic-bezier(.4,0,.2,1),
-      box-shadow 0.35s cubic-bezier(.4,0,.2,1);
+    transform: scale(0.82) translateY(0);
+    transition:
+      transform 0.5s cubic-bezier(.4,0,.2,1),
+      opacity 0.5s cubic-bezier(.4,0,.2,1),
+      box-shadow 0.5s cubic-bezier(.4,0,.2,1);
     z-index: 1;
     pointer-events: none;
     background: #fffbe6cc;
@@ -473,27 +472,52 @@
     display: flex;
     flex-direction: column;
     align-items: flex-start;
+    opacity: 0.6;
   }
   .prog-card-center {
     opacity: 1;
-    transform: scale(1.13);
+    transform: scale(1.13) translateY(0);
     box-shadow: 0 8px 32px #fde04799, 0 0 0 6px #bfa76a33;
     z-index: 2;
     pointer-events: auto;
     background: #fff;
+    animation: carousel-pop-in 0.7s cubic-bezier(.4,0,.2,1);
   }
   .prog-card-side {
     opacity: 0.85;
-    transform: scale(0.95);
+    transform: scale(0.95) translateY(0);
     z-index: 1;
     pointer-events: auto;
   }
-  .prog-arrow {
-    min-width: 2.5rem;
-    min-height: 2.5rem;
-    font-size: 1.5rem;
-    user-select: none;
-    transition: opacity 0.2s;
+  @keyframes carousel-pop-in {
+    0% {
+      opacity: 0;
+      transform: scale(0.7) translateY(40px);
+      filter: blur(2px);
+    }
+    60% {
+      opacity: 1;
+      transform: scale(1.18) translateY(-10px);
+      filter: blur(0.5px);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1.13) translateY(0);
+      filter: blur(0);
+    }
+  }
+  @keyframes carousel-fade-out {
+    0% {
+      opacity: 1;
+      transform: scale(1.13) translateY(0);
+    }
+    100% {
+      opacity: 0;
+      transform: scale(0.7) translateY(40px);
+    }
+  }
+  .prog-card-leave {
+    animation: carousel-fade-out 0.5s cubic-bezier(.4,0,.2,1) forwards;
   }
   #prog-indicators button {
     width: 12px;
@@ -544,8 +568,18 @@
       desc: "Domingos | 4:00 PM - 8:00 PM"
     }
   ];
-  function renderProgCarousel(centerIdx) {
+  let progCenter = 0, progInterval = null, progPaused = false, progLastIdx = 0;
+  function renderProgCarousel(centerIdx, direction = 1) {
     const container = document.getElementById('prog-carousel');
+    // Animate out old center card
+    const oldCards = container.querySelectorAll('.prog-card-center');
+    oldCards.forEach(card => {
+      card.classList.remove('prog-card-center');
+      card.classList.add('prog-card-leave');
+      setTimeout(() => card.remove(), 480);
+    });
+
+    // Animate in new cards
     container.innerHTML = '';
     for (let i = 0; i < progData.length; i++) {
       let cls = "prog-card group";
@@ -567,36 +601,37 @@
       Array.from(indicators.children).forEach((btn, idx) => {
         btn.onclick = () => {
           progCenter = idx;
-          renderProgCarousel(progCenter);
-          updateProgArrows();
+          renderProgCarousel(progCenter, idx > progLastIdx ? 1 : -1);
+          progLastIdx = progCenter;
+          resetProgInterval();
         };
       });
     } else {
       indicators.innerHTML = '';
     }
+    progLastIdx = centerIdx;
   }
-  let progCenter = 0;
-  function updateProgCarousel(dir) {
-    progCenter = (progCenter + dir + progData.length) % progData.length;
-    renderProgCarousel(progCenter);
-    updateProgArrows();
+  function nextProgCarousel() {
+    let nextIdx = (progCenter + 1) % progData.length;
+    renderProgCarousel(nextIdx, 1);
+    progCenter = nextIdx;
   }
-  function updateProgArrows() {
-    const prev = document.getElementById('prog-prev');
-    const next = document.getElementById('prog-next');
-    if (progData.length > 1) {
-      prev.classList.remove('hidden');
-      next.classList.remove('hidden');
-    } else {
-      prev.classList.add('hidden');
-      next.classList.add('hidden');
-    }
+  function startProgInterval() {
+    if (progInterval) clearInterval(progInterval);
+    progInterval = setInterval(() => {
+      if (!progPaused) nextProgCarousel();
+    }, 3200);
+  }
+  function resetProgInterval() {
+    startProgInterval();
   }
   document.addEventListener("DOMContentLoaded", function() {
     renderProgCarousel(progCenter);
-    updateProgArrows();
-    document.getElementById('prog-prev').onclick = () => updateProgCarousel(-1);
-    document.getElementById('prog-next').onclick = () => updateProgCarousel(1);
+    startProgInterval();
+    // Pause on hover
+    const progCarousel = document.getElementById('prog-carousel');
+    progCarousel.addEventListener('mouseenter', () => { progPaused = true; });
+    progCarousel.addEventListener('mouseleave', () => { progPaused = false; });
   });
   </script>
 
@@ -609,11 +644,9 @@
   </h3>
   <div class="relative flex flex-col items-center">
     <div class="flex items-center justify-center gap-2 w-full max-w-4xl mx-auto">
-      <!-- Flechas eliminadas -->
       <div id="emisora-carousel" class="flex items-center justify-center gap-2 w-full overflow-visible">
         <!-- Emisoras render here -->
       </div>
-      <!-- Flechas eliminadas -->
     </div>
     <div id="emisora-indicators" class="flex justify-center mt-4 gap-2"></div>
   </div>
@@ -622,14 +655,15 @@
 /* Carousel effect for emisoras */
 #emisora-carousel {
   min-height: 160px;
+  position: relative;
 }
 .emisora-card {
   opacity: 0.6;
-  transform: scale(0.82);
-  transition: 
-    transform 0.35s cubic-bezier(.4,0,.2,1),
-    opacity 0.35s cubic-bezier(.4,0,.2,1),
-    box-shadow 0.35s cubic-bezier(.4,0,.2,1);
+  transform: scale(0.82) translateY(0);
+  transition:
+    transform 0.5s cubic-bezier(.4,0,.2,1),
+    opacity 0.5s cubic-bezier(.4,0,.2,1),
+    box-shadow 0.5s cubic-bezier(.4,0,.2,1);
   z-index: 1;
   pointer-events: none;
   display: flex;
@@ -638,23 +672,20 @@
 }
 .emisora-card-center {
   opacity: 1;
-  transform: scale(1.13);
+  transform: scale(1.13) translateY(0);
   box-shadow: 0 8px 32px #fde04799, 0 0 0 6px #bfa76a33;
   z-index: 2;
   pointer-events: auto;
+  animation: carousel-pop-in 0.7s cubic-bezier(.4,0,.2,1);
 }
 .emisora-card-side {
   opacity: 0.85;
-  transform: scale(0.95);
+  transform: scale(0.95) translateY(0);
   z-index: 1;
   pointer-events: auto;
 }
-.emisora-arrow {
-  min-width: 2.5rem;
-  min-height: 2.5rem;
-  font-size: 1.5rem;
-  user-select: none;
-  transition: opacity 0.2s;
+.emisora-card-leave {
+  animation: carousel-fade-out 0.5s cubic-bezier(.4,0,.2,1) forwards;
 }
 #emisora-indicators button {
   width: 12px;
@@ -698,8 +729,17 @@ const emisoraData = [
     alt: "DC Clasicos EC"
   }
 ];
-function renderEmisoraCarousel(centerIdx) {
+let emisoraCenter = 0, emisoraInterval = null, emisoraPaused = false, emisoraLastIdx = 0;
+function renderEmisoraCarousel(centerIdx, direction = 1) {
   const container = document.getElementById('emisora-carousel');
+  // Animate out old center card
+  const oldCards = container.querySelectorAll('.emisora-card-center');
+  oldCards.forEach(card => {
+    card.classList.remove('emisora-card-center');
+    card.classList.add('emisora-card-leave');
+    setTimeout(() => card.remove(), 480);
+  });
+
   container.innerHTML = '';
   for (let i = 0; i < emisoraData.length; i++) {
     let cls = "emisora-card";
@@ -720,36 +760,37 @@ function renderEmisoraCarousel(centerIdx) {
     Array.from(indicators.children).forEach((btn, idx) => {
       btn.onclick = () => {
         emisoraCenter = idx;
-        renderEmisoraCarousel(emisoraCenter);
-        updateEmisoraArrows();
+        renderEmisoraCarousel(emisoraCenter, idx > emisoraLastIdx ? 1 : -1);
+        emisoraLastIdx = emisoraCenter;
+        resetEmisoraInterval();
       };
     });
   } else {
     indicators.innerHTML = '';
   }
+  emisoraLastIdx = centerIdx;
 }
-let emisoraCenter = 0;
-function updateEmisoraCarousel(dir) {
-  emisoraCenter = (emisoraCenter + dir + emisoraData.length) % emisoraData.length;
-  renderEmisoraCarousel(emisoraCenter);
-  updateEmisoraArrows();
+function nextEmisoraCarousel() {
+  let nextIdx = (emisoraCenter + 1) % emisoraData.length;
+  renderEmisoraCarousel(nextIdx, 1);
+  emisoraCenter = nextIdx;
 }
-function updateEmisoraArrows() {
-  const prev = document.getElementById('emisora-prev');
-  const next = document.getElementById('emisora-next');
-  if (emisoraData.length > 1) {
-    prev.classList.remove('hidden');
-    next.classList.remove('hidden');
-  } else {
-    prev.classList.add('hidden');
-    next.classList.add('hidden');
-  }
+function startEmisoraInterval() {
+  if (emisoraInterval) clearInterval(emisoraInterval);
+  emisoraInterval = setInterval(() => {
+    if (!emisoraPaused) nextEmisoraCarousel();
+  }, 3200);
+}
+function resetEmisoraInterval() {
+  startEmisoraInterval();
 }
 document.addEventListener("DOMContentLoaded", function() {
   renderEmisoraCarousel(emisoraCenter);
-  updateEmisoraArrows();
-  document.getElementById('emisora-prev').onclick = () => updateEmisoraCarousel(-1);
-  document.getElementById('emisora-next').onclick = () => updateEmisoraCarousel(1);
+  startEmisoraInterval();
+  // Pause on hover
+  const emisoraCarousel = document.getElementById('emisora-carousel');
+  emisoraCarousel.addEventListener('mouseenter', () => { emisoraPaused = true; });
+  emisoraCarousel.addEventListener('mouseleave', () => { emisoraPaused = false; });
 });
 </script>
 
@@ -866,11 +907,9 @@ document.addEventListener("DOMContentLoaded", function() {
     </h3>
     <div class="relative flex flex-col items-center">
       <div class="flex items-center justify-center gap-2 w-full max-w-4xl mx-auto">
-        <!-- Flechas eliminadas -->
         <div id="galeria-carousel" class="flex items-center justify-center gap-2 w-full overflow-visible">
           <!-- Galeria items render here -->
         </div>
-        <!-- Flechas eliminadas -->
       </div>
       <div id="galeria-indicators" class="flex justify-center mt-4 gap-2"></div>
     </div>
@@ -879,14 +918,15 @@ document.addEventListener("DOMContentLoaded", function() {
   /* Carousel effect for galeria */
   #galeria-carousel {
     min-height: 220px;
+    position: relative;
   }
   .galeria-card {
     opacity: 0.6;
-    transform: scale(0.82);
-    transition: 
-      transform 0.35s cubic-bezier(.4,0,.2,1),
-      opacity 0.35s cubic-bezier(.4,0,.2,1),
-      box-shadow 0.35s cubic-bezier(.4,0,.2,1);
+    transform: scale(0.82) translateY(0);
+    transition:
+      transform 0.5s cubic-bezier(.4,0,.2,1),
+      opacity 0.5s cubic-bezier(.4,0,.2,1),
+      box-shadow 0.5s cubic-bezier(.4,0,.2,1);
     z-index: 1;
     pointer-events: none;
     display: flex;
@@ -895,23 +935,20 @@ document.addEventListener("DOMContentLoaded", function() {
   }
   .galeria-card-center {
     opacity: 1;
-    transform: scale(1.13);
+    transform: scale(1.13) translateY(0);
     box-shadow: 0 8px 32px #fde04799, 0 0 0 6px #bfa76a33;
     z-index: 2;
     pointer-events: auto;
+    animation: carousel-pop-in 0.7s cubic-bezier(.4,0,.2,1);
   }
   .galeria-card-side {
     opacity: 0.85;
-    transform: scale(0.95);
+    transform: scale(0.95) translateY(0);
     z-index: 1;
     pointer-events: auto;
   }
-  .galeria-arrow {
-    min-width: 2.5rem;
-    min-height: 2.5rem;
-    font-size: 1.5rem;
-    user-select: none;
-    transition: opacity 0.2s;
+  .galeria-card-leave {
+    animation: carousel-fade-out 0.5s cubic-bezier(.4,0,.2,1) forwards;
   }
   #galeria-indicators button {
     width: 12px;
@@ -953,8 +990,17 @@ document.addEventListener("DOMContentLoaded", function() {
       iframe: `<iframe width="460" height="215" src="https://www.youtube.com/embed/Wck0vDgQW7o?si=LMrGX-xBGNcxnXXD" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>`
     }
   ];
-  function renderGaleriaCarousel(centerIdx) {
+  let galeriaCenter = 0, galeriaInterval = null, galeriaPaused = false, galeriaLastIdx = 0;
+  function renderGaleriaCarousel(centerIdx, direction = 1) {
     const container = document.getElementById('galeria-carousel');
+    // Animate out old center card
+    const oldCards = container.querySelectorAll('.galeria-card-center');
+    oldCards.forEach(card => {
+      card.classList.remove('galeria-card-center');
+      card.classList.add('galeria-card-leave');
+      setTimeout(() => card.remove(), 480);
+    });
+
     container.innerHTML = '';
     for (let i = 0; i < galeriaData.length; i++) {
       let cls = "galeria-card";
@@ -971,36 +1017,37 @@ document.addEventListener("DOMContentLoaded", function() {
       Array.from(indicators.children).forEach((btn, idx) => {
         btn.onclick = () => {
           galeriaCenter = idx;
-          renderGaleriaCarousel(galeriaCenter);
-          updateGaleriaArrows();
+          renderGaleriaCarousel(galeriaCenter, idx > galeriaLastIdx ? 1 : -1);
+          galeriaLastIdx = galeriaCenter;
+          resetGaleriaInterval();
         };
       });
     } else {
       indicators.innerHTML = '';
     }
+    galeriaLastIdx = centerIdx;
   }
-  let galeriaCenter = 0;
-  function updateGaleriaCarousel(dir) {
-    galeriaCenter = (galeriaCenter + dir + galeriaData.length) % galeriaData.length;
-    renderGaleriaCarousel(galeriaCenter);
-    updateGaleriaArrows();
+  function nextGaleriaCarousel() {
+    let nextIdx = (galeriaCenter + 1) % galeriaData.length;
+    renderGaleriaCarousel(nextIdx, 1);
+    galeriaCenter = nextIdx;
   }
-  function updateGaleriaArrows() {
-    const prev = document.getElementById('galeria-prev');
-    const next = document.getElementById('galeria-next');
-    if (galeriaData.length > 1) {
-      prev.classList.remove('hidden');
-      next.classList.remove('hidden');
-    } else {
-      prev.classList.add('hidden');
-      next.classList.add('hidden');
-    }
+  function startGaleriaInterval() {
+    if (galeriaInterval) clearInterval(galeriaInterval);
+    galeriaInterval = setInterval(() => {
+      if (!galeriaPaused) nextGaleriaCarousel();
+    }, 3200);
+  }
+  function resetGaleriaInterval() {
+    startGaleriaInterval();
   }
   document.addEventListener("DOMContentLoaded", function() {
     renderGaleriaCarousel(galeriaCenter);
-    updateGaleriaArrows();
-    document.getElementById('galeria-prev').onclick = () => updateGaleriaCarousel(-1);
-    document.getElementById('galeria-next').onclick = () => updateGaleriaCarousel(1);
+    startGaleriaInterval();
+    // Pause on hover
+    const galeriaCarousel = document.getElementById('galeria-carousel');
+    galeriaCarousel.addEventListener('mouseenter', () => { galeriaPaused = true; });
+    galeriaCarousel.addEventListener('mouseleave', () => { galeriaPaused = false; });
   });
   </script>
 
