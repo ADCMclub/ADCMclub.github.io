@@ -732,6 +732,20 @@
     height: 50px;
   }
 }
+#emisora-indicators button {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #bfa76a55;
+  border: none;
+  margin: 0 2px;
+  transition: background 0.2s;
+  cursor: pointer;
+}
+#emisora-indicators button.active {
+  background: #fde047;
+  box-shadow: 0 0 0 2px #bfa76a55;
+}
 </style>
 <script>
 const emisoraData = [
@@ -773,7 +787,7 @@ function renderEmisoraCarousel(centerIdx, direction = 1) {
       </a>
     `;
   }
-  // Indicators
+  // Indicadores similares a programación
   const indicators = document.getElementById('emisora-indicators');
   if (emisoraData.length > 1) {
     indicators.innerHTML = emisoraData.map((_, idx) =>
