@@ -438,130 +438,166 @@
         style="font-family: 'Poppins', 'Segoe UI', Arial, sans-serif;">
       🎧 Programación
     </h3>
-    <div class="relative overflow-x-auto" style="position:relative;">
-      <!-- Flechas eliminadas -->
-      <div 
-        id="prog-scroll"
-        class="flex gap-8 items-center py-6 justify-center"
-        style="width: max-content; margin: 0 auto;"
-        onmouseover="this.style.animationPlayState && (this.style.animationPlayState='paused')"
-        onmouseout="this.style.animationPlayState && (this.style.animationPlayState='running')"
-      >
-        <!-- Tarjetas de programación, puedes duplicar y editar -->
-        <div class="bg-white/80 p-6 rounded-xl shadow-lg hover:scale-105 hover:bg-yellow-100/80 transition-transform duration-300 animate-fade-up text-gray-900 min-w-[320px] max-w-xs text-left group">
-          <h4 class="font-bold text-lg group-hover:text-yellow-600 transition-colors duration-300 animate-shine">Mañanas Musicales</h4>
-          <p class="text-sm group-hover:translate-x-2 transition-transform duration-300 animate-fade-in">Lunes a Viernes | 7:00 AM - 11:00 AM</p>
+    <div class="relative flex flex-col items-center">
+      <div class="flex items-center justify-center gap-2 w-full max-w-4xl mx-auto">
+        <!-- Flechas eliminadas -->
+        <div id="prog-carousel" class="flex items-center justify-center gap-2 w-full overflow-visible">
+          <!-- Cards will be rendered here -->
         </div>
-        <div class="bg-white/80 p-6 rounded-xl shadow-lg hover:scale-105 hover:bg-yellow-100/80 transition-transform duration-300 animate-fade-up text-gray-900 min-w-[320px] max-w-xs text-left group">
-          <h4 class="font-bold text-lg group-hover:text-yellow-600 transition-colors duration-300 animate-shine">Zona Retro</h4>
-          <p class="text-sm group-hover:translate-x-2 transition-transform duration-300 animate-fade-in">Lunes a Viernes | 2:00 PM - 5:00 PM</p>
-        </div>
-        <div class="bg-white/80 p-6 rounded-xl shadow-lg hover:scale-105 hover:bg-yellow-100/80 transition-transform duration-300 animate-fade-up text-gray-900 min-w-[320px] max-w-xs text-left group">
-          <h4 class="font-bold text-lg group-hover:text-yellow-600 transition-colors duration-300 animate-shine">Noche Urbana</h4>
-          <p class="text-sm group-hover:translate-x-2 transition-transform duration-300 animate-fade-in">Lunes a Viernes | 8:00 PM - 12:00 AM</p>
-        </div>
-        <!-- Más tarjetas aquí -->
+        <!-- Flechas eliminadas -->
       </div>
+      <div id="prog-indicators" class="flex justify-center mt-4 gap-2"></div>
     </div>
   </section>
-
   <style>
-    @keyframes prog-scroll-x {
-      0% { transform: translateX(0); }
-      100% { transform: translateX(-60%); }
+  /* Carousel effect for programacion */
+  #prog-carousel {
+    min-height: 220px;
+  }
+  .prog-card {
+    opacity: 0.6;
+    transform: scale(0.82);
+    transition: 
+      transform 0.35s cubic-bezier(.4,0,.2,1),
+      opacity 0.35s cubic-bezier(.4,0,.2,1),
+      box-shadow 0.35s cubic-bezier(.4,0,.2,1);
+    z-index: 1;
+    pointer-events: none;
+    background: #fffbe6cc;
+    border-radius: 1.25rem;
+    min-width: 220px;
+    max-width: 320px;
+    margin: 0 0.25rem;
+    padding: 1.5rem 1.25rem;
+    box-shadow: 0 2px 12px #bfa76a22;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .prog-card-center {
+    opacity: 1;
+    transform: scale(1.13);
+    box-shadow: 0 8px 32px #fde04799, 0 0 0 6px #bfa76a33;
+    z-index: 2;
+    pointer-events: auto;
+    background: #fff;
+  }
+  .prog-card-side {
+    opacity: 0.85;
+    transform: scale(0.95);
+    z-index: 1;
+    pointer-events: auto;
+  }
+  .prog-arrow {
+    min-width: 2.5rem;
+    min-height: 2.5rem;
+    font-size: 1.5rem;
+    user-select: none;
+    transition: opacity 0.2s;
+  }
+  #prog-indicators button {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #bfa76a55;
+    border: none;
+    margin: 0 2px;
+    transition: background 0.2s;
+    cursor: pointer;
+  }
+  #prog-indicators button.active {
+    background: #fde047;
+    box-shadow: 0 0 0 2px #bfa76a55;
+  }
+  @media (max-width: 600px) {
+    #prog-carousel {
+      min-height: 180px;
     }
-    #prog-scroll {
-      cursor: grab;
-      user-select: none;
-      scrollbar-width: thin;
-      scrollbar-color: #bfa76a #232526;
-      justify-content: center;
+    .prog-card {
+      min-width: 140px !important;
+      max-width: 180px !important;
+      font-size: 0.95rem;
+      padding: 1rem 0.75rem;
     }
-    #prog-scroll::-webkit-scrollbar {
-      height: 8px;
-    }
-    #prog-scroll::-webkit-scrollbar-thumb {
-      background: #bfa76a;
-      border-radius: 4px;
-    }
-    #prog-scroll::-webkit-scrollbar-track {
-      background: #232526;
-    }
+  }
   </style>
   <script>
-    document.addEventListener("DOMContentLoaded", function() {
-      // --- AUTO SCROLL SOLO SI HAY OVERFLOW ---
-      function checkAndAnimateProgScroll() {
-        const scroll = document.getElementById('prog-scroll');
-        if (!scroll) return;
-        scroll.style.animation = '';
-        if (scroll.scrollWidth > scroll.parentElement.offsetWidth + 10) {
-          scroll.style.animation = 'prog-scroll-x 40s linear infinite';
-          document.getElementById('progScrollLeft').style.display = 'block';
-          document.getElementById('progScrollRight').style.display = 'block';
-        } else {
-          document.getElementById('progScrollLeft').style.display = 'none';
-          document.getElementById('progScrollRight').style.display = 'none';
-        }
-      }
-      window.addEventListener('resize', checkAndAnimateProgScroll);
-      setTimeout(checkAndAnimateProgScroll, 400);
-
-      // --- DRAG SCROLL CON MOUSE ---
-      const scroll = document.getElementById('prog-scroll');
-      let isDown = false, startX, scrollLeft;
-      if (scroll) {
-        scroll.addEventListener('mousedown', (e) => {
-          isDown = true;
-          scroll.classList.add('dragging');
-          startX = e.pageX - scroll.offsetLeft;
-          scrollLeft = scroll.scrollLeft;
-        });
-        scroll.addEventListener('mouseleave', () => {
-          isDown = false;
-          scroll.classList.remove('dragging');
-        });
-        scroll.addEventListener('mouseup', () => {
-          isDown = false;
-          scroll.classList.remove('dragging');
-        });
-        scroll.addEventListener('mousemove', (e) => {
-          if (!isDown) return;
-          e.preventDefault();
-          const x = e.pageX - scroll.offsetLeft;
-          const walk = (x - startX) * 1.5;
-          scroll.scrollLeft = scrollLeft - walk;
-          scroll.style.animationPlayState = 'paused';
-        });
-        // Touch para móviles
-        let touchStartX = 0, touchScrollLeft = 0;
-        scroll.addEventListener('touchstart', (e) => {
-          isDown = true;
-          touchStartX = e.touches[0].pageX;
-          touchScrollLeft = scroll.scrollLeft;
-        });
-        scroll.addEventListener('touchend', () => { isDown = false; });
-        scroll.addEventListener('touchmove', (e) => {
-          if (!isDown) return;
-          const x = e.touches[0].pageX;
-          const walk = (x - touchStartX) * 1.5;
-          scroll.scrollLeft = touchScrollLeft - walk;
-          scroll.style.animationPlayState = 'paused';
-        });
-      }
-
-      // --- BOTONES DE DESPLAZAMIENTO ---
-      const btnLeft = document.getElementById('progScrollLeft');
-      const btnRight = document.getElementById('progScrollRight');
-      if (btnLeft && btnRight && scroll) {
-        btnLeft.addEventListener('click', () => {
-          scroll.scrollBy({ left: -340, behavior: 'smooth' });
-        });
-        btnRight.addEventListener('click', () => {
-          scroll.scrollBy({ left: 340, behavior: 'smooth' });
-        });
-      }
-    });
+  const progData = [
+    {
+      title: "Mañanas Musicales",
+      desc: "Lunes a Viernes | 7:00 AM - 11:00 AM"
+    },
+    {
+      title: "Zona Retro",
+      desc: "Lunes a Viernes | 2:00 PM - 5:00 PM"
+    },
+    {
+      title: "Noche Urbana",
+      desc: "Lunes a Viernes | 8:00 PM - 12:00 AM"
+    },
+    {
+      title: "Salsa Total",
+      desc: "Sábados | 10:00 AM - 2:00 PM"
+    },
+    {
+      title: "Top Latino",
+      desc: "Domingos | 4:00 PM - 8:00 PM"
+    }
+  ];
+  function renderProgCarousel(centerIdx) {
+    const container = document.getElementById('prog-carousel');
+    container.innerHTML = '';
+    for (let i = 0; i < progData.length; i++) {
+      let cls = "prog-card group";
+      if (i === centerIdx) cls += " prog-card-center";
+      else if (i === (centerIdx - 1 + progData.length) % progData.length || i === (centerIdx + 1) % progData.length) cls += " prog-card-side";
+      container.innerHTML += `
+        <div class="${cls}">
+          <h4 class="font-bold text-lg group-hover:text-yellow-600 transition-colors duration-300 animate-shine">${progData[i].title}</h4>
+          <p class="text-sm group-hover:translate-x-2 transition-transform duration-300 animate-fade-in">${progData[i].desc}</p>
+        </div>
+      `;
+    }
+    // Indicators
+    const indicators = document.getElementById('prog-indicators');
+    if (progData.length > 1) {
+      indicators.innerHTML = progData.map((_, idx) =>
+        `<button class="${idx === centerIdx ? 'active' : ''}" aria-label="Ir a ${progData[idx].title}"></button>`
+      ).join('');
+      Array.from(indicators.children).forEach((btn, idx) => {
+        btn.onclick = () => {
+          progCenter = idx;
+          renderProgCarousel(progCenter);
+          updateProgArrows();
+        };
+      });
+    } else {
+      indicators.innerHTML = '';
+    }
+  }
+  let progCenter = 0;
+  function updateProgCarousel(dir) {
+    progCenter = (progCenter + dir + progData.length) % progData.length;
+    renderProgCarousel(progCenter);
+    updateProgArrows();
+  }
+  function updateProgArrows() {
+    const prev = document.getElementById('prog-prev');
+    const next = document.getElementById('prog-next');
+    if (progData.length > 1) {
+      prev.classList.remove('hidden');
+      next.classList.remove('hidden');
+    } else {
+      prev.classList.add('hidden');
+      next.classList.add('hidden');
+    }
+  }
+  document.addEventListener("DOMContentLoaded", function() {
+    renderProgCarousel(progCenter);
+    updateProgArrows();
+    document.getElementById('prog-prev').onclick = () => updateProgCarousel(-1);
+    document.getElementById('prog-next').onclick = () => updateProgCarousel(1);
+  });
   </script>
 
   <!-- EMISORAS -->
@@ -571,128 +607,151 @@
       style="font-family: 'Poppins', 'Segoe UI', Arial, sans-serif;">
     📻 Emisoras
   </h3>
-  <div class="relative overflow-x-auto" style="position:relative;">
-    <div 
-      id="emisora-scroll"
-      class="flex gap-8 items-center py-6 justify-center"
-      style="width: max-content; margin: 0 auto; flex-wrap: wrap;"
-    >
-      <!-- Emisoras animadas, sin fondo -->
-      <a href="https://rdcrsound.jimdofree.com/radios/dcradioec/" target="_blank" class="emisora-anim group">
-        <img src="/RADIO/img_radio/DCRadioec_logo.jpg" alt="DC Radio EC" class="emisora-img" />
-      </a>
-      <a href="https://rdcrsound.jimdofree.com/radios/dcmixec/" target="_blank" class="emisora-anim group">
-        <img src="/RADIO/img_radio/dcmix_logo.jpg" alt="DC Mix EC" class="emisora-img" />
-      </a>
-      <a href="https://rdcrsound.jimdofree.com/radios/dcclasicosec/" target="_blank" class="emisora-anim group">
-        <img src="/RADIO/img_radio/dcclasicos_logo.jpg" alt="DC Clasicos EC" class="emisora-img" />
-      </a>
-      <!-- Agrega más emisoras aquí -->
+  <div class="relative flex flex-col items-center">
+    <div class="flex items-center justify-center gap-2 w-full max-w-4xl mx-auto">
+      <!-- Flechas eliminadas -->
+      <div id="emisora-carousel" class="flex items-center justify-center gap-2 w-full overflow-visible">
+        <!-- Emisoras render here -->
+      </div>
+      <!-- Flechas eliminadas -->
     </div>
+    <div id="emisora-indicators" class="flex justify-center mt-4 gap-2"></div>
   </div>
 </section>
 <style>
-  /* Radios responsive grid */
-  #emisora-scroll {
-    flex-wrap: wrap;
-    gap: 2.5rem;
-    justify-content: center;
+/* Carousel effect for emisoras */
+#emisora-carousel {
+  min-height: 160px;
+}
+.emisora-card {
+  opacity: 0.6;
+  transform: scale(0.82);
+  transition: 
+    transform 0.35s cubic-bezier(.4,0,.2,1),
+    opacity 0.35s cubic-bezier(.4,0,.2,1),
+    box-shadow 0.35s cubic-bezier(.4,0,.2,1);
+  z-index: 1;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.emisora-card-center {
+  opacity: 1;
+  transform: scale(1.13);
+  box-shadow: 0 8px 32px #fde04799, 0 0 0 6px #bfa76a33;
+  z-index: 2;
+  pointer-events: auto;
+}
+.emisora-card-side {
+  opacity: 0.85;
+  transform: scale(0.95);
+  z-index: 1;
+  pointer-events: auto;
+}
+.emisora-arrow {
+  min-width: 2.5rem;
+  min-height: 2.5rem;
+  font-size: 1.5rem;
+  user-select: none;
+  transition: opacity 0.2s;
+}
+#emisora-indicators button {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #bfa76a55;
+  border: none;
+  margin: 0 2px;
+  transition: background 0.2s;
+  cursor: pointer;
+}
+#emisora-indicators button.active {
+  background: #fde047;
+  box-shadow: 0 0 0 2px #bfa76a55;
+}
+@media (max-width: 600px) {
+  #emisora-carousel {
+    min-height: 120px;
   }
-  @media (max-width: 900px) {
-    #emisora-scroll {
-      gap: 1.5rem;
-    }
+  .emisora-card {
+    min-width: 90px !important;
+    max-width: 120px !important;
   }
-  @media (max-width: 600px) {
-    #emisora-scroll {
-      flex-direction: column !important;
-      align-items: center !important;
-      gap: 1.25rem !important;
-    }
-    #emisora-scroll a {
-      width: 90vw !important;
-      max-width: 320px !important;
-      min-width: 0 !important;
-      height: auto !important;
-    }
-    #emisora-scroll img {
-      width: 100% !important;
-      height: auto !important;
-      min-width: 0 !important;
-      max-width: 100% !important;
-      aspect-ratio: 1/1;
-    }
-  }
-  #emisora-scroll a {
-    background: none !important; /* Sin fondo */
-    border-radius: 1.5rem;
-    box-shadow: none;
-    transition: transform 0.22s, box-shadow 0.22s;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 180px;
-    height: 180px;
-    position: relative;
-    overflow: visible;
-  }
-  .emisora-img {
-    border-radius: 1.2rem;
-    border: none;
-    box-shadow: 0 4px 32px 0 #bfa76a33, 0 0 0 0 #fffbe600;
-    width: 120px;
-    height: 120px;
-    object-fit: contain;
-    background: transparent !important;
-    transition: 
-      transform 0.35s cubic-bezier(.4,0,.2,1),
-      box-shadow 0.35s cubic-bezier(.4,0,.2,1),
-      filter 0.35s cubic-bezier(.4,0,.2,1);
-    /* Animación inicial */
-    animation: emisora-float 3.2s ease-in-out infinite alternate;
-    will-change: transform, filter;
-  }
-  .emisora-anim:hover .emisora-img,
-  .emisora-anim:focus .emisora-img {
-    transform: scale(1.13) rotate(-6deg);
-    filter: brightness(1.15) drop-shadow(0 0 16px #fde047cc);
-    box-shadow: 0 8px 32px #fde04788, 0 0 0 6px #bfa76a33;
-    z-index: 2;
-  }
-  .emisora-anim:active .emisora-img {
-    transform: scale(0.97) rotate(2deg);
-    filter: brightness(0.98);
-  }
-  @keyframes emisora-float {
-    0%   { transform: translateY(0) scale(1) rotate(-2deg);}
-    20%  { transform: translateY(-8px) scale(1.04) rotate(2deg);}
-    40%  { transform: translateY(0) scale(1.01) rotate(-3deg);}
-    60%  { transform: translateY(7px) scale(1.03) rotate(3deg);}
-    80%  { transform: translateY(-5px) scale(1.02) rotate(-2deg);}
-    100% { transform: translateY(0) scale(1) rotate(0deg);}
-  }
-  @media (max-width: 600px) {
-    #emisora-scroll {
-      gap: 1.25rem !important;
-    }
-    #emisora-scroll a {
-      width: 90vw !important;
-      max-width: 320px !important;
-      min-width: 0 !important;
-      height: auto !important;
-    }
-    .emisora-img {
-      width: 80vw !important;
-      height: 80vw !important;
-      min-width: 120px !important;
-      max-width: 98vw !important;
-      min-height: 120px !important;
-      max-height: 98vw !important;
-      aspect-ratio: 1/1;
-    }
-  }
+}
 </style>
+<script>
+const emisoraData = [
+  {
+    href: "https://rdcrsound.jimdofree.com/radios/dcradioec/",
+    img: "/RADIO/img_radio/DCRadioec_logo.jpg",
+    alt: "DC Radio EC"
+  },
+  {
+    href: "https://rdcrsound.jimdofree.com/radios/dcmixec/",
+    img: "/RADIO/img_radio/dcmix_logo.jpg",
+    alt: "DC Mix EC"
+  },
+  {
+    href: "https://rdcrsound.jimdofree.com/radios/dcclasicosec/",
+    img: "/RADIO/img_radio/dcclasicos_logo.jpg",
+    alt: "DC Clasicos EC"
+  }
+];
+function renderEmisoraCarousel(centerIdx) {
+  const container = document.getElementById('emisora-carousel');
+  container.innerHTML = '';
+  for (let i = 0; i < emisoraData.length; i++) {
+    let cls = "emisora-card";
+    if (i === centerIdx) cls += " emisora-card-center";
+    else if (i === (centerIdx - 1 + emisoraData.length) % emisoraData.length || i === (centerIdx + 1) % emisoraData.length) cls += " emisora-card-side";
+    container.innerHTML += `
+      <a href="${emisoraData[i].href}" target="_blank" class="${cls}">
+        <img src="${emisoraData[i].img}" alt="${emisoraData[i].alt}" class="emisora-img" />
+      </a>
+    `;
+  }
+  // Indicators
+  const indicators = document.getElementById('emisora-indicators');
+  if (emisoraData.length > 1) {
+    indicators.innerHTML = emisoraData.map((_, idx) =>
+      `<button class="${idx === centerIdx ? 'active' : ''}" aria-label="Ir a ${emisoraData[idx].alt}"></button>`
+    ).join('');
+    Array.from(indicators.children).forEach((btn, idx) => {
+      btn.onclick = () => {
+        emisoraCenter = idx;
+        renderEmisoraCarousel(emisoraCenter);
+        updateEmisoraArrows();
+      };
+    });
+  } else {
+    indicators.innerHTML = '';
+  }
+}
+let emisoraCenter = 0;
+function updateEmisoraCarousel(dir) {
+  emisoraCenter = (emisoraCenter + dir + emisoraData.length) % emisoraData.length;
+  renderEmisoraCarousel(emisoraCenter);
+  updateEmisoraArrows();
+}
+function updateEmisoraArrows() {
+  const prev = document.getElementById('emisora-prev');
+  const next = document.getElementById('emisora-next');
+  if (emisoraData.length > 1) {
+    prev.classList.remove('hidden');
+    next.classList.remove('hidden');
+  } else {
+    prev.classList.add('hidden');
+    next.classList.add('hidden');
+  }
+}
+document.addEventListener("DOMContentLoaded", function() {
+  renderEmisoraCarousel(emisoraCenter);
+  updateEmisoraArrows();
+  document.getElementById('emisora-prev').onclick = () => updateEmisoraCarousel(-1);
+  document.getElementById('emisora-next').onclick = () => updateEmisoraCarousel(1);
+});
+</script>
 
 <!-- LOS MÁS PRENDIDOS - Sección animada pequeña -->
 <section id="mas-prendidos" class="section-gradient py-10 px-6 animate-fade-up">
@@ -805,158 +864,144 @@
         style="font-family: 'Poppins', 'Segoe UI', Arial, sans-serif;">
       📸 Galería
     </h3>
-    <div class="relative overflow-x-auto" style="position:relative;">
-      <!-- Flechas eliminadas -->
-      <div 
-        id="playlist-scroll"
-        class="flex gap-8 items-center py-6"
-        style="width: max-content;"
-        onmouseover="this.style.animationPlayState && (this.style.animationPlayState='paused')"
-        onmouseout="this.style.animationPlayState && (this.style.animationPlayState='running')"
-      >
-        <!-- Solo pon tus iframes aquí, puedes duplicar y cambiar el src -->
-         <iframe width="460" height="215" src="https://www.youtube.com/embed/MDUpPdssSMY?si=_-jySlk2tqA3gJ4F" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-         <iframe width="460" height="215" src="https://www.youtube.com/embed/RwvKQtD6zGQ?si=wxf9bkJthhibF3TV" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-         <iframe width="460" height="215" src="https://www.youtube.com/embed/Wck0vDgQW7o?si=LMrGX-xBGNcxnXXD" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-
-       <!-- Duplicado 1 -->
-         <iframe width="460" height="215" src="https://www.youtube.com/embed/MDUpPdssSMY?si=_-jySlk2tqA3gJ4F" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-         <iframe width="460" height="215" src="https://www.youtube.com/embed/RwvKQtD6zGQ?si=wxf9bkJthhibF3TV" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-         <iframe width="460" height="215" src="https://www.youtube.com/embed/Wck0vDgQW7o?si=LMrGX-xBGNcxnXXD" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-           <!-- Duplicado 2 -->
-         <iframe width="460" height="215" src="https://www.youtube.com/embed/MDUpPdssSMY?si=_-jySlk2tqA3gJ4F" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-         <iframe width="460" height="215" src="https://www.youtube.com/embed/RwvKQtD6zGQ?si=wxf9bkJthhibF3TV" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-         <iframe width="460" height="215" src="https://www.youtube.com/embed/Wck0vDgQW7o?si=LMrGX-xBGNcxnXXD" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-       <!-- Duplicado 3 -->
-         <iframe width="460" height="215" src="https://www.youtube.com/embed/MDUpPdssSMY?si=_-jySlk2tqA3gJ4F" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-         <iframe width="460" height="215" src="https://www.youtube.com/embed/RwvKQtD6zGQ?si=wxf9bkJthhibF3TV" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-         <iframe width="460" height="215" src="https://www.youtube.com/embed/Wck0vDgQW7o?si=LMrGX-xBGNcxnXXD" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-           <!-- Duplicado 4 -->
-         <iframe width="460" height="215" src="https://www.youtube.com/embed/MDUpPdssSMY?si=_-jySlk2tqA3gJ4F" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-         <iframe width="460" height="215" src="https://www.youtube.com/embed/RwvKQtD6zGQ?si=wxf9bkJthhibF3TV" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-         <iframe width="460" height="215" src="https://www.youtube.com/embed/Wck0vDgQW7o?si=LMrGX-xBGNcxnXXD" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-
-
+    <div class="relative flex flex-col items-center">
+      <div class="flex items-center justify-center gap-2 w-full max-w-4xl mx-auto">
+        <!-- Flechas eliminadas -->
+        <div id="galeria-carousel" class="flex items-center justify-center gap-2 w-full overflow-visible">
+          <!-- Galeria items render here -->
+        </div>
+        <!-- Flechas eliminadas -->
       </div>
+      <div id="galeria-indicators" class="flex justify-center mt-4 gap-2"></div>
     </div>
   </section>
-
   <style>
-    @keyframes scroll-x {
-      0% { transform: translateX(0); }
-      100% { transform: translateX(-60%); }
+  /* Carousel effect for galeria */
+  #galeria-carousel {
+    min-height: 220px;
+  }
+  .galeria-card {
+    opacity: 0.6;
+    transform: scale(0.82);
+    transition: 
+      transform 0.35s cubic-bezier(.4,0,.2,1),
+      opacity 0.35s cubic-bezier(.4,0,.2,1),
+      box-shadow 0.35s cubic-bezier(.4,0,.2,1);
+    z-index: 1;
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .galeria-card-center {
+    opacity: 1;
+    transform: scale(1.13);
+    box-shadow: 0 8px 32px #fde04799, 0 0 0 6px #bfa76a33;
+    z-index: 2;
+    pointer-events: auto;
+  }
+  .galeria-card-side {
+    opacity: 0.85;
+    transform: scale(0.95);
+    z-index: 1;
+    pointer-events: auto;
+  }
+  .galeria-arrow {
+    min-width: 2.5rem;
+    min-height: 2.5rem;
+    font-size: 1.5rem;
+    user-select: none;
+    transition: opacity 0.2s;
+  }
+  #galeria-indicators button {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #bfa76a55;
+    border: none;
+    margin: 0 2px;
+    transition: background 0.2s;
+    cursor: pointer;
+  }
+  #galeria-indicators button.active {
+    background: #fde047;
+    box-shadow: 0 0 0 2px #bfa76a55;
+  }
+  @media (max-width: 600px) {
+    #galeria-carousel {
+      min-height: 120px;
     }
-    #playlist-scroll {
-      cursor: grab;
-      user-select: none;
-      scrollbar-width: thin;
-      scrollbar-color: #bfa76a #232526;
+    .galeria-card {
+      min-width: 90px !important;
+      max-width: 120px !important;
     }
-    #playlist-scroll::-webkit-scrollbar {
-      height: 8px;
+    .galeria-card-center iframe {
+      width: 220px !important;
+      height: 120px !important;
     }
-    #playlist-scroll::-webkit-scrollbar-thumb {
-      background: #bfa76a;
-      border-radius: 4px;
-    }
-    #playlist-scroll::-webkit-scrollbar-track {
-      background: #232526;
-    }
+  }
   </style>
   <script>
-    document.addEventListener("DOMContentLoaded", function() {
-      // --- EMBED ---
-      document.querySelectorAll('.video-yt').forEach(function(div) {
-        const url = div.getAttribute('data-youtube');
-        let embed = '';
-        if (!url) return;
-        // Video individual
-        const videoMatch = url.match(/(?:v=|\/embed\/|\.be\/)([a-zA-Z0-9_-]{11})/);
-        // Playlist
-        const playlistMatch = url.match(/[?&]list=([a-zA-Z0-9_-]+)/);
-        if (playlistMatch && !videoMatch) {
-          embed = `https://www.youtube.com/embed/videoseries?list=${playlistMatch[1]}&rel=0&modestbranding=1&showinfo=0&controls=1`;
-        } else if (videoMatch) {
-          embed = `https://www.youtube.com/embed/${videoMatch[1]}?rel=0&modestbranding=1&showinfo=0&controls=1`;
-          if (playlistMatch) embed += `&list=${playlistMatch[1]}`;
-        }
-        if (embed) {
-          div.innerHTML = `<iframe width="320" height="180" src="${embed}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen class="rounded-xl shadow-lg"></iframe>`;
-        }
+  const galeriaData = [
+    {
+      iframe: `<iframe width="460" height="215" src="https://www.youtube.com/embed/MDUpPdssSMY?si=_-jySlk2tqA3gJ4F" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>`
+    },
+    {
+      iframe: `<iframe width="460" height="215" src="https://www.youtube.com/embed/RwvKQtD6zGQ?si=wxf9bkJthhibF3TV" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>`
+    },
+    {
+      iframe: `<iframe width="460" height="215" src="https://www.youtube.com/embed/Wck0vDgQW7o?si=LMrGX-xBGNcxnXXD" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>`
+    }
+  ];
+  function renderGaleriaCarousel(centerIdx) {
+    const container = document.getElementById('galeria-carousel');
+    container.innerHTML = '';
+    for (let i = 0; i < galeriaData.length; i++) {
+      let cls = "galeria-card";
+      if (i === centerIdx) cls += " galeria-card-center";
+      else if (i === (centerIdx - 1 + galeriaData.length) % galeriaData.length || i === (centerIdx + 1) % galeriaData.length) cls += " galeria-card-side";
+      container.innerHTML += `<div class="${cls}">${galeriaData[i].iframe}</div>`;
+    }
+    // Indicators
+    const indicators = document.getElementById('galeria-indicators');
+    if (galeriaData.length > 1) {
+      indicators.innerHTML = galeriaData.map((_, idx) =>
+        `<button class="${idx === centerIdx ? 'active' : ''}" aria-label="Ir a video ${idx+1}"></button>`
+      ).join('');
+      Array.from(indicators.children).forEach((btn, idx) => {
+        btn.onclick = () => {
+          galeriaCenter = idx;
+          renderGaleriaCarousel(galeriaCenter);
+          updateGaleriaArrows();
+        };
       });
-
-      // --- AUTO SCROLL SOLO SI HAY OVERFLOW ---
-      function checkAndAnimateScroll() {
-        const scroll = document.getElementById('playlist-scroll');
-        if (!scroll) return;
-        scroll.style.animation = '';
-        if (scroll.scrollWidth > scroll.parentElement.offsetWidth + 10) {
-          scroll.style.animation = 'scroll-x 40s linear infinite';
-          document.getElementById('scrollLeft').style.display = 'block';
-          document.getElementById('scrollRight').style.display = 'block';
-        } else {
-          document.getElementById('scrollLeft').style.display = 'none';
-          document.getElementById('scrollRight').style.display = 'none';
-        }
-      }
-      window.addEventListener('resize', checkAndAnimateScroll);
-      setTimeout(checkAndAnimateScroll, 400);
-
-      // --- DRAG SCROLL CON MOUSE ---
-      const scroll = document.getElementById('playlist-scroll');
-      let isDown = false, startX, scrollLeft;
-      if (scroll) {
-        scroll.addEventListener('mousedown', (e) => {
-          isDown = true;
-          scroll.classList.add('dragging');
-          startX = e.pageX - scroll.offsetLeft;
-          scrollLeft = scroll.scrollLeft;
-        });
-        scroll.addEventListener('mouseleave', () => {
-          isDown = false;
-          scroll.classList.remove('dragging');
-        });
-        scroll.addEventListener('mouseup', () => {
-          isDown = false;
-          scroll.classList.remove('dragging');
-        });
-        scroll.addEventListener('mousemove', (e) => {
-          if (!isDown) return;
-          e.preventDefault();
-          const x = e.pageX - scroll.offsetLeft;
-          const walk = (x - startX) * 1.5;
-          scroll.scrollLeft = scrollLeft - walk;
-          scroll.style.animationPlayState = 'paused';
-        });
-        // Touch para móviles
-        let touchStartX = 0, touchScrollLeft = 0;
-        scroll.addEventListener('touchstart', (e) => {
-          isDown = true;
-          touchStartX = e.touches[0].pageX;
-          touchScrollLeft = scroll.scrollLeft;
-        });
-        scroll.addEventListener('touchend', () => { isDown = false; });
-        scroll.addEventListener('touchmove', (e) => {
-          if (!isDown) return;
-          const x = e.touches[0].pageX;
-          const walk = (x - touchStartX) * 1.5;
-          scroll.scrollLeft = touchScrollLeft - walk;
-          scroll.style.animationPlayState = 'paused';
-        });
-      }
-
-      // --- BOTONES DE DESPLAZAMIENTO ---
-      const btnLeft = document.getElementById('scrollLeft');
-      const btnRight = document.getElementById('scrollRight');
-      if (btnLeft && btnRight && scroll) {
-        btnLeft.addEventListener('click', () => {
-          scroll.scrollBy({ left: -580, behavior: 'smooth' });
-        });
-        btnRight.addEventListener('click', () => {
-          scroll.scrollBy({ left: 580, behavior: 'smooth' });
-        });
-      }
-    });
+    } else {
+      indicators.innerHTML = '';
+    }
+  }
+  let galeriaCenter = 0;
+  function updateGaleriaCarousel(dir) {
+    galeriaCenter = (galeriaCenter + dir + galeriaData.length) % galeriaData.length;
+    renderGaleriaCarousel(galeriaCenter);
+    updateGaleriaArrows();
+  }
+  function updateGaleriaArrows() {
+    const prev = document.getElementById('galeria-prev');
+    const next = document.getElementById('galeria-next');
+    if (galeriaData.length > 1) {
+      prev.classList.remove('hidden');
+      next.classList.remove('hidden');
+    } else {
+      prev.classList.add('hidden');
+      next.classList.add('hidden');
+    }
+  }
+  document.addEventListener("DOMContentLoaded", function() {
+    renderGaleriaCarousel(galeriaCenter);
+    updateGaleriaArrows();
+    document.getElementById('galeria-prev').onclick = () => updateGaleriaCarousel(-1);
+    document.getElementById('galeria-next').onclick = () => updateGaleriaCarousel(1);
+  });
   </script>
 
   <!-- CONTACTO -->
@@ -1487,7 +1532,7 @@ document.addEventListener("DOMContentLoaded", function() {
   <div class="icon-bounce">
     <svg xmlns="http://www.w3.org/2000/svg" width="34" height="34" viewBox="0 0 32 32" fill="none">
       <circle cx="16" cy="16" r="16" fill="#25d366"/>
-      <path fill="#fff" d="M23.5 19.6c-0.3-0.2-1.8-0.9-2.1-1-0.3-0.1-0.5-0.2-0.7 0.2s-0.8 1-1 1.2c-0.2 0.2-0.4 0.2-0.7 0.1-0.3-0.2-1.3-0.5-2.5-1.6-0.9-0.8-1.6-1.8-1.8-2.1-0.2-0.3 0-0.5 0.1-0.7 0.1-0.1 0.2-0.3 0.3-0.5 0.1-0.2 0-0.4 0-0.6s-0.7-1.7-1-2.3c-0.3-0.6-0.5-0.5-0.7-0.5-0.2 0-0.4 0-0.6 0s-0.6 0.1-0.9 0.4c-0.3 0.3-1.1 1.1-1.1 2.7 0 1.6 1.1 3.1 1.2 3.3 0.1 0.2 2.1 3.2 5.2 4.3 0.7 0.2 1.2 0.3 1.6 0.4 0.7 0.1 1.3 0.1 1.8 0.1 0.6 0 1.8-0.2 2.1-0.7 0.3-0.5 0.3-1.1 0.2-1.2-0.1-0.1-0.3-0.2-0.6-0.3z"/>
+      <path fill="#fff" d="M23.5 19.6c-0.3-0.2-1.8-0.9-2.1-1-0.3-0.1-0.5-0.2-0.7 0.2s-0.8 1-1 1.2c-0.2 0.2-0.4 0.2-0.7 0.1-0.3-0.2-1.3-0.5-2.5-1.6-0.9-0.8-1.6-1.8-1.8-2.1-0.2-0.3 0-0.5 0.1-0.7 0.1-0.1 0.2-0.3 0.3-0.5 0.1-0.2 0-0.4 0-0.6s-0.7-1.7-1-2.3c-0.3-0.6-0.5-0.5-0.7-0.5-0.2 0-0.4 0-0.6 0s-0.6 0.1-0.9 0.4c-0.3 0.3-1.1 1.1 2.7 0 1.6 1.1 3.1 1.2 3.3 0.1 0.2 2.1 3.2 5.2 4.3 0.7 0.2 1.2 0.3 1.6 0.4 0.7 0.1 1.3 0.1 1.8 0.1 0.6 0 1.8-0.2 2.1-0.7 0.3-0.5 0.3-1.1 0.2-1.2-0.1-0.1-0.3-0.2-0.6-0.3z"/>
     </svg>
   </div>
   <span>Contáctanos</span>
