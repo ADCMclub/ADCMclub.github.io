@@ -145,6 +145,21 @@
       z-index: 1000;
     }
 
+    #sceneDropdownContainer {
+      margin-top: 20px;
+      padding: 15px;
+      background: #444;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    #sceneDropdown {
+      width: 80%;
+      max-width: 300px;
+      margin: 0 auto;
+      display: block;
+    }
+
     @media (max-width: 768px) {
       body {
         padding: 10px;
@@ -254,14 +269,17 @@
     <div class="editor-controls"></div>
   </div>
 
-  <!-- Move scene buttons to the bottom -->
-  <div id="sceneButtons">
-    <button data-scene="scene1">Escena 1</button>
-    <button data-scene="scene2">Escena 2</button>
-    <button data-scene="scene3">Escena 3</button>
-    <button data-scene="scene4">Escena 4</button>
-    <button data-scene="scene5">Escena 5</button>
-    <button data-scene="scene6">Escena 6</button>
+  <!-- Scene selection dropdown -->
+  <div id="sceneDropdownContainer" style="margin-top: 15px; display: none; text-align: center;">
+    <label for="sceneDropdown" style="font-size: 1.2rem; color: #f4f7fa;">Seleccionar escena:</label>
+    <select id="sceneDropdown" style="padding: 10px; font-size: 1rem; border-radius: 8px; background: #333; color: #f4f7fa; border: 1px solid #555;">
+      <option value="scene1">Escena 1</option>
+      <option value="scene2">Escena 2</option>
+      <option value="scene3">Escena 3</option>
+      <option value="scene4">Escena 4</option>
+      <option value="scene5">Escena 5</option>
+      <option value="scene6">Escena 6</option>
+    </select>
   </div>
 
   <div id="recordingIcon" class="recording-icon"></div>
@@ -403,24 +421,17 @@
     }
 
     function switchScene(sceneId) {
-      // Hide all scenes and deactivate buttons
       scenes.forEach(scene => {
         scene.style.display = 'none';
         scene.classList.remove('active');
       });
 
-      sceneButtons.forEach(btn => btn.classList.remove('active'));
-
-      // Activate the selected scene and button
       const targetScene = document.getElementById(sceneId);
-      const targetButton = document.querySelector(`button[data-scene="${sceneId}"]`);
 
-      if (targetScene && targetButton) {
+      if (targetScene) {
         targetScene.style.display = 'flex';
         targetScene.classList.add('active');
-        targetButton.classList.add('active');
 
-        // Assign streams to videos in the scene
         const localVideos = targetScene.querySelectorAll('video[id^="localVideo"]');
         const remoteVideos = targetScene.querySelectorAll('video[id^="remoteVideo"]');
 
@@ -438,19 +449,19 @@
       }
     }
 
-    function setupSceneButtons() {
-      sceneButtons.forEach(btn => {
-        btn.addEventListener('click', () => {
-          const sceneId = btn.getAttribute('data-scene');
-          if (sceneId) {
-            switchScene(sceneId);
-          }
-        });
+    function setupSceneDropdown() {
+      const sceneDropdown = document.getElementById('sceneDropdown');
+      sceneDropdown.addEventListener('change', () => {
+        const selectedScene = sceneDropdown.value;
+        if (selectedScene) {
+          switchScene(selectedScene);
+        }
       });
     }
 
     function setDefaultScene() {
       const defaultSceneId = 'scene1'; // Set the default scene ID
+      document.getElementById('sceneDropdown').value = defaultSceneId;
       switchScene(defaultSceneId);
     }
 
@@ -458,48 +469,47 @@
       await getDevices();
       await getStreams();
       assignLocalStreams();
-      setupSceneButtons(); // Ensure scene buttons are initialized
-      setDefaultScene(); // Set the default scene
+      setupSceneDropdown(); // Initialize the scene dropdown
     }
-
+    enterCallBtn.addEventListener('click', async () => {
     document.addEventListener('DOMContentLoaded', initializePage);
-
-    // Event listeners for camera and microphone selection
+      if (!localStream1) {
+    // Event listeners for camera and microphone selectioncepta permisos.');
     cameraSelect.addEventListener('change', async () => {
       await getStreams();
       assignLocalStreams();
-    });
-
-    micSelect.addEventListener('change', async () => {
+    });ocument.querySelector('.pre-call').classList.add('hide');
+      document.querySelector('.controls').classList.remove('hide');
+    micSelect.addEventListener('change', async () => {).style.display = 'block'; // Show scene dropdown
       await getStreams();
       assignLocalStreams();
-    });
-
+    });ssignLocalStreams();
+      setDefaultScene(); // Set the default scene
     enterCallBtn.addEventListener('click', async () => {
       isEditor = asEditorCheckbox.checked;
-      if (!localStream1) {
+      if (!localStream1) {ner('DOMContentLoaded', initializePage);
         alert('Por favor selecciona cámara y micrófono y acepta permisos.');
-        return;
-      }
-
+        return;steners for camera and microphone selection
+      }eraSelect.addEventListener('change', async () => {
+      await getStreams();
       document.querySelector('.pre-call').classList.add('hide');
       document.querySelector('.controls').classList.remove('hide');
       document.getElementById('sceneButtons').style.display = 'flex';
-
+    micSelect.addEventListener('change', async () => {
       initializeSession();
       assignLocalStreams();
       setupEditorControls();
       setDefaultScene();
-    });
-
+    });erCallBtn.addEventListener('click', async () => {
+      isEditor = asEditorCheckbox.checked;
     startCallBtn.addEventListener('click', async () => {
-      peerConnection = new RTCPeerConnection(servers);
+      peerConnection = new RTCPeerConnection(servers); y acepta permisos.');
       localStream1.getTracks().forEach(track => peerConnection.addTrack(track, localStream1));
       localStream2.getTracks().forEach(track => peerConnection.addTrack(track, localStream2));
 
-      const callDoc = db.ref('calls').push();
-      callIdInput.value = callDoc.key;
-
+      const callDoc = db.ref('calls').push();ssList.add('hide');
+      callIdInput.value = callDoc.key;s').classList.remove('hide');
+      document.getElementById('sceneButtons').style.display = 'flex';
       const callerCandidatesCollection = callDoc.child('callerCandidates');
       peerConnection.onicecandidate = event => {
         if (event.candidate) {
@@ -507,132 +517,148 @@
         }
       };
 
-      peerConnection.ontrack = event => {
-        assignRemoteStream(event.streams[0]);
-      };
-
+      peerConnection.ontrack = event => {, async () => {
+        assignRemoteStream(event.streams[0]);servers);(snapshot.val());
+      };calStream1.getTracks().forEach(track => peerConnection.addTrack(track, localStream1));peerConnection.addIceCandidate(candidate);
+      localStream2.getTracks().forEach(track => peerConnection.addTrack(track, localStream2));      });
       const offer = await peerConnection.createOffer();
       await peerConnection.setLocalDescription(offer);
       await callDoc.child('offer').set({ type: offer.type, sdp: offer.sdp });
-
-      callDoc.child('answer').on('value', async snapshot => {
-        const answer = snapshot.val();
+      const callId = callIdInput.value;
+      callDoc.child('answer').on('value', async snapshot => {rCandidates';
+        const answer = snapshot.val();event => { de llamada para unirse.');
         if (answer && !peerConnection.currentRemoteDescription) {
           await peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
         }
+      });rConnection = new RTCPeerConnection(servers);
+      localStream1.getTracks().forEach(track => peerConnection.addTrack(track, localStream1));
+      callDoc.child('calleeCandidates').on('child_added', snapshot => {(track, localStream2));
+        assignRemoteStream(event.streams[0]);
+      };
+st answerCandidatesCollection = callDoc.child('calleeCandidates');
+      const offer = await peerConnection.createOffer();onst offerCandidatesCollection = callDoc.child('callerCandidates');
+      await peerConnection.setLocalDescription(offer);
+      await callDoc.child('offer').set({ type: offer.type, sdp: offer.sdp });
+
+      callDoc.child('answer').on('value', async snapshot => {idatesCollection.push(event.candidate.toJSON());
+        const answer = snapshot.val();
+        if (answer && !peerConnection.currentRemoteDescription) {
+          await peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
+        }      peerConnection.ontrack = event => {
       });
 
       callDoc.child('calleeCandidates').on('child_added', snapshot => {
         const candidate = new RTCIceCandidate(snapshot.val());
-        peerConnection.addIceCandidate(candidate);
+        peerConnection.addIceCandidate(candidate);'offer').once('value');
       });
     });
-
+        alert('No se encontró una oferta para esta llamada. Verifica el ID de llamada.');
     joinCallBtn.addEventListener('click', async () => {
       const callId = callIdInput.value;
       if (!callId) {
-        alert('Por favor ingresa un ID de llamada para unirse.');
+        alert('Por favor ingresa un ID de llamada para unirse.');it peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
         return;
-      }
-
-      peerConnection = new RTCPeerConnection(servers);
+      }      const answer = await peerConnection.createAnswer();
+ption(answer);
+      peerConnection = new RTCPeerConnection(servers);: answer.type, sdp: answer.sdp });
       localStream1.getTracks().forEach(track => peerConnection.addTrack(track, localStream1));
-      localStream2.getTracks().forEach(track => peerConnection.addTrack(track, localStream2));
-
-      const callDoc = db.ref(`calls/${callId}`);
+      localStream2.getTracks().forEach(track => peerConnection.addTrack(track, localStream2));ferCandidatesCollection.on('child_added', snapshot => {
+        const candidate = new RTCIceCandidate(snapshot.val());
+      const callDoc = db.ref(`calls/${callId}`);ror('Error adding ICE candidate:', e));
       const answerCandidatesCollection = callDoc.child('calleeCandidates');
       const offerCandidatesCollection = callDoc.child('callerCandidates');
 
-      peerConnection.onicecandidate = event => {
-        if (event.candidate) {
-          answerCandidatesCollection.push(event.candidate.toJSON());
+      peerConnection.onicecandidate = event => {Btn.addEventListener('click', () => {
+        if (event.candidate) {ideoEnabled = !videoEnabled;
+          answerCandidatesCollection.push(event.candidate.toJSON());      localStream1.getVideoTracks().forEach(track => track.enabled = videoEnabled);
         }
-      };
+      };      toggleVideoBtn.textContent = videoEnabled ? 'Video Activado' : 'Video Desactivado';
 
       peerConnection.ontrack = event => {
         const remoteStream = event.streams[0];
-        assignRemoteStream(remoteStream); // Ensure remote streams are assigned properly
-      };
-
+        assignRemoteStream(remoteStream); // Ensure remote streams are assigned properly      audioEnabled = !audioEnabled;
+      };led = audioEnabled);emoteStream); // Ensure remote streams are assigned properly      audioEnabled = !audioEnabled;
+      };led = audioEnabled);
       const offerSnapshot = await callDoc.child('offer').once('value');
-      const offer = offerSnapshot.val();
-      if (!offer) {
-        alert('No se encontró una oferta para esta llamada. Verifica el ID de llamada.');
-        return;
-      }
-
+      const offer = offerSnapshot.val();c.child('offer').once('value');
+      if (!offer) { offerSnapshot.val();
+        alert('No se encontró una oferta para esta llamada. Verifica el ID de llamada.');    startRecordingBtn.addEventListener('click', () => {
+        return;No se encontró una oferta para esta llamada. Verifica el ID de llamada.');    startRecordingBtn.addEventListener('click', () => {
+      } grabar.');
+      } grabar.');
       await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
-
-      const answer = await peerConnection.createAnswer();
-      await peerConnection.setLocalDescription(answer);
-      await callDoc.child('answer').set({ type: answer.type, sdp: answer.sdp });
-
+      await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
+      const answer = await peerConnection.createAnswer();onst activeScene = document.querySelector('.scene.active');
+      await peerConnection.setLocalDescription(answer);      const mixedStream = new MediaStream();'.scene.active');
+      await callDoc.child('answer').set({ type: answer.type, sdp: answer.sdp }); new MediaStream();
+'video').forEach(video => {answer').set({ type: answer.type, sdp: answer.sdp });
       offerCandidatesCollection.on('child_added', snapshot => {
-        const candidate = new RTCIceCandidate(snapshot.val());
+        const candidate = new RTCIceCandidate(snapshot.val());{
         peerConnection.addIceCandidate(candidate).catch(e => console.error('Error adding ICE candidate:', e));
-      });
-    });
-
-    toggleVideoBtn.addEventListener('click', () => {
-      videoEnabled = !videoEnabled;
+      });ediaRecorder = new MediaRecorder(mixedStream, { mimeType: 'video/mp4' });adding ICE candidate:', e));
+    });      mediaRecorder.ondataavailable = event => {{ mimeType: 'video/mp4' });
+    });      mediaRecorder.ondataavailable = event => {
+    toggleVideoBtn.addEventListener('click', () => {ks.push(event.data);
+      videoEnabled = !videoEnabled;('click', () => {ks.push(event.data);
       localStream1.getVideoTracks().forEach(track => track.enabled = videoEnabled);
-      toggleVideoBtn.classList.toggle('active', videoEnabled);
-      toggleVideoBtn.textContent = videoEnabled ? 'Video Activado' : 'Video Desactivado';
+      toggleVideoBtn.classList.toggle('active', videoEnabled);ediaRecorder.onstop = () => {
+      toggleVideoBtn.textContent = videoEnabled ? 'Video Activado' : 'Video Desactivado';lob(recordedChunks, { type: 'video/mp4' });
+    });oggleVideoBtn.textContent = videoEnabled ? 'Video Activado' : 'Video Desactivado';lob(recordedChunks, { type: 'video/mp4' });
     });
-
-    toggleAudioBtn.addEventListener('click', () => {
-      audioEnabled = !audioEnabled;
+    toggleAudioBtn.addEventListener('click', () => {        const a = document.createElement('a');
+      audioEnabled = !audioEnabled;('click', () => {        const a = document.createElement('a');
       localStream1.getAudioTracks().forEach(track => track.enabled = audioEnabled);
-      toggleAudioBtn.classList.toggle('active', audioEnabled);
-      toggleAudioBtn.textContent = audioEnabled ? 'Micrófono Activado' : 'Micrófono Desactivado';
+      toggleAudioBtn.classList.toggle('active', audioEnabled);.download = `grabacion_${Date.now()}.mp4`;
+      toggleAudioBtn.textContent = audioEnabled ? 'Micrófono Activado' : 'Micrófono Desactivado';        document.body.appendChild(a);
+    });oggleAudioBtn.textContent = audioEnabled ? 'Micrófono Activado' : 'Micrófono Desactivado';        document.body.appendChild(a);
     });
-
-    startRecordingBtn.addEventListener('click', () => {
-      if (!isEditor) {
-        alert('Solo el editor puede grabar.');
-        return;
-      }
+    startRecordingBtn.addEventListener('click', () => {a descargar.');
+      if (!isEditor) {addEventListener('click', () => {a descargar.');
+        alert('Solo el editor puede grabar.');iaRecorder.start();
+        return;artRecordingBtn.disabled = true;aRecorder.start();
+      }lse;urn;artRecordingBtn.disabled = true;
       recordedChunks = [];
       const activeScene = document.querySelector('.scene.active');
-      const mixedStream = new MediaStream();
-
-      activeScene.querySelectorAll('video').forEach(video => {
-        video.srcObject?.getTracks().forEach(track => mixedStream.addTrack(track));
-      });
-
-      mediaRecorder = new MediaRecorder(mixedStream, { mimeType: 'video/mp4' });
-      mediaRecorder.ondataavailable = event => {
-        if (event.data.size > 0) {
-          recordedChunks.push(event.data);
-        }
-      };
+      const mixedStream = new MediaStream();ctor('.scene.active');
+ () => {nst mixedStream = new MediaStream();
+      activeScene.querySelectorAll('video').forEach(video => {ecorder.state !== 'inactive') {
+        video.srcObject?.getTracks().forEach(track => mixedStream.addTrack(track));.stop(); {
+      });ideo.srcObject?.getTracks().forEach(track => mixedStream.addTrack(track));.stop();
+rue;  });
+      mediaRecorder = new MediaRecorder(mixedStream, { mimeType: 'video/mp4' });con.style.display = 'none';
+      mediaRecorder.ondataavailable = event => {eam, { mimeType: 'video/mp4' });con.style.display = 'none';
+        if (event.data.size > 0) {e = event => {
+          recordedChunks.push(event.data);pt>
+        } recordedChunks.push(event.data);pt>
+      };}
       mediaRecorder.onstop = () => {
         const blob = new Blob(recordedChunks, { type: 'video/mp4' });
+        const url = URL.createObjectURL(blob);{ type: 'video/mp4' });
         const url = URL.createObjectURL(blob);
-
         const a = document.createElement('a');
-        a.style.display = 'none';
-        a.href = url;
+        a.style.display = 'none';Element('a');
+        a.href = url;ay = 'none';
         a.download = `grabacion_${Date.now()}.mp4`;
-        document.body.appendChild(a);
-        a.click();
+        document.body.appendChild(a);e.now()}.mp4`;
+        a.click();ody.appendChild(a);
         URL.revokeObjectURL(url);
         alert('Grabación lista para descargar.');
-      };
+      };alert('Grabación lista para descargar.');
       mediaRecorder.start();
       startRecordingBtn.disabled = true;
       stopRecordingBtn.disabled = false;
       recordingIcon.style.display = 'block';
+    });ecordingIcon.style.display = 'block';
     });
-
     stopRecordingBtn.addEventListener('click', () => {
       if (mediaRecorder && mediaRecorder.state !== 'inactive') {
-        mediaRecorder.stop();
+        mediaRecorder.stop();diaRecorder.state !== 'inactive') {
         startRecordingBtn.disabled = false;
-        stopRecordingBtn.disabled = true;
+        stopRecordingBtn.disabled = true;e;
         recordingIcon.style.display = 'none';
-      }
+      } recordingIcon.style.display = 'none';
     });
   </script>
-</body>
+</body>ipt>
+</html>
 </html>
