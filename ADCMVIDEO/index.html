@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>WebRTC con Firebase - Escenas y Grabación</title>
+  <title>ADCM VIDEO</title>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
@@ -162,7 +162,7 @@
 </head>
 <body>
 
-  <h1>WebRTC con Firebase - Escenas y Grabación</h1>
+  <h1>ADCM VIDEO</h1>
 
   <div class="pre-call section">
     <video id="previewVideo" autoplay muted playsinline style="width: 100%; max-width: 600px; border-radius:10px; background:#000;"></video><br>
@@ -241,7 +241,7 @@
   <div id="recordingIcon" class="recording-icon"></div>
 
   <script>
-    // Firebase config
+    // Firebase configuration
     const firebaseConfig = {
       apiKey: "AIzaSyC6shbQniv5FeXnJYaSasbGKdYibDWhxV8",
       authDomain: "fir-rtc-1d4a1.firebaseapp.com",
@@ -257,33 +257,14 @@
 
     const servers = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
 
-    // Streams y conexiones
-    let localStream1, localStream2;
-    let peerConnection;
-    let isCaller = false;
-    let videoEnabled = true;
-    let audioEnabled = true;
+    // Global variables
+    let localStream1, localStream2, peerConnection, mediaRecorder;
+    let recordedChunks = [];
+    let isEditor = false;
+    let sessionId = null;
 
-    // DOM
+    // DOM elements
     const previewVideo = document.getElementById('previewVideo');
-
-    const camsLocal = {
-      1: document.getElementById('localVideo1'),
-      2: document.getElementById('localVideo2'),
-      3: document.getElementById('localVideo3'),
-      4: document.getElementById('localVideo4'),
-      5: document.getElementById('localVideo5'),
-      6: document.getElementById('localVideo6'),
-    };
-    const camsRemote = {
-      1: document.getElementById('remoteVideo1'),
-      2: document.getElementById('remoteVideo2'),
-      3: document.getElementById('remoteVideo3'),
-      4: document.getElementById('remoteVideo4'),
-      5: document.getElementById('remoteVideo5'),
-      6: document.getElementById('remoteVideo6'),
-    };
-
     const cameraSelect = document.getElementById('cameraSelect');
     const micSelect = document.getElementById('micSelect');
     const toggleVideoBtn = document.getElementById('toggleVideo');
@@ -297,42 +278,43 @@
     const asEditorCheckbox = document.getElementById('asEditor');
     const editorInfo = document.getElementById('editorInfo');
     const recordingIcon = document.getElementById('recordingIcon');
-
     const sceneButtons = [...document.querySelectorAll('#sceneButtons button')];
     const scenes = [...document.querySelectorAll('.scene')];
 
-    let mediaRecorder;
-    let recordedChunks = [];
+    const camsLocal = {
+      1: document.getElementById('localVideo1'),
+      2: document.getElementById('localVideo2'),
+      3: document.getElementById('localVideo3'),
+      4: document.getElementById('localVideo4'),
+      5: document.getElementById('localVideo5'),
+      6: document.getElementById('localVideo6'),
+    };
 
-    let isEditor = false;
-    let sessionId = null;
+    const camsRemote = {
+      1: document.getElementById('remoteVideo1'),
+      2: document.getElementById('remoteVideo2'),
+      3: document.getElementById('remoteVideo3'),
+      4: document.getElementById('remoteVideo4'),
+      5: document.getElementById('remoteVideo5'),
+      6: document.getElementById('remoteVideo6'),
+    };
 
-    // Obtener dispositivos
+    // Utility functions
     async function getDevices() {
       try {
         const devices = await navigator.mediaDevices.enumerateDevices();
-
         const videoDevices = devices.filter(d => d.kind === 'videoinput');
         const audioDevices = devices.filter(d => d.kind === 'audioinput');
 
-        cameraSelect.innerHTML = '';
-        videoDevices.forEach((device, index) => {
-          const option = document.createElement('option');
-          option.value = device.deviceId;
-          option.text = device.label || `Cámara ${index + 1}`;
-          cameraSelect.appendChild(option);
-        });
+        cameraSelect.innerHTML = videoDevices.map((device, index) =>
+          `<option value="${device.deviceId}">${device.label || `Cámara ${index + 1}`}</option>`
+        ).join('');
 
-        micSelect.innerHTML = '';
-        audioDevices.forEach((device, index) => {
-          const option = document.createElement('option');
-          option.value = device.deviceId;
-          option.text = device.label || `Micrófono ${index + 1}`;
-          micSelect.appendChild(option);
-        });
+        micSelect.innerHTML = audioDevices.map((device, index) =>
+          `<option value="${device.deviceId}">${device.label || `Micrófono ${index + 1}`}</option>`
+        ).join('');
 
-        // Ensure compatibility for iOS devices
-        if (videoDevices.length === 0 || audioDevices.length === 0) {
+        if (!videoDevices.length || !audioDevices.length) {
           alert('Por favor, habilita permisos de cámara y micrófono en tu dispositivo.');
         }
       } catch (error) {
@@ -341,73 +323,51 @@
       }
     }
 
-    // Obtener streams para ambas cámaras
     async function getStreams() {
-      const videoDeviceId = cameraSelect.value;
-      const audioDeviceId = micSelect.value;
+      try {
+        const videoDeviceId = cameraSelect.value;
+        const audioDeviceId = micSelect.value;
 
-      // Local stream 1 con video y audio seleccionados
-      localStream1 = await navigator.mediaDevices.getUserMedia({
-        video: { deviceId: videoDeviceId ? { exact: videoDeviceId } : undefined },
-        audio: { deviceId: audioDeviceId ? { exact: audioDeviceId } : undefined },
-      });
+        localStream1 = await navigator.mediaDevices.getUserMedia({
+          video: { deviceId: videoDeviceId ? { exact: videoDeviceId } : undefined },
+          audio: { deviceId: audioDeviceId ? { exact: audioDeviceId } : undefined },
+        });
 
-      // Para la segunda cámara, intentar otro video distinto si hay más cámaras
-      // Buscamos otra cámara distinta a la primera seleccionada
-      const videoDevices = (await navigator.mediaDevices.enumerateDevices())
-        .filter(d => d.kind === 'videoinput');
-      let secondCamId = videoDevices.find(d => d.deviceId !== videoDeviceId)?.deviceId;
+        const videoDevices = (await navigator.mediaDevices.enumerateDevices())
+          .filter(d => d.kind === 'videoinput');
+        const secondCamId = videoDevices.find(d => d.deviceId !== videoDeviceId)?.deviceId;
 
-      localStream2 = secondCamId
-        ? await navigator.mediaDevices.getUserMedia({ video: { deviceId: { exact: secondCamId } }, audio: false })
-        : localStream1.clone();
+        localStream2 = secondCamId
+          ? await navigator.mediaDevices.getUserMedia({ video: { deviceId: { exact: secondCamId } }, audio: false })
+          : localStream1.clone();
 
-      // Mostrar preview con cámara 1
-      previewVideo.srcObject = localStream1;
-    }
-
-    // Mostrar streams en todos los videos locales
-    function assignLocalStreams() {
-      camsLocal[1].srcObject = localStream1;
-      camsLocal[2].srcObject = localStream2;
-      camsLocal[3].srcObject = localStream1;
-      camsLocal[4].srcObject = localStream1;
-      camsLocal[5].srcObject = localStream1;
-      camsLocal[6].srcObject = localStream2;
-    }
-
-    // Asignar el stream remoto a los videos correspondientes
-    function assignRemoteStream(stream) {
-      if (!isEditor) {
-        camsRemote[1].srcObject = stream;
-        camsRemote[2].srcObject = stream;
-        camsRemote[3].srcObject = stream;
-        camsRemote[4].srcObject = stream;
-        camsRemote[5].srcObject = stream;
-        camsRemote[6].srcObject = stream;
+        previewVideo.srcObject = localStream1;
+      } catch (error) {
+        console.error('Error al obtener streams:', error);
+        alert('No se pudieron obtener los streams. Verifica los permisos.');
       }
     }
 
-    // Default to scene 4 upon entering
+    function assignLocalStreams() {
+      Object.values(camsLocal).forEach((cam, index) => {
+        cam.srcObject = index === 1 ? localStream2 : localStream1;
+      });
+    }
+
+    function assignRemoteStream(stream) {
+      Object.values(camsRemote).forEach(cam => {
+        cam.srcObject = stream;
+      });
+    }
+
     function setDefaultScene() {
+      // Set scene 4 as the default
       sceneButtons.forEach(b => b.classList.remove('active'));
       scenes.forEach(scene => scene.classList.remove('active'));
       document.querySelector('[data-scene="scene4"]').classList.add('active');
       document.getElementById('scene4').classList.add('active');
     }
 
-    // Generate a unique session ID
-    function generateSessionId() {
-      return Math.random().toString(36).substr(2, 9);
-    }
-
-    // Initialize session-specific scene state
-    function initializeSession() {
-      sessionId = generateSessionId();
-      db.ref(`sessions/${sessionId}/scene`).set('scene1'); // Default scene
-    }
-
-    // Allow participants to change scenes within their session
     function setupSceneButtons() {
       sceneButtons.forEach(btn => {
         btn.addEventListener('click', () => {
@@ -420,14 +380,22 @@
           const targetScene = document.getElementById(btn.dataset.scene);
           if (targetScene) {
             targetScene.classList.add('active');
-          } else {
-            console.error(`Scene with ID "${btn.dataset.scene}" not found.`);
           }
         });
       });
     }
 
-    // Ensure scene switching is enabled after entering a call
+    function initializeSession() {
+      sessionId = Math.random().toString(36).substr(2, 9);
+      db.ref(`sessions/${sessionId}/scene`).set('scene1');
+    }
+
+    function setupEditorControls() {
+      editorInfo.classList.toggle('hide', !isEditor);
+      startRecordingBtn.disabled = !isEditor;
+    }
+
+    // Event listeners
     enterCallBtn.addEventListener('click', async () => {
       isEditor = asEditorCheckbox.checked;
       if (!localStream1) {
@@ -437,26 +405,20 @@
       document.querySelector('.pre-call').classList.add('hide');
       document.querySelector('.controls').classList.remove('hide');
 
-      initializeSession(); // Initialize session-specific state
+      initializeSession();
       assignLocalStreams();
-      setDefaultScene(); // Set scene 4 as default
-      setupSceneButtons(); // Enable scene switching
-      setupEditorControls(); // Add editor controls
+      setupSceneButtons();
+      setupEditorControls();
     });
 
-    // WebRTC y Firebase - creación y unión de llamada
     startCallBtn.addEventListener('click', async () => {
-      isCaller = true;
       peerConnection = new RTCPeerConnection(servers);
-
-      // Agregar tracks de ambas cámaras
       localStream1.getTracks().forEach(track => peerConnection.addTrack(track, localStream1));
       localStream2.getTracks().forEach(track => peerConnection.addTrack(track, localStream2));
 
       const callDoc = db.ref('calls').push();
       callIdInput.value = callDoc.key;
 
-      // ICE candidates
       const callerCandidatesCollection = callDoc.child('callerCandidates');
       peerConnection.onicecandidate = event => {
         if (event.candidate) {
@@ -464,39 +426,25 @@
         }
       };
 
-      // Remoto
-      const calleeCandidatesCollection = callDoc.child('calleeCandidates');
-
       peerConnection.ontrack = event => {
-        const remoteStream = event.streams[0];
-        assignRemoteStream(remoteStream);
+        assignRemoteStream(event.streams[0]);
       };
 
-      // Crear offer
       const offer = await peerConnection.createOffer();
       await peerConnection.setLocalDescription(offer);
+      await callDoc.child('offer').set({ type: offer.type, sdp: offer.sdp });
 
-      await callDoc.child('offer').set({
-        type: offer.type,
-        sdp: offer.sdp
-      });
-
-      // Escuchar answer
       callDoc.child('answer').on('value', async snapshot => {
         const answer = snapshot.val();
-        if (!peerConnection.currentRemoteDescription && answer) {
-          const rtcAnswer = new RTCSessionDescription(answer);
-          await peerConnection.setRemoteDescription(rtcAnswer);
+        if (answer && !peerConnection.currentRemoteDescription) {
+          await peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
         }
       });
 
-      // Escuchar candidatos callee
-      calleeCandidatesCollection.on('child_added', snapshot => {
+      callDoc.child('calleeCandidates').on('child_added', snapshot => {
         const candidate = new RTCIceCandidate(snapshot.val());
         peerConnection.addIceCandidate(candidate);
       });
-
-      enableSceneSwitching(); // Enable scene switching after call creation
     });
 
     joinCallBtn.addEventListener('click', async () => {
@@ -505,13 +453,12 @@
         alert('Por favor ingresa un ID de llamada para unirse.');
         return;
       }
-      peerConnection = new RTCPeerConnection(servers);
 
-      // Agregar tracks locales
+      peerConnection = new RTCPeerConnection(servers);
       localStream1.getTracks().forEach(track => peerConnection.addTrack(track, localStream1));
       localStream2.getTracks().forEach(track => peerConnection.addTrack(track, localStream2));
 
-      const callDoc = db.ref('calls/' + callId);
+      const callDoc = db.ref(`calls/${callId}`);
       const answerCandidatesCollection = callDoc.child('calleeCandidates');
       const offerCandidatesCollection = callDoc.child('callerCandidates');
 
@@ -522,8 +469,7 @@
       };
 
       peerConnection.ontrack = event => {
-        const remoteStream = event.streams[0];
-        assignRemoteStream(remoteStream); // Ensure remote stream is assigned to all scenes
+        assignRemoteStream(event.streams[0]);
       };
 
       const offerSnapshot = await callDoc.child('offer').once('value');
@@ -532,39 +478,26 @@
 
       const answer = await peerConnection.createAnswer();
       await peerConnection.setLocalDescription(answer);
-
-      await callDoc.child('answer').set({
-        type: answer.type,
-        sdp: answer.sdp
-      });
+      await callDoc.child('answer').set({ type: answer.type, sdp: answer.sdp });
 
       offerCandidatesCollection.on('child_added', snapshot => {
         const candidate = new RTCIceCandidate(snapshot.val());
         peerConnection.addIceCandidate(candidate);
       });
-
-      enableSceneSwitching(); // Enable scene switching after joining a call
     });
 
-    // Grabación
     startRecordingBtn.addEventListener('click', () => {
       if (!isEditor) {
         alert('Solo el editor puede grabar.');
-        return;
-      }
-      if (!peerConnection) {
-        alert('Primero debes iniciar o unirte a una llamada.');
         return;
       }
       recordedChunks = [];
       const activeScene = document.querySelector('.scene.active');
       const mixedStream = new MediaStream();
 
-      // Combine streams from the active scene
-      const localVideos = activeScene.querySelectorAll('video[id^="localVideo"]');
-      const remoteVideos = activeScene.querySelectorAll('video[id^="remoteVideo"]');
-      localVideos.forEach(video => video.srcObject?.getTracks().forEach(track => mixedStream.addTrack(track)));
-      remoteVideos.forEach(video => video.srcObject?.getTracks().forEach(track => mixedStream.addTrack(track)));
+      activeScene.querySelectorAll('video').forEach(video => {
+        video.srcObject?.getTracks().forEach(track => mixedStream.addTrack(track));
+      });
 
       mediaRecorder = new MediaRecorder(mixedStream, { mimeType: 'video/mp4' });
       mediaRecorder.ondataavailable = event => {
@@ -582,14 +515,13 @@
         a.download = `grabacion_${Date.now()}.mp4`;
         document.body.appendChild(a);
         a.click();
-        window.URL.revokeObjectURL(url);
+        URL.revokeObjectURL(url);
         alert('Grabación lista para descargar.');
-        recordingIcon.style.display = 'none'; // Hide recording icon
       };
       mediaRecorder.start();
       startRecordingBtn.disabled = true;
       stopRecordingBtn.disabled = false;
-      recordingIcon.style.display = 'block'; // Show recording icon
+      recordingIcon.style.display = 'block';
     });
 
     stopRecordingBtn.addEventListener('click', () => {
@@ -597,29 +529,28 @@
         mediaRecorder.stop();
         startRecordingBtn.disabled = false;
         stopRecordingBtn.disabled = true;
-        recordingIcon.style.display = 'none'; // Hide recording icon
+        recordingIcon.style.display = 'none';
       }
     });
 
-    // Inicializar dispositivos y UI
-    (async () => {
+    // Initialize
+    document.addEventListener('DOMContentLoaded', async () => {
       await getDevices();
       await getStreams();
       assignLocalStreams();
-      setupSceneButtons();
-      setupSceneVisibility();
-      setupKeyboardShortcuts();
+      setDefaultScene(); // Set scene 4 as default on page load
+      setupSceneButtons(); // Enable scene switching
+    });
 
-      // Actualizar streams si cambian selects
-      cameraSelect.addEventListener('change', async () => {
-        await getStreams();
-        assignLocalStreams();
-      });
-      micSelect.addEventListener('change', async () => {
-        await getStreams();
-        assignLocalStreams();
-      });
-    })();
+    cameraSelect.addEventListener('change', async () => {
+      await getStreams();
+      assignLocalStreams();
+    });
+
+    micSelect.addEventListener('change', async () => {
+      await getStreams();
+      assignLocalStreams();
+    });
   </script>
 </body>
 </html>
