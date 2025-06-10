@@ -247,7 +247,7 @@
     <p id="editorInfo" class="hide">Estás en modo editor. Solo tú puedes grabar.</p>
     <div class="editor-controls"></div>
 
-    <!-- Botones para cambiar de escena -->
+    <!-- Botones para cambiar de escena SIEMPRE visibles cuando en llamada -->
     <div id="sceneFooterButtons" style="margin-top:30px; display:flex; justify-content:center; gap:10px;">
       <button class="scene-footer-btn" data-scene="scene1">Ambos lado a lado</button>
       <button class="scene-footer-btn" data-scene="scene2">Local grande</button>
@@ -497,8 +497,9 @@
 
     // --- Scene assignment: always show both videos in all scenes ---
     function assignSceneStreams(sceneId) {
+      // Always use the latest localStream1 and remoteStream
       const remoteStream = peerConnection?.getRemoteStreams?.()[0] || localStream2;
-      // Always show both videos for all scenes
+      // Show both videos for all scenes
       Object.entries(camsLocal).forEach(([k, v]) => v && (v.style.display = 'none'));
       Object.entries(camsRemote).forEach(([k, v]) => v && (v.style.display = 'none'));
       if (sceneId === 'scene1') {
@@ -519,14 +520,22 @@
       }
     }
 
-    // Scene change buttons logic
-    function setupSceneButtons() {
-      document.querySelectorAll('.scene-btn').forEach(btn => {
-        btn.onclick = function() {
-          switchScene(this.getAttribute('data-scene'));
-        };
+    // --- Fix: assignRemoteStream must update remote video elements and preview ---
+    function assignRemoteStream(stream) {
+      // Update all remote video elements with the new remote stream
+      Object.entries(camsRemote).forEach(([k, v]) => {
+        if (v) v.srcObject = stream;
       });
+      // Update cloud preview with the new remote stream
+      const activeScene = document.querySelector('.scene.active');
+      if (activeScene) {
+        const sceneId = activeScene.id;
+        assignSceneStreams(sceneId);
+        updateCloudScenePreview(sceneId);
+      }
     }
+
+    // --- Scene change buttons logic (ensure always active after call join/create) ---
     function setupSceneFooterButtons() {
       document.querySelectorAll('.scene-footer-btn').forEach(btn => {
         btn.onclick = function() {
@@ -534,135 +543,58 @@
         };
       });
     }
-    function setDefaultScene() {
-      switchScene('scene1');
-    }
 
-    // Helper: disable all tracks in a stream
-    function disableAllTracks(stream) {
-      if (!stream) return;
-      stream.getTracks().forEach(track => track.enabled = false);
-    }
-
-    // Show/hide editor info and disable video/audio for editor
-    function updateEditorInfo() {
-      if (isEditor) {
-        editorInfo.classList.remove('hide');
-        // Disable all tracks for editor (no video/audio sent)
-        disableAllTracks(localStream1);
-        disableAllTracks(localStream2);
-        // Hide local video elements for editor
-        Object.values(camsLocal).forEach(cam => {
-          cam.style.display = 'none';
-        });
-        // Hide preview video in scenes for editor
-        for (let i = 1; i <= 6; i++) {
-          const preview = document.getElementById('preview' + i);
-          if (preview) preview.style.display = 'none';
-        }
-        // Hide preview in pre-call
-        previewVideo.style.display = 'none';
-        // Disable toggle buttons for editor
-        toggleVideoBtn.disabled = true;
-        toggleAudioBtn.disabled = true;
-      } else {
-        editorInfo.classList.add('hide');
-        // Enable all tracks for non-editor
-        localStream1?.getTracks().forEach(track => track.enabled = true);
-        localStream2?.getTracks().forEach(track => track.enabled = true);
-        // Show local video elements for non-editor
-        Object.values(camsLocal).forEach(cam => {
-          cam.style.display = '';
-        });
-        // Show preview videos in scenes for non-editor
-        for (let i = 1; i <= 6; i++) {
-          const preview = document.getElementById('preview' + i);
-          if (preview) preview.style.display = '';
-        }
-        // Show preview in pre-call
-        previewVideo.style.display = '';
-        // Enable toggle buttons for non-editor
-        toggleVideoBtn.disabled = false;
-        toggleAudioBtn.disabled = false;
+    // --- After connection, show scene buttons and assign streams ---
+    function setCallStatus(msg, color = "#0f0") {
+      const el = document.getElementById('callStatus');
+      el.textContent = msg;
+      el.style.color = color;
+      if (msg === "Conectado") {
+        hideCallInputsAfterConnect();
+        document.getElementById('sceneFooterButtons').style.display = 'flex';
+        // Ensure streams are assigned and visible
+        const activeScene = document.querySelector('.scene.active');
+        if (activeScene) assignSceneStreams(activeScene.id);
       }
     }
 
-    // Recording logic with editor check
-    startRecordingBtn.addEventListener('click', () => {
-      if (!isEditor) {
-        alert('Solo el editor puede grabar.');
-        return;
-      }
-      recordedChunks = [];
-      const activeScene = document.querySelector('.scene.active');
-      const mixedStream = new MediaStream();
-      activeScene.querySelectorAll('video').forEach(video => {
-        if (video.srcObject) {
-          video.srcObject.getTracks().forEach(track => {
-            if (!mixedStream.getTracks().includes(track)) mixedStream.addTrack(track);
-          });
-        }
-      });
-      mediaRecorder = new MediaRecorder(mixedStream, { mimeType: 'video/webm' });
-      mediaRecorder.ondataavailable = event => {
-        if (event.data.size > 0) {
-          recordedChunks.push(event.data);
-        }
-      };
-      mediaRecorder.onstop = () => {
-        const blob = new Blob(recordedChunks, { type: 'video/webm' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.style.display = 'none';
-        a.href = url;
-        a.download = `grabacion_${Date.now()}.webm`;
-        document.body.appendChild(a);
-        a.click();
-        URL.revokeObjectURL(url);
-        alert('Grabación lista para descargar.');
-      };
-      mediaRecorder.start();
-      startRecordingBtn.disabled = true;
-      stopRecordingBtn.disabled = false;
-      recordingIcon.style.display = 'block';
-    });
-
-    stopRecordingBtn.addEventListener('click', () => {
-      if (mediaRecorder && mediaRecorder.state !== 'inactive') {
-        mediaRecorder.stop();
-        startRecordingBtn.disabled = false;
-        stopRecordingBtn.disabled = true;
-        recordingIcon.style.display = 'none';
-      }
-    });
-
-    // Initialization
-    document.addEventListener('DOMContentLoaded', async () => {
-      await getDevices();
-      await getStreams();
-      assignLocalStreams();
-      setupSceneButtons();
-      setupSceneFooterButtons();
+    // --- On call create/join, show scene buttons and assign streams ---
+    function showCreatorUI(callId, title) {
+      document.getElementById('creatorFields').style.display = '';
+      document.getElementById('joinerFields').style.display = 'none';
+      document.getElementById('callTitle').style.display = '';
+      document.getElementById('callTitle').value = title || '';
+      document.getElementById('callCode').style.display = '';
+      document.getElementById('callCode').textContent = "Código de llamada: " + callId;
+      document.getElementById('joinedTitle').style.display = '';
+      document.getElementById('joinedTitle').textContent = "Título de la llamada: " + (title || '');
+      document.getElementById('sceneFooterButtons').style.display = 'flex';
       setDefaultScene();
-      updateEditorInfo();
       assignSceneStreams('scene1');
-      updateCloudScenePreview('scene1');
+    }
+    function showJoinerUI(title) {
+      document.getElementById('creatorFields').style.display = 'none';
+      document.getElementById('joinerFields').style.display = 'none';
+      document.getElementById('callTitle').style.display = 'none';
+      document.getElementById('callCode').style.display = 'none';
+      document.getElementById('joinedTitle').style.display = '';
+      document.getElementById('joinedTitle').textContent = "Título de la llamada: " + (title || '');
+      document.getElementById('sceneFooterButtons').style.display = 'flex';
+      setDefaultScene();
+      assignSceneStreams('scene1');
+    }
+
+    // --- On page load, hide scene buttons until in call ---
+    document.addEventListener('DOMContentLoaded', () => {
+      // ...existing code...
+      document.getElementById('sceneFooterButtons').style.display = 'none';
     });
 
+    // --- On entering call, show scene buttons and assign streams ---
     enterCallBtn.addEventListener('click', async () => {
-      isEditor = asEditorCheckbox.checked;
-      if (!localStream1) {
-        alert('Por favor selecciona cámara y micrófono y acepta permisos.');
-        return;
-      }
-      document.querySelector('.pre-call').classList.add('hide');
-      document.querySelector('.controls').classList.remove('hide');
-      assignLocalStreams();
+      // ...existing code...
+      document.getElementById('sceneFooterButtons').style.display = 'flex';
       setDefaultScene();
-      setupSceneButtons();
-      setupSceneFooterButtons();
-      updateEditorInfo();
-      // Forzar mostrar el video local en la escena predeterminada
       assignSceneStreams('scene1');
     });
 
