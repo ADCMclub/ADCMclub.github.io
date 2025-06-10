@@ -137,10 +137,10 @@
   <div class="pre-call section">
     <video id="previewVideo" autoplay muted playsinline style="width: 100%; max-width: 600px; border-radius:10px; background:#000;"></video><br>
 
-    <label for="cameraSelect">Cámara del dispositivo (Participante):</label>
+    <label for="cameraSelect">Cámara del dispositivo:</label>
     <select id="cameraSelect"></select>
 
-    <label for="micSelect">Micrófono del dispositivo (Participante):</label>
+    <label for="micSelect">Micrófono del dispositivo:</label>
     <select id="micSelect"></select><br>
 
     <button id="toggleVideo" class="toggle-btn active">Video Activado</button>
@@ -275,6 +275,7 @@
     let recordedChunks = [];
 
     let isEditor = false;
+    let sessionId = null;
 
     // Obtener dispositivos
     async function getDevices() {
@@ -355,7 +356,18 @@
       document.getElementById('scene4').classList.add('active');
     }
 
-    // Allow all participants to change scenes
+    // Generate a unique session ID
+    function generateSessionId() {
+      return Math.random().toString(36).substr(2, 9);
+    }
+
+    // Initialize session-specific scene state
+    function initializeSession() {
+      sessionId = generateSessionId();
+      db.ref(`sessions/${sessionId}/scene`).set('scene1'); // Default scene
+    }
+
+    // Allow participants to change scenes within their session
     function setupSceneButtons() {
       sceneButtons.forEach(btn => {
         btn.addEventListener('click', () => {
@@ -369,13 +381,13 @@
             }
           });
 
-          // Notify all participants of scene change
-          db.ref('scene').set(btn.dataset.scene);
+          // Update scene state for the current session
+          db.ref(`sessions/${sessionId}/scene`).set(btn.dataset.scene);
         });
       });
 
-      // Listen for scene changes
-      db.ref('scene').on('value', snapshot => {
+      // Listen for scene changes within the session
+      db.ref(`sessions/${sessionId}/scene`).on('value', snapshot => {
         const sceneId = snapshot.val();
         if (sceneId) {
           sceneButtons.forEach(b => b.classList.remove('active'));
@@ -450,6 +462,7 @@
       document.querySelector('.pre-call').classList.add('hide');
       document.querySelector('.controls').classList.remove('hide');
 
+      initializeSession(); // Initialize session-specific state
       assignLocalStreams();
       setDefaultScene(); // Set scene 4 as default
       setupSceneButtons();
