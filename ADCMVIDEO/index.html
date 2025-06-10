@@ -231,9 +231,9 @@
     <!-- Escena 4: Ambos vertical (uno arriba del otro) -->
     <div id="scene4" class="scene">
       <div class="scene-name">Ambos vertical</div>
-      <div style="display:flex;flex-direction:column;width:100%;align-items:center;">
-        <video id="localVideo4" class="main" style="width:80%;height:auto;" autoplay muted playsinline></video>
-        <video id="remoteVideo4" class="main" style="width:80%;height:auto;" autoplay playsinline></video>
+      <div style="display:flex;flex-direction:row;width:100%;align-items:center;justify-content:center;">
+        <video id="localVideo4" class="main" style="width:45%;height:auto;" autoplay muted playsinline></video>
+        <video id="remoteVideo4" class="main" style="width:45%;height:auto;" autoplay playsinline></video>
       </div>
       <div class="scene-controls">
         <button class="scene-btn" data-scene="scene5">Ir a Local grande, remoto pequeño (esquina)</button>
@@ -285,12 +285,6 @@
       <button class="scene-footer-btn" data-scene="scene4">Ambos vertical</button>
       <button class="scene-footer-btn" data-scene="scene5">Local grande esquina</button>
       <button class="scene-footer-btn" data-scene="scene6">Remoto grande esquina</button>
-    </div>
-
-    <!-- Sección para mostrar la previsualización de la escena activa (en la nube) -->
-    <div id="cloudScenePreviewSection" style="margin-top:30px;">
-      <h3 style="color:#fff;">Vista previa de la escena activa (en la nube)</h3>
-      <video id="cloudScenePreview" width="320" height="180" muted autoplay playsinline style="background:#222; border:2px solid #555; border-radius:8px;"></video>
     </div>
   </div>
 
@@ -447,56 +441,6 @@
       assignLocalStreams();
     });
 
-    // Actualiza la escena activa en la nube y la previsualización
-    function updateCloudScenePreview(sceneId) {
-      const remoteStream = peerConnection?.getRemoteStreams?.()[0] || localStream2;
-      const preview = document.getElementById('cloudScenePreview');
-      // Detener cualquier stream anterior
-      if (preview.srcObject) {
-        preview.srcObject.getTracks().forEach(track => track.stop && track.stop());
-        preview.srcObject = null;
-      }
-      // Composición según la escena
-      const canvas = document.createElement('canvas');
-      canvas.width = 320;
-      canvas.height = 180;
-      const ctx = canvas.getContext('2d');
-      const vLocal = document.createElement('video');
-      const vRemote = document.createElement('video');
-      vLocal.muted = true; vRemote.muted = true;
-      vLocal.autoplay = true; vRemote.autoplay = true;
-      vLocal.playsInline = true; vRemote.playsInline = true;
-      vLocal.srcObject = localStream1 || null;
-      vRemote.srcObject = remoteStream || null;
-
-      Promise.all([
-        new Promise(res => vLocal.onloadeddata = res),
-        new Promise(res => vRemote.onloadeddata = res)
-      ]).then(() => {
-        function draw() {
-          ctx.clearRect(0, 0, canvas.width, canvas.height);
-          if (sceneId === 'scene1') {
-            // Ambos lado a lado
-            ctx.drawImage(vLocal, 0, 0, canvas.width / 2, canvas.height);
-            ctx.drawImage(vRemote, canvas.width / 2, 0, canvas.width / 2, canvas.height);
-          } else if (sceneId === 'scene2') {
-            // Local grande, remoto pequeño
-            ctx.drawImage(vLocal, 0, 0, canvas.width, canvas.height);
-            ctx.drawImage(vRemote, canvas.width - 80, canvas.height - 60, 80, 60);
-          } else if (sceneId === 'scene3') {
-            // Remoto grande, local pequeño
-            ctx.drawImage(vRemote, 0, 0, canvas.width, canvas.height);
-            ctx.drawImage(vLocal, canvas.width - 80, canvas.height - 60, 80, 60);
-          }
-          requestAnimationFrame(draw);
-        }
-        draw();
-      });
-      const stream = canvas.captureStream();
-      preview.srcObject = stream;
-      preview.play().catch(() => {});
-    }
-
     // Cambia la escena y resalta el botón activo
     function switchScene(sceneId) {
       scenes.forEach(scene => {
@@ -512,7 +456,6 @@
         btn.classList.toggle('active', btn.getAttribute('data-scene') === sceneId);
       });
       assignSceneStreams(sceneId);
-      updateCloudScenePreview(sceneId);
     }
 
     // Helper to show/hide creator/joiner fields
@@ -629,7 +572,6 @@
         btn.classList.toggle('active', btn.getAttribute('data-scene') === sceneId);
       });
       assignSceneStreams(sceneId);
-      updateCloudScenePreview(sceneId);
     }
 
     // Initialization
@@ -642,7 +584,6 @@
       setDefaultScene();
       updateEditorInfo();
       assignSceneStreams('scene1');
-      updateCloudScenePreview('scene1');
     });
 
     enterCallBtn.addEventListener('click', async () => {
