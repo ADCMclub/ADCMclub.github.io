@@ -1,12 +1,12 @@
 // 🔥 CONFIGURA TU PROYECTO FIREBASE ABAJO:
 const firebaseConfig = {
-  apiKey: "TU_API_KEY",
-  authDomain: "TU_DOMINIO.firebaseapp.com",
-  databaseURL: "https://TU_DOMINIO.firebaseio.com",
-  projectId: "TU_PROYECTO_ID",
-  storageBucket: "TU_PROYECTO.appspot.com",
-  messagingSenderId: "XXXXXX",
-  appId: "TU_APP_ID"
+  apiKey: "AIzaSyC6shbQniv5FeXnJYaSasbGKdYibDWhxV8",
+  authDomain: "fir-rtc-1d4a1.firebaseapp.com",
+  databaseURL: "https://fir-rtc-1d4a1-default-rtdb.firebaseio.com",
+  projectId: "fir-rtc-1d4a1",
+  storageBucket: "fir-rtc-1d4a1.firebasestorage.app",
+  messagingSenderId: "786317659414",
+  appId: "1:786317659414:web:4b9fe6fecc349647d1d437"
 };
 
 firebase.initializeApp(firebaseConfig);
