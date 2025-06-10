@@ -145,21 +145,6 @@
       z-index: 1000;
     }
 
-    #sceneDropdownContainer {
-      margin-top: 20px;
-      padding: 15px;
-      background: #444;
-      border-radius: 10px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-    }
-
-    #sceneDropdown {
-      width: 80%;
-      max-width: 300px;
-      margin: 0 auto;
-      display: block;
-    }
-
     @media (max-width: 768px) {
       body {
         padding: 10px;
@@ -220,19 +205,31 @@
     <div id="scene1" class="scene">
       <div class="scene-name">Escena 1</div>
       <video id="localVideo1" class="main" autoplay muted playsinline></video>
+      <div class="scene-controls">
+        <button class="scene-btn" data-scene="scene2">Ir a Escena 2</button>
+      </div>
+      <video id="preview1" class="preview" autoplay muted playsinline style="width:120px;position:absolute;top:10px;right:10px;border:2px solid #fff;background:#222;"></video>
     </div>
 
     <!-- Escena 2: Solo cámara 2 -->
     <div id="scene2" class="scene">
       <div class="scene-name">Escena 2</div>
       <video id="remoteVideo2" class="main" autoplay playsinline></video>
+      <div class="scene-controls">
+        <button class="scene-btn" data-scene="scene1">Ir a Escena 1</button>
+      </div>
+      <video id="preview2" class="preview" autoplay muted playsinline style="width:120px;position:absolute;top:10px;right:10px;border:2px solid #fff;background:#222;"></video>
     </div>
 
-    <!-- Escena 3 mejorada: dos cámaras verticales lado a lado -->
+    <!-- Escena 3: dos cámaras verticales lado a lado -->
     <div id="scene3" class="scene">
       <div class="scene-name">Escena 3</div>
       <video id="localVideo3" class="main" autoplay muted playsinline></video>
       <video id="remoteVideo3" class="main" autoplay playsinline></video>
+      <div class="scene-controls">
+        <button class="scene-btn" data-scene="scene4">Ir a Escena 4</button>
+      </div>
+      <video id="preview3" class="preview" autoplay muted playsinline style="width:120px;position:absolute;top:10px;right:10px;border:2px solid #fff;background:#222;"></video>
     </div>
 
     <!-- Escena 4: Ambas horizontal -->
@@ -240,6 +237,10 @@
       <div class="scene-name">Escena 4</div>
       <video id="localVideo4" class="main" autoplay muted playsinline></video>
       <video id="remoteVideo4" class="main" autoplay playsinline></video>
+      <div class="scene-controls">
+        <button class="scene-btn" data-scene="scene5">Ir a Escena 5</button>
+      </div>
+      <video id="preview4" class="preview" autoplay muted playsinline style="width:120px;position:absolute;top:10px;right:10px;border:2px solid #fff;background:#222;"></video>
     </div>
 
     <!-- Escena 5: Cam1 grande, Cam2 esquina -->
@@ -247,6 +248,10 @@
       <div class="scene-name">Escena 5</div>
       <video id="localVideo5" class="main" autoplay muted playsinline></video>
       <video id="remoteVideo5" class="small" autoplay playsinline></video>
+      <div class="scene-controls">
+        <button class="scene-btn" data-scene="scene6">Ir a Escena 6</button>
+      </div>
+      <video id="preview5" class="preview" autoplay muted playsinline style="width:120px;position:absolute;top:10px;right:10px;border:2px solid #fff;background:#222;"></video>
     </div>
 
     <!-- Escena 6: Cam2 grande, Cam1 esquina -->
@@ -254,6 +259,10 @@
       <div class="scene-name">Escena 6</div>
       <video id="remoteVideo6" class="main" autoplay playsinline></video>
       <video id="localVideo6" class="small" autoplay muted playsinline></video>
+      <div class="scene-controls">
+        <button class="scene-btn" data-scene="scene1">Ir a Escena 1</button>
+      </div>
+      <video id="preview6" class="preview" autoplay muted playsinline style="width:120px;position:absolute;top:10px;right:10px;border:2px solid #fff;background:#222;"></video>
     </div>
 
     <div style="margin-top: 15px;">
@@ -267,19 +276,44 @@
 
     <p id="editorInfo" class="hide">Estás en modo editor. Solo tú puedes grabar.</p>
     <div class="editor-controls"></div>
-  </div>
 
-  <!-- Scene selection dropdown -->
-  <div id="sceneDropdownContainer" style="margin-top: 15px; display: none; text-align: center;">
-    <label for="sceneDropdown" style="font-size: 1.2rem; color: #f4f7fa;">Seleccionar escena:</label>
-    <select id="sceneDropdown" style="padding: 10px; font-size: 1rem; border-radius: 8px; background: #333; color: #f4f7fa; border: 1px solid #555;">
-      <option value="scene1">Escena 1</option>
-      <option value="scene2">Escena 2</option>
-      <option value="scene3">Escena 3</option>
-      <option value="scene4">Escena 4</option>
-      <option value="scene5">Escena 5</option>
-      <option value="scene6">Escena 6</option>
-    </select>
+    <!-- Botones para cambiar de escena -->
+    <div id="sceneFooterButtons" style="margin-top:30px; display:flex; justify-content:center; gap:10px;">
+      <button class="scene-footer-btn" data-scene="scene1">Escena 1</button>
+      <button class="scene-footer-btn" data-scene="scene2">Escena 2</button>
+      <button class="scene-footer-btn" data-scene="scene3">Escena 3</button>
+      <button class="scene-footer-btn" data-scene="scene4">Escena 4</button>
+      <button class="scene-footer-btn" data-scene="scene5">Escena 5</button>
+      <button class="scene-footer-btn" data-scene="scene6">Escena 6</button>
+    </div>
+
+    <!-- Agrega la previsualización de escenas debajo de los botones de cambio de escena -->
+    <div id="scenePreviewContainer" style="margin-top:30px; display:flex; justify-content:center; gap:10px; flex-wrap:wrap;">
+      <div style="display:flex; flex-direction:column; align-items:center;">
+        <span style="color:#fff;font-size:0.95rem;">Escena 1</span>
+        <video id="previewScene1" width="120" height="80" muted playsinline style="background:#222; border:2px solid #555; border-radius:8px;"></video>
+      </div>
+      <div style="display:flex; flex-direction:column; align-items:center;">
+        <span style="color:#fff;font-size:0.95rem;">Escena 2</span>
+        <video id="previewScene2" width="120" height="80" muted playsinline style="background:#222; border:2px solid #555; border-radius:8px;"></video>
+      </div>
+      <div style="display:flex; flex-direction:column; align-items:center;">
+        <span style="color:#fff;font-size:0.95rem;">Escena 3</span>
+        <video id="previewScene3" width="120" height="80" muted playsinline style="background:#222; border:2px solid #555; border-radius:8px;"></video>
+      </div>
+      <div style="display:flex; flex-direction:column; align-items:center;">
+        <span style="color:#fff;font-size:0.95rem;">Escena 4</span>
+        <video id="previewScene4" width="120" height="80" muted playsinline style="background:#222; border:2px solid #555; border-radius:8px;"></video>
+      </div>
+      <div style="display:flex; flex-direction:column; align-items:center;">
+        <span style="color:#fff;font-size:0.95rem;">Escena 5</span>
+        <video id="previewScene5" width="120" height="80" muted playsinline style="background:#222; border:2px solid #555; border-radius:8px;"></video>
+      </div>
+      <div style="display:flex; flex-direction:column; align-items:center;">
+        <span style="color:#fff;font-size:0.95rem;">Escena 6</span>
+        <video id="previewScene6" width="120" height="80" muted playsinline style="background:#222; border:2px solid #555; border-radius:8px;"></video>
+      </div>
+    </div>
   </div>
 
   <div id="recordingIcon" class="recording-icon"></div>
@@ -428,57 +462,195 @@
       assignLocalStreams();
     });
 
+    // Cambia la escena y resalta el botón activo
     function switchScene(sceneId) {
       scenes.forEach(scene => {
         scene.style.display = 'none';
         scene.classList.remove('active');
       });
-
       const targetScene = document.getElementById(sceneId);
-
       if (targetScene) {
         targetScene.style.display = 'flex';
         targetScene.classList.add('active');
+      }
+      // Resalta el botón activo
+      document.querySelectorAll('.scene-footer-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-scene') === sceneId);
+      });
 
-        const localVideos = targetScene.querySelectorAll('video[id^="localVideo"]');
-        const remoteVideos = targetScene.querySelectorAll('video[id^="remoteVideo"]');
+      // Asigna los streams correctos a cada escena según la descripción
+      assignSceneStreams(sceneId);
+    }
 
-        localVideos.forEach(video => {
-          video.srcObject = localStream1 || localStream2;
-          video.play().catch(e => console.error('Error playing local video:', e));
-        });
+    // Asigna los streams correctos a los videos de cada escena según la descripción
+    function assignSceneStreams(sceneId) {
+      // Usuario 1: localStream1, Usuario 2: remoteStream (peerConnection) o localStream2 si no hay conexión
+      const remoteStream = peerConnection?.getRemoteStreams?.()[0] || localStream2;
 
-        remoteVideos.forEach(video => {
-          if (peerConnection?.getRemoteStreams?.()[0]) {
-            video.srcObject = peerConnection.getRemoteStreams()[0];
-            video.play().catch(e => console.error('Error playing remote video:', e));
-          }
-        });
+      // Mostrar SIEMPRE los videos de la escena activa, ocultar los demás
+      Object.entries(camsLocal).forEach(([k, v]) => v && (v.style.display = 'none'));
+      Object.entries(camsRemote).forEach(([k, v]) => v && (v.style.display = 'none'));
+
+      if (sceneId === 'scene1') {
+        camsLocal[1].srcObject = localStream1;
+        camsLocal[1].style.display = '';
+      } else if (sceneId === 'scene2') {
+        camsRemote[2].srcObject = remoteStream;
+        camsRemote[2].style.display = '';
+      } else if (sceneId === 'scene3') {
+        camsLocal[3].srcObject = localStream1;
+        camsRemote[3].srcObject = remoteStream;
+        camsLocal[3].style.display = '';
+        camsRemote[3].style.display = '';
+      } else if (sceneId === 'scene4') {
+        camsLocal[4].srcObject = localStream1;
+        camsRemote[4].srcObject = remoteStream;
+        camsLocal[4].style.display = '';
+        camsRemote[4].style.display = '';
+      } else if (sceneId === 'scene5') {
+        camsLocal[5].srcObject = localStream1;
+        camsRemote[5].srcObject = remoteStream;
+        camsLocal[5].style.display = '';
+        camsRemote[5].style.display = '';
+      } else if (sceneId === 'scene6') {
+        camsRemote[6].srcObject = remoteStream;
+        camsLocal[6].srcObject = localStream1;
+        camsRemote[6].style.display = '';
+        camsLocal[6].style.display = '';
       }
     }
 
-    function setupSceneDropdown() {
-      const sceneDropdown = document.getElementById('sceneDropdown');
-      sceneDropdown.addEventListener('change', () => {
-        const selectedScene = sceneDropdown.value;
-        if (selectedScene) {
-          switchScene(selectedScene);
-        }
+    // Scene change buttons logic
+    function setupSceneButtons() {
+      document.querySelectorAll('.scene-btn').forEach(btn => {
+        btn.onclick = function() {
+          switchScene(this.getAttribute('data-scene'));
+        };
       });
     }
 
-    function setDefaultScene() {
-      const defaultSceneId = 'scene4'; // Cambia esto al ID de la escena que quieras mostrar por defecto
-      document.getElementById('sceneDropdown').value = defaultSceneId;
-      switchScene(defaultSceneId);
+    // Botones de cambio de escena en el pie
+    function setupSceneFooterButtons() {
+      document.querySelectorAll('.scene-footer-btn').forEach(btn => {
+        btn.onclick = function() {
+          switchScene(this.getAttribute('data-scene'));
+        };
+      });
     }
 
+    // Set default scene
+    function setDefaultScene() {
+      switchScene('scene4');
+    }
+
+    // Helper: disable all tracks in a stream
+    function disableAllTracks(stream) {
+      if (!stream) return;
+      stream.getTracks().forEach(track => track.enabled = false);
+    }
+
+    // Show/hide editor info and disable video/audio for editor
+    function updateEditorInfo() {
+      if (isEditor) {
+        editorInfo.classList.remove('hide');
+        // Disable all tracks for editor (no video/audio sent)
+        disableAllTracks(localStream1);
+        disableAllTracks(localStream2);
+        // Hide local video elements for editor
+        Object.values(camsLocal).forEach(cam => {
+          cam.style.display = 'none';
+        });
+        // Hide preview video in scenes for editor
+        for (let i = 1; i <= 6; i++) {
+          const preview = document.getElementById('preview' + i);
+          if (preview) preview.style.display = 'none';
+        }
+        // Hide preview in pre-call
+        previewVideo.style.display = 'none';
+        // Disable toggle buttons for editor
+        toggleVideoBtn.disabled = true;
+        toggleAudioBtn.disabled = true;
+      } else {
+        editorInfo.classList.add('hide');
+        // Enable all tracks for non-editor
+        localStream1?.getTracks().forEach(track => track.enabled = true);
+        localStream2?.getTracks().forEach(track => track.enabled = true);
+        // Show local video elements for non-editor
+        Object.values(camsLocal).forEach(cam => {
+          cam.style.display = '';
+        });
+        // Show preview videos in scenes for non-editor
+        for (let i = 1; i <= 6; i++) {
+          const preview = document.getElementById('preview' + i);
+          if (preview) preview.style.display = '';
+        }
+        // Show preview in pre-call
+        previewVideo.style.display = '';
+        // Enable toggle buttons for non-editor
+        toggleVideoBtn.disabled = false;
+        toggleAudioBtn.disabled = false;
+      }
+    }
+
+    // Recording logic with editor check
+    startRecordingBtn.addEventListener('click', () => {
+      if (!isEditor) {
+        alert('Solo el editor puede grabar.');
+        return;
+      }
+      recordedChunks = [];
+      const activeScene = document.querySelector('.scene.active');
+      const mixedStream = new MediaStream();
+      activeScene.querySelectorAll('video').forEach(video => {
+        if (video.srcObject) {
+          video.srcObject.getTracks().forEach(track => {
+            if (!mixedStream.getTracks().includes(track)) mixedStream.addTrack(track);
+          });
+        }
+      });
+      mediaRecorder = new MediaRecorder(mixedStream, { mimeType: 'video/webm' });
+      mediaRecorder.ondataavailable = event => {
+        if (event.data.size > 0) {
+          recordedChunks.push(event.data);
+        }
+      };
+      mediaRecorder.onstop = () => {
+        const blob = new Blob(recordedChunks, { type: 'video/webm' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = url;
+        a.download = `grabacion_${Date.now()}.webm`;
+        document.body.appendChild(a);
+        a.click();
+        URL.revokeObjectURL(url);
+        alert('Grabación lista para descargar.');
+      };
+      mediaRecorder.start();
+      startRecordingBtn.disabled = true;
+      stopRecordingBtn.disabled = false;
+      recordingIcon.style.display = 'block';
+    });
+
+    stopRecordingBtn.addEventListener('click', () => {
+      if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+        mediaRecorder.stop();
+        startRecordingBtn.disabled = false;
+        stopRecordingBtn.disabled = true;
+        recordingIcon.style.display = 'none';
+      }
+    });
+
+    // Initialization
     document.addEventListener('DOMContentLoaded', async () => {
       await getDevices();
       await getStreams();
       assignLocalStreams();
-      setupSceneDropdown();
+      setupSceneButtons();
+      setupSceneFooterButtons();
       setDefaultScene();
+      updateEditorInfo();
+      assignSceneStreams('scene4');
     });
 
     enterCallBtn.addEventListener('click', async () => {
@@ -487,14 +659,210 @@
         alert('Por favor selecciona cámara y micrófono y acepta permisos.');
         return;
       }
-
       document.querySelector('.pre-call').classList.add('hide');
       document.querySelector('.controls').classList.remove('hide');
-      document.getElementById('sceneDropdownContainer').style.display = 'block';
-
       assignLocalStreams();
       setDefaultScene();
+      setupSceneButtons();
+      setupSceneFooterButtons();
+      updateEditorInfo();
+      // Forzar mostrar el video local en la escena predeterminada
+      assignSceneStreams('scene4');
     });
+
+    // Call creation/join logic
+    let callRef = null;
+    let callerCandidatesCollection = null;
+    let calleeCandidatesCollection = null;
+
+    document.getElementById('startCall').addEventListener('click', async () => {
+      peerConnection = new RTCPeerConnection(servers);
+      localStream1.getTracks().forEach(track => peerConnection.addTrack(track, localStream1));
+      localStream2.getTracks().forEach(track => peerConnection.addTrack(track, localStream2));
+
+      callRef = db.ref('calls').push();
+      callIdInput.value = callRef.key;
+
+      callerCandidatesCollection = callRef.child('callerCandidates');
+      peerConnection.onicecandidate = event => {
+        if (event.candidate) {
+          callerCandidatesCollection.push(event.candidate.toJSON());
+        }
+      };
+
+      peerConnection.ontrack = event => {
+        assignRemoteStream(event.streams[0]);
+      };
+
+      const offer = await peerConnection.createOffer();
+      await peerConnection.setLocalDescription(offer);
+      await callRef.child('offer').set({ type: offer.type, sdp: offer.sdp });
+
+      callRef.child('answer').on('value', async snapshot => {
+        const answer = snapshot.val();
+        if (answer && !peerConnection.currentRemoteDescription) {
+          await peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
+        }
+      });
+
+      callRef.child('calleeCandidates').on('child_added', snapshot => {
+        const candidate = new RTCIceCandidate(snapshot.val());
+        peerConnection.addIceCandidate(candidate);
+      });
+    });
+
+    document.getElementById('joinCall').addEventListener('click', async () => {
+      const callId = callIdInput.value;
+      if (!callId) {
+        alert('Por favor ingresa un ID de llamada para unirse.');
+        return;
+      }
+
+      peerConnection = new RTCPeerConnection(servers);
+      localStream1.getTracks().forEach(track => peerConnection.addTrack(track, localStream1));
+      localStream2.getTracks().forEach(track => peerConnection.addTrack(track, localStream2));
+
+      callRef = db.ref(`calls/${callId}`);
+      calleeCandidatesCollection = callRef.child('calleeCandidates');
+      const offerCandidatesCollection = callRef.child('callerCandidates');
+
+      peerConnection.onicecandidate = event => {
+        if (event.candidate) {
+          calleeCandidatesCollection.push(event.candidate.toJSON());
+        }
+      };
+
+      peerConnection.ontrack = event => {
+        assignRemoteStream(event.streams[0]);
+      };
+
+      const offerSnapshot = await callRef.child('offer').once('value');
+      const offer = offerSnapshot.val();
+      if (!offer) {
+        alert('No se encontró una oferta para esta llamada. Verifica el ID de llamada.');
+        return;
+      }
+
+      await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
+
+      const answer = await peerConnection.createAnswer();
+      await peerConnection.setLocalDescription(answer);
+      await callRef.child('answer').set({ type: answer.type, sdp: answer.sdp });
+
+      offerCandidatesCollection.on('child_added', snapshot => {
+        const candidate = new RTCIceCandidate(snapshot.val());
+        peerConnection.addIceCandidate(candidate).catch(e => console.error('Error adding ICE candidate:', e));
+      });
+    });
+
+    // Previsualización de escenas: muestra cómo se vería cada escena (composición)
+    function updateScenePreviews() {
+      // Usuario 1: localStream1, Usuario 2: remoteStream (peerConnection) o localStream2
+      const remoteStream = peerConnection?.getRemoteStreams?.()[0] || localStream2;
+
+      // Escena 1: Solo usuario 1
+      setPreviewScene('previewScene1', [localStream1]);
+      // Escena 2: Solo usuario 2
+      setPreviewScene('previewScene2', [remoteStream]);
+      // Escena 3: usuario 1 y 2 vertical alado horizontalmente
+      setPreviewScene('previewScene3', [localStream1, remoteStream], 'side');
+      // Escena 4: usuario 1 y 2 horizontal uno alado del otro
+      setPreviewScene('previewScene4', [localStream1, remoteStream], 'side');
+      // Escena 5: usuario 1 grande, usuario 2 pequeño a un lado
+      setPreviewScene('previewScene5', [localStream1, remoteStream], 'pip1');
+      // Escena 6: usuario 2 grande, usuario 1 pequeño a un lado
+      setPreviewScene('previewScene6', [remoteStream, localStream1], 'pip2');
+    }
+
+    // Helper para mostrar la composición de la escena en un canvas y ponerlo en el video de preview
+    function setPreviewScene(previewId, streams, layout = 'single') {
+      const preview = document.getElementById(previewId);
+      if (!preview) return;
+
+      // Detener cualquier stream anterior
+      if (preview.srcObject) {
+        preview.srcObject.getTracks().forEach(track => track.stop && track.stop());
+        preview.srcObject = null;
+      }
+
+      // Si solo hay un stream, mostrarlo directo
+      if (streams.length === 1 || layout === 'single') {
+        preview.srcObject = streams[0] || null;
+        preview.play().catch(() => {});
+        return;
+      }
+
+      // Si hay dos streams, hacer composición en canvas
+      const canvas = document.createElement('canvas');
+      canvas.width = 120;
+      canvas.height = 80;
+      const ctx = canvas.getContext('2d');
+      const v1 = document.createElement('video');
+      const v2 = document.createElement('video');
+      v1.muted = true; v2.muted = true;
+      v1.autoplay = true; v2.autoplay = true;
+      v1.playsInline = true; v2.playsInline = true;
+      v1.srcObject = streams[0] || null;
+      v2.srcObject = streams[1] || null;
+
+      // Esperar a que ambos videos estén listos
+      Promise.all([
+        new Promise(res => v1.onloadeddata = res),
+        new Promise(res => v2.onloadeddata = res)
+      ]).then(() => {
+        // Dibuja según el layout
+        function draw() {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          if (layout === 'side') {
+            // Dos videos lado a lado
+            ctx.drawImage(v1, 0, 0, canvas.width / 2, canvas.height);
+            ctx.drawImage(v2, canvas.width / 2, 0, canvas.width / 2, canvas.height);
+          } else if (layout === 'pip1') {
+            // Usuario 1 grande, usuario 2 pequeño esquina
+            ctx.drawImage(v1, 0, 0, canvas.width, canvas.height);
+            ctx.drawImage(v2, canvas.width - 40, canvas.height - 30, 40, 30);
+          } else if (layout === 'pip2') {
+            // Usuario 2 grande, usuario 1 pequeño esquina
+            ctx.drawImage(v1, 0, 0, canvas.width, canvas.height);
+            ctx.drawImage(v2, canvas.width - 40, canvas.height - 30, 40, 30);
+          }
+          requestAnimationFrame(draw);
+        }
+        draw();
+      });
+
+      // Asigna el stream del canvas al video de preview
+      const stream = canvas.captureStream();
+      preview.srcObject = stream;
+      preview.play().catch(() => {});
+    }
+
+    // Llama a updateScenePreviews cuando cambian los streams o al iniciar
+    document.addEventListener('DOMContentLoaded', () => {
+      updateScenePreviews();
+    });
+    cameraSelect.addEventListener('change', async () => {
+      await getStreams();
+      assignLocalStreams();
+      updateScenePreviews();
+    });
+    micSelect.addEventListener('change', async () => {
+      await getStreams();
+      assignLocalStreams();
+      updateScenePreviews();
+    });
+    enterCallBtn.addEventListener('click', () => {
+      updateScenePreviews();
+    });
+
+    // También actualiza las previsualizaciones cuando se asignan los streams
+    function assignLocalStreams() {
+      Object.entries(camsLocal).forEach(([key, cam]) => {
+        cam.srcObject = key === '1' ? localStream2 : localStream1;
+        cam.play().catch(e => console.error(`Error playing local video ${key}:`, e));
+      });
+      updateScenePreviews();
+    }
   </script>
 </body>
 </html>
