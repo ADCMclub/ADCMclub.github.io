@@ -64,15 +64,34 @@
     .scene.active {
       display: flex;
     }
+    .scene-name {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      font-size: 1.2rem;
+      color: #fff;
+      background: rgba(0, 0, 0, 0.7);
+      padding: 5px 10px;
+      border-radius: 5px;
+    }
+    #sceneButtons {
+      display: none; /* Hide scene buttons initially */
+      justify-content: center;
+      gap: 10px;
+      margin-top: 20px;
+      padding: 10px;
+      background: #333; /* Dark background for buttons */
+      border-radius: 8px;
+    }
     #sceneButtons button {
-      padding: 8px 15px;
-      margin: 5px;
+      padding: 10px 20px;
+      font-size: 1rem;
       cursor: pointer;
       border: none;
       border-radius: 6px;
-      background: #ddd;
+      background: #555;
+      color: #f4f7fa;
       transition: background-color 0.3s;
-      color: #333; /* Dark text for better contrast on light buttons */
     }
     #sceneButtons button.active {
       background: #007bff;
@@ -182,47 +201,44 @@
   </div>
 
   <div class="controls section hide">
-    <div id="sceneButtons">
-      <button data-scene="scene1" class="active">Escena 1 </button>
-      <button data-scene="scene2">Escena 2 </button>
-      <button data-scene="scene3">Escena 3 </button>
-      <button data-scene="scene4">Escena 4 </button>
-      <button data-scene="scene5">Escena 5 </button>
-      <button data-scene="scene6">Escena 6 </button>
-    </div>
-
     <!-- Escena 1: Solo cámara 1 -->
-    <div id="scene1" class="scene active">
+    <div id="scene1" class="scene">
+      <div class="scene-name">Escena 1</div>
       <video id="localVideo1" class="main" autoplay muted playsinline></video>
     </div>
 
     <!-- Escena 2: Solo cámara 2 -->
     <div id="scene2" class="scene">
+      <div class="scene-name">Escena 2</div>
       <video id="remoteVideo2" class="main" autoplay playsinline></video>
     </div>
 
     <!-- Escena 3 mejorada: dos cámaras verticales lado a lado -->
     <div id="scene3" class="scene">
+      <div class="scene-name">Escena 3</div>
       <video id="localVideo3" class="main" autoplay muted playsinline></video>
       <video id="remoteVideo3" class="main" autoplay playsinline></video>
     </div>
 
     <!-- Escena 4: Ambas horizontal -->
-    <div id="scene4" class="scene">
+    <div id="scene4" class="scene active">
+      <div class="scene-name">Escena 4</div>
       <video id="localVideo4" class="main" autoplay muted playsinline></video>
       <video id="remoteVideo4" class="main" autoplay playsinline></video>
     </div>
 
     <!-- Escena 5: Cam1 grande, Cam2 esquina -->
     <div id="scene5" class="scene">
+      <div class="scene-name">Escena 5</div>
       <video id="localVideo5" class="main" autoplay muted playsinline></video>
-      <video id="remoteVideo5" class="main" autoplay playsinline></video>
+      <video id="remoteVideo5" class="small" autoplay playsinline></video>
     </div>
 
     <!-- Escena 6: Cam2 grande, Cam1 esquina -->
     <div id="scene6" class="scene">
+      <div class="scene-name">Escena 6</div>
       <video id="remoteVideo6" class="main" autoplay playsinline></video>
-      <video id="localVideo6" class="main" autoplay muted playsinline></video>
+      <video id="localVideo6" class="small" autoplay muted playsinline></video>
     </div>
 
     <div style="margin-top: 15px;">
@@ -236,6 +252,16 @@
 
     <p id="editorInfo" class="hide">Estás en modo editor. Solo tú puedes grabar.</p>
     <div class="editor-controls"></div>
+  </div>
+
+  <!-- Move scene buttons to the bottom -->
+  <div id="sceneButtons">
+    <button data-scene="scene1" class="active">Escena 1</button>
+    <button data-scene="scene2">Escena 2</button>
+    <button data-scene="scene3">Escena 3</button>
+    <button data-scene="scene4">Escena 4</button>
+    <button data-scene="scene5">Escena 5</button>
+    <button data-scene="scene6">Escena 6</button>
   </div>
 
   <div id="recordingIcon" class="recording-icon"></div>
@@ -262,6 +288,8 @@
     let recordedChunks = [];
     let isEditor = false;
     let sessionId = null;
+    let videoEnabled = true;
+    let audioEnabled = true;
 
     // DOM elements
     const previewVideo = document.getElementById('previewVideo');
@@ -349,40 +377,69 @@
     }
 
     function assignLocalStreams() {
-      Object.values(camsLocal).forEach((cam, index) => {
-        cam.srcObject = index === 1 ? localStream2 : localStream1;
+      Object.entries(camsLocal).forEach(([key, cam]) => {
+        cam.srcObject = key === '1' ? localStream2 : localStream1;
+        cam.play().catch(e => console.error(`Error playing local video ${key}:`, e));
       });
     }
 
     function assignRemoteStream(stream) {
       Object.values(camsRemote).forEach(cam => {
         cam.srcObject = stream;
+        cam.play().catch(e => console.error('Error playing remote video:', e));
       });
     }
 
-    function setDefaultScene() {
-      // Set scene 4 as the default
-      sceneButtons.forEach(b => b.classList.remove('active'));
-      scenes.forEach(scene => scene.classList.remove('active'));
-      document.querySelector('[data-scene="scene4"]').classList.add('active');
-      document.getElementById('scene4').classList.add('active');
+    function switchScene(sceneId) {
+      // Hide all scenes
+      scenes.forEach(scene => {
+        scene.style.display = 'none';
+        scene.classList.remove('active');
+      });
+
+      // Remove active class from all buttons
+      sceneButtons.forEach(btn => btn.classList.remove('active'));
+
+      // Show selected scene and activate button
+      const targetScene = document.getElementById(sceneId);
+      const targetButton = document.querySelector(`button[data-scene="${sceneId}"]`);
+
+      if (targetScene && targetButton) {
+        targetScene.style.display = 'flex';
+        targetScene.classList.add('active');
+        targetButton.classList.add('active');
+
+        // Assign streams to videos in the scene
+        const localVideos = targetScene.querySelectorAll('video[id^="localVideo"]');
+        const remoteVideos = targetScene.querySelectorAll('video[id^="remoteVideo"]');
+
+        localVideos.forEach(video => {
+          video.srcObject = localStream1 || localStream2;
+          video.play().catch(e => console.error('Error playing local video:', e));
+        });
+
+        remoteVideos.forEach(video => {
+          if (peerConnection?.getRemoteStreams?.()[0]) {
+            video.srcObject = peerConnection.getRemoteStreams()[0];
+            video.play().catch(e => console.error('Error playing remote video:', e));
+          }
+        });
+      }
     }
 
     function setupSceneButtons() {
       sceneButtons.forEach(btn => {
         btn.addEventListener('click', () => {
-          // Update active button
-          sceneButtons.forEach(b => b.classList.remove('active'));
-          btn.classList.add('active');
-
-          // Update active scene
-          scenes.forEach(scene => scene.classList.remove('active'));
-          const targetScene = document.getElementById(btn.dataset.scene);
-          if (targetScene) {
-            targetScene.classList.add('active');
+          const sceneId = btn.getAttribute('data-scene');
+          if (sceneId) {
+            switchScene(sceneId); // Ensure scene switching works
           }
         });
       });
+    }
+
+    function setDefaultScene() {
+      switchScene('scene4'); // Set default scene to scene 4
     }
 
     function initializeSession() {
@@ -404,6 +461,7 @@
       }
       document.querySelector('.pre-call').classList.add('hide');
       document.querySelector('.controls').classList.remove('hide');
+      document.getElementById('sceneButtons').style.display = 'flex'; // Show scene buttons
 
       initializeSession();
       assignLocalStreams();
@@ -486,6 +544,20 @@
       });
     });
 
+    toggleVideoBtn.addEventListener('click', () => {
+      videoEnabled = !videoEnabled;
+      localStream1.getVideoTracks().forEach(track => track.enabled = videoEnabled);
+      toggleVideoBtn.classList.toggle('active', videoEnabled);
+      toggleVideoBtn.textContent = videoEnabled ? 'Video Activado' : 'Video Desactivado';
+    });
+
+    toggleAudioBtn.addEventListener('click', () => {
+      audioEnabled = !audioEnabled;
+      localStream1.getAudioTracks().forEach(track => track.enabled = audioEnabled);
+      toggleAudioBtn.classList.toggle('active', audioEnabled);
+      toggleAudioBtn.textContent = audioEnabled ? 'Micrófono Activado' : 'Micrófono Desactivado';
+    });
+
     startRecordingBtn.addEventListener('click', () => {
       if (!isEditor) {
         alert('Solo el editor puede grabar.');
@@ -533,13 +605,13 @@
       }
     });
 
-    // Initialize
+    // Initialize event handlers
     document.addEventListener('DOMContentLoaded', async () => {
       await getDevices();
       await getStreams();
       assignLocalStreams();
-      setDefaultScene(); // Set scene 4 as default on page load
-      setupSceneButtons(); // Enable scene switching
+      setupSceneButtons(); // Ensure buttons are properly bound
+      setDefaultScene(); // Ensure default scene is visible
     });
 
     cameraSelect.addEventListener('change', async () => {
