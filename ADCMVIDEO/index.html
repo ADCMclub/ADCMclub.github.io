@@ -432,12 +432,7 @@
             video.play().catch(e => console.error('Error playing remote video:', e));
           }
         });
-
-        // Update the scene in Firebase
-        if (sessionId) {
-          db.ref(`sessions/${sessionId}/scene`).set(sceneId);
-        }
-      }
+z      }
     }
 
     function setupSceneButtons() {
@@ -449,18 +444,6 @@
           }
         });
       });
-    }
-
-    // Listen for scene changes in Firebase
-    function listenForSceneChanges() {
-      if (sessionId) {
-        db.ref(`sessions/${sessionId}/scene`).on('value', snapshot => {
-          const sceneId = snapshot.val();
-          if (sceneId) {
-            switchScene(sceneId);
-          }
-        });
-      }
     }
 
     enterCallBtn.addEventListener('click', async () => {
@@ -478,7 +461,6 @@
       assignLocalStreams();
       setupEditorControls();
       setDefaultScene();
-      listenForSceneChanges(); // Start listening for scene changes
     });
 
     startCallBtn.addEventListener('click', async () => {
