@@ -225,6 +225,35 @@
       <video id="remoteVideo3" class="main" autoplay playsinline></video>
       <video id="localVideo3" class="small" autoplay muted playsinline></video>
       <div class="scene-controls">
+        <button class="scene-btn" data-scene="scene4">Ir a Ambos vertical</button>
+      </div>
+    </div>
+    <!-- Escena 4: Ambos vertical (uno arriba del otro) -->
+    <div id="scene4" class="scene">
+      <div class="scene-name">Ambos vertical</div>
+      <div style="display:flex;flex-direction:column;width:100%;align-items:center;">
+        <video id="localVideo4" class="main" style="width:80%;height:auto;" autoplay muted playsinline></video>
+        <video id="remoteVideo4" class="main" style="width:80%;height:auto;" autoplay playsinline></video>
+      </div>
+      <div class="scene-controls">
+        <button class="scene-btn" data-scene="scene5">Ir a Local grande, remoto pequeño (esquina)</button>
+      </div>
+    </div>
+    <!-- Escena 5: Local grande, remoto pequeño esquina -->
+    <div id="scene5" class="scene">
+      <div class="scene-name">Local grande, remoto pequeño (esquina)</div>
+      <video id="localVideo5" class="main" autoplay muted playsinline></video>
+      <video id="remoteVideo5" class="small" style="bottom:30px;right:30px;" autoplay playsinline></video>
+      <div class="scene-controls">
+        <button class="scene-btn" data-scene="scene6">Ir a Remoto grande, local pequeño (esquina)</button>
+      </div>
+    </div>
+    <!-- Escena 6: Remoto grande, local pequeño esquina -->
+    <div id="scene6" class="scene">
+      <div class="scene-name">Remoto grande, local pequeño (esquina)</div>
+      <video id="remoteVideo6" class="main" autoplay playsinline></video>
+      <video id="localVideo6" class="small" style="bottom:30px;right:30px;" autoplay muted playsinline></video>
+      <div class="scene-controls">
         <button class="scene-btn" data-scene="scene1">Ir a Ambos lado a lado</button>
       </div>
     </div>
@@ -253,6 +282,9 @@
       <button class="scene-footer-btn" data-scene="scene1">Ambos lado a lado</button>
       <button class="scene-footer-btn" data-scene="scene2">Local grande</button>
       <button class="scene-footer-btn" data-scene="scene3">Remoto grande</button>
+      <button class="scene-footer-btn" data-scene="scene4">Ambos vertical</button>
+      <button class="scene-footer-btn" data-scene="scene5">Local grande esquina</button>
+      <button class="scene-footer-btn" data-scene="scene6">Remoto grande esquina</button>
     </div>
 
     <!-- Sección para mostrar la previsualización de la escena activa (en la nube) -->
@@ -305,7 +337,14 @@
     const editorInfo = document.getElementById('editorInfo');
     const recordingIcon = document.getElementById('recordingIcon');
     const sceneButtons = [...document.querySelectorAll('#sceneButtons button')];
-    const scenes = [...document.querySelectorAll('.scene')];
+    const scenes = [
+      document.getElementById('scene1'),
+      document.getElementById('scene2'),
+      document.getElementById('scene3'),
+      document.getElementById('scene4'),
+      document.getElementById('scene5'),
+      document.getElementById('scene6')
+    ].filter(Boolean);
 
     const camsLocal = {
       1: document.getElementById('localVideo1'),
@@ -507,9 +546,23 @@
     }
 
     // --- Scene assignment: always show both videos in all scenes ---
+    // Guardar el último stream remoto recibido
+    let lastRemoteStream = null;
+
+    // Asignar el stream remoto a los elementos de video remotos y refrescar la escena activa
+    function assignRemoteStream(stream) {
+      lastRemoteStream = stream;
+      Object.values(camsRemote).forEach(cam => {
+        if (cam) cam.srcObject = stream;
+      });
+      const activeScene = document.querySelector('.scene.active');
+      if (activeScene) assignSceneStreams(activeScene.id);
+    }
+
+    // Modificar assignSceneStreams para usar el último stream remoto recibido
     function assignSceneStreams(sceneId) {
-      const remoteStream = peerConnection?.getRemoteStreams?.()[0] || localStream2;
-      // Always show both videos for all scenes
+      // Usar el último stream remoto recibido si existe
+      const remoteStream = lastRemoteStream || (peerConnection && peerConnection.getReceivers && peerConnection.getReceivers().find(r => r.track && r.track.kind === 'video')?.track && new MediaStream([peerConnection.getReceivers().find(r => r.track && r.track.kind === 'video').track])) || localStream2;
       Object.entries(camsLocal).forEach(([k, v]) => v && (v.style.display = 'none'));
       Object.entries(camsRemote).forEach(([k, v]) => v && (v.style.display = 'none'));
       if (sceneId === 'scene1') {
@@ -527,10 +580,25 @@
         camsLocal[3].srcObject = localStream1;
         camsRemote[3].style.display = '';
         camsLocal[3].style.display = '';
+      } else if (sceneId === 'scene4') {
+        camsLocal[4].srcObject = localStream1;
+        camsRemote[4].srcObject = remoteStream;
+        camsLocal[4].style.display = '';
+        camsRemote[4].style.display = '';
+      } else if (sceneId === 'scene5') {
+        camsLocal[5].srcObject = localStream1;
+        camsRemote[5].srcObject = remoteStream;
+        camsLocal[5].style.display = '';
+        camsRemote[5].style.display = '';
+      } else if (sceneId === 'scene6') {
+        camsRemote[6].srcObject = remoteStream;
+        camsLocal[6].srcObject = localStream1;
+        camsRemote[6].style.display = '';
+        camsLocal[6].style.display = '';
       }
     }
 
-    // Scene change buttons logic
+    // Botones de cambio de escena
     function setupSceneButtons() {
       document.querySelectorAll('.scene-btn').forEach(btn => {
         btn.onclick = function() {
@@ -545,121 +613,24 @@
         };
       });
     }
-    function setDefaultScene() {
-      switchScene('scene1');
-    }
 
-    // Helper: disable all tracks in a stream
-    function disableAllTracks(stream) {
-      if (!stream) return;
-      stream.getTracks().forEach(track => track.enabled = false);
-    }
-
-    // Show/hide editor info and disable video/audio for editor
-    function updateEditorInfo() {
-      if (isEditor) {
-        editorInfo.classList.remove('hide');
-        // Disable all tracks for editor (no video/audio sent)
-        disableAllTracks(localStream1);
-        disableAllTracks(localStream2);
-        // Hide local video elements for editor
-        Object.values(camsLocal).forEach(cam => {
-          cam.style.display = 'none';
-        });
-        // Hide preview video in scenes for editor
-        for (let i = 1; i <= 6; i++) {
-          const preview = document.getElementById('preview' + i);
-          if (preview) preview.style.display = 'none';
-        }
-        // Hide preview in pre-call
-        previewVideo.style.display = 'none';
-        // Disable toggle buttons for editor
-        toggleVideoBtn.disabled = true;
-        toggleAudioBtn.disabled = true;
-      } else {
-        editorInfo.classList.add('hide');
-        // Enable all tracks for non-editor
-        localStream1?.getTracks().forEach(track => track.enabled = true);
-        localStream2?.getTracks().forEach(track => track.enabled = true);
-        // Show local video elements for non-editor
-        Object.values(camsLocal).forEach(cam => {
-          cam.style.display = '';
-        });
-        // Show preview videos in scenes for non-editor
-        for (let i = 1; i <= 6; i++) {
-          const preview = document.getElementById('preview' + i);
-          if (preview) preview.style.display = '';
-        }
-        // Show preview in pre-call
-        previewVideo.style.display = '';
-        // Enable toggle buttons for non-editor
-        toggleVideoBtn.disabled = false;
-        toggleAudioBtn.disabled = false;
-      }
-      updateRecordingButtons();
-    }
-
-    // Mostrar/ocultar botones de grabación solo para el editor
-    function updateRecordingButtons() {
-      const startBtn = document.getElementById('startRecording');
-      const stopBtn = document.getElementById('stopRecording');
-      if (isEditor) {
-        startBtn.style.display = '';
-        stopBtn.style.display = '';
-      } else {
-        startBtn.style.display = 'none';
-        stopBtn.style.display = 'none';
-      }
-    }
-
-    // Recording logic with editor check
-    startRecordingBtn.addEventListener('click', () => {
-      if (!isEditor) {
-        alert('Solo el editor puede grabar.');
-        return;
-      }
-      recordedChunks = [];
-      const activeScene = document.querySelector('.scene.active');
-      const mixedStream = new MediaStream();
-      activeScene.querySelectorAll('video').forEach(video => {
-        if (video.srcObject) {
-          video.srcObject.getTracks().forEach(track => {
-            if (!mixedStream.getTracks().includes(track)) mixedStream.addTrack(track);
-          });
-        }
+    // Cambia la escena y resalta el botón activo
+    function switchScene(sceneId) {
+      scenes.forEach(scene => {
+        scene.style.display = 'none';
+        scene.classList.remove('active');
       });
-      mediaRecorder = new MediaRecorder(mixedStream, { mimeType: 'video/webm' });
-      mediaRecorder.ondataavailable = event => {
-        if (event.data.size > 0) {
-          recordedChunks.push(event.data);
-        }
-      };
-      mediaRecorder.onstop = () => {
-        const blob = new Blob(recordedChunks, { type: 'video/webm' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.style.display = 'none';
-        a.href = url;
-        a.download = `grabacion_${Date.now()}.webm`;
-        document.body.appendChild(a);
-        a.click();
-        URL.revokeObjectURL(url);
-        alert('Grabación lista para descargar.');
-      };
-      mediaRecorder.start();
-      startRecordingBtn.disabled = true;
-      stopRecordingBtn.disabled = false;
-      recordingIcon.style.display = 'block';
-    });
-
-    stopRecordingBtn.addEventListener('click', () => {
-      if (mediaRecorder && mediaRecorder.state !== 'inactive') {
-        mediaRecorder.stop();
-        startRecordingBtn.disabled = false;
-        stopRecordingBtn.disabled = true;
-        recordingIcon.style.display = 'none';
+      const targetScene = document.getElementById(sceneId);
+      if (targetScene) {
+        targetScene.style.display = 'flex';
+        targetScene.classList.add('active');
       }
-    });
+      document.querySelectorAll('.scene-footer-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-scene') === sceneId);
+      });
+      assignSceneStreams(sceneId);
+      updateCloudScenePreview(sceneId);
+    }
 
     // Initialization
     document.addEventListener('DOMContentLoaded', async () => {
@@ -780,6 +751,7 @@
       if (!offer) {
         alert('No se encontró una oferta para esta llamada. Verifica el ID de llamada.');
         setCallStatus("ID no válido", "#f00");
+        // No ocultar/join UI ni avanzar, simplemente salir
         return;
       }
 
