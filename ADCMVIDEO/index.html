@@ -206,18 +206,18 @@
       <!-- <div class="scene-name">Ambos lado a lado</div> -->
       <video id="localVideo1" class="main" autoplay muted playsinline></video>
       <video id="remoteVideo1" class="main" autoplay playsinline></video>
-      <div class="scene-controls">
+      <!-- <div class="scene-controls">
         <button class="scene-btn" data-scene="scene2">Ir a PiP Local grande</button>
-      </div>
+      </div> -->
     </div>
     <!-- Escena 2: Local grande, remoto pequeño -->
     <div id="scene2" class="scene">
       <!-- <div class="scene-name">Local grande, remoto pequeño</div> -->
       <video id="localVideo2" class="main" autoplay muted playsinline></video>
       <video id="remoteVideo2" class="small" autoplay playsinline></video>
-      <div class="scene-controls">
+      <!-- <div class="scene-controls">
         <button class="scene-btn" data-scene="scene3">Ir a PiP Remoto grande</button>
-      </div>
+      </div> -->
     </div>
     <!-- Escena 3: Remoto grande, local pequeño -->
     <div id="scene3" class="scene">
@@ -364,9 +364,15 @@
         const videoDevices = devices.filter(d => d.kind === 'videoinput');
         const audioDevices = devices.filter(d => d.kind === 'audioinput');
 
-        cameraSelect.innerHTML = videoDevices.map((device, index) =>
-          `<option value="${device.deviceId}">${device.label || `Cámara ${index + 1}`}</option>`
-        ).join('');
+        // Para móviles, mostrar etiquetas genéricas si no hay label
+        cameraSelect.innerHTML = videoDevices.map((device, index) => {
+          let label = device.label || (device.deviceId && device.deviceId.includes('front') ? 'Frontal' : device.deviceId && device.deviceId.includes('back') ? 'Trasera' : `Cámara ${index + 1}`);
+          // Si no hay label y hay dos cámaras, la primera es frontal, la segunda trasera
+          if (!device.label && videoDevices.length === 2) {
+            label = index === 0 ? 'Frontal' : 'Trasera';
+          }
+          return `<option value="${device.deviceId}">${label}</option>`;
+        }).join('');
 
         micSelect.innerHTML = audioDevices.map((device, index) =>
           `<option value="${device.deviceId}">${device.label || `Micrófono ${index + 1}`}</option>`
@@ -376,7 +382,6 @@
           alert('Por favor, habilita permisos de cámara y micrófono en tu dispositivo.');
         }
       } catch (error) {
-        console.error('Error al obtener dispositivos:', error);
         alert('No se pudieron obtener los dispositivos. Verifica los permisos.');
       }
     }
