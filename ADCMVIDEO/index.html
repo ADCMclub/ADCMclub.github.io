@@ -331,21 +331,15 @@
     async function getDevices() {
       try {
         // Request permissions upfront to ensure all devices are accessible
-        const constraints = {
-          video: true,
-          audio: true,
-        };
-
-        // Adjust constraints for mobile devices
-        if (/Mobi|Android/i.test(navigator.userAgent)) {
-          constraints.video = { facingMode: 'user' }; // Default to front-facing camera
-        }
-
-        await navigator.mediaDevices.getUserMedia(constraints);
+        await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
 
         const devices = await navigator.mediaDevices.enumerateDevices();
         const videoDevices = devices.filter(d => d.kind === 'videoinput');
         const audioDevices = devices.filter(d => d.kind === 'audioinput');
+
+        if (videoDevices.length === 0) {
+          alert('No se detectaron cámaras. Verifica los permisos y la conexión del dispositivo.');
+        }
 
         cameraSelect.innerHTML = videoDevices.map((device, index) =>
           `<option value="${device.deviceId}">${device.label || `Cámara ${index + 1}`}</option>`
@@ -355,8 +349,8 @@
           `<option value="${device.deviceId}">${device.label || `Micrófono ${index + 1}`}</option>`
         ).join('');
 
-        if (!videoDevices.length || !audioDevices.length) {
-          alert('Por favor, habilita permisos de cámara y micrófono en tu dispositivo.');
+        if (audioDevices.length === 0) {
+          alert('No se detectaron micrófonos. Verifica los permisos y la conexión del dispositivo.');
         }
       } catch (error) {
         console.error('Error al obtener dispositivos:', error);
