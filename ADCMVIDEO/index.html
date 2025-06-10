@@ -624,6 +624,7 @@
     let calleeCandidatesCollection = null;
 
     document.getElementById('startCall').addEventListener('click', async () => {
+      isCreator = true;
       // Genera un ID corto y lo usa como clave
       const shortId = generateShortId();
       callRef = db.ref('calls/' + shortId);
@@ -673,6 +674,7 @@
     });
 
     document.getElementById('joinCall').addEventListener('click', async () => {
+      isCreator = false;
       const callId = callIdInput.value.trim();
       if (!callId) {
         alert('Por favor ingresa un ID de llamada para unirse.');
