@@ -1,19 +1,79 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>WebRTC con Firebase</title>
-  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f0f2f5;
+      margin: 0;
+      padding: 20px;
+      text-align: center;
+      color: #333;
+    }
+    h1 { color: #2c3e50; }
+    video {
+      width: 300px;
+      max-width: 100%;
+      border-radius: 10px;
+      margin: 10px 0;
+      background: #000;
+    }
+    .pre-call, .controls {
+      margin: 20px auto;
+      max-width: 500px;
+    }
+    select, input, button {
+      margin: 5px;
+      padding: 10px;
+      font-size: 1rem;
+      border-radius: 5px;
+    }
+    .toggle-btn {
+      background-color: #ccc;
+      color: #000;
+    }
+    .active {
+      background-color: #007bff;
+      color: #fff;
+    }
+    .hide {
+      display: none;
+    }
+  </style>
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
 </head>
 <body>
-  <h1>WebRTC con Firebase</h1>
-  <video id="localVideo" autoplay muted playsinline></video>
-  <video id="remoteVideo" autoplay playsinline></video>
-  <button id="startCall">Crear llamada</button>
-  <button id="joinCall">Unirse a llamada</button>
-  <input id="callId" placeholder="ID de llamada">
+
+  <h1>Previsualización de llamada</h1>
+
+  <div class="pre-call">
+    <video id="previewVideo" autoplay muted playsinline></video><br>
+    
+    <label for="cameraSelect">Cámara:</label>
+    <select id="cameraSelect"></select><br>
+
+    <label for="micSelect">Micrófono:</label>
+    <select id="micSelect"></select><br>
+
+    <button id="toggleVideo" class="toggle-btn active">Video Activado</button>
+    <button id="toggleAudio" class="toggle-btn active">Micrófono Activado</button><br>
+
+    <button id="enterCall">Entrar a la llamada</button>
+  </div>
+
+  <div class="controls hide">
+    <video id="localVideo" autoplay muted playsinline></video>
+    <video id="remoteVideo" autoplay playsinline></video><br>
+
+    <button id="startCall">Crear llamada</button>
+    <button id="joinCall">Unirse a llamada</button>
+    <input id="callId" placeholder="ID de llamada" />
+  </div>
+
   <script src="app.js"></script>
 </body>
 </html>
