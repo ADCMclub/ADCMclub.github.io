@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>WebRTC con Firebase</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+</head>
+<body>
+  <h1>WebRTC con Firebase</h1>
+  <video id="localVideo" autoplay muted playsinline></video>
+  <video id="remoteVideo" autoplay playsinline></video>
+  <button id="startCall">Crear llamada</button>
+  <button id="joinCall">Unirse a llamada</button>
+  <input id="callId" placeholder="ID de llamada">
+  <script src="app.js"></script>
+</body>
+</html>
