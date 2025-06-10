@@ -273,18 +273,18 @@
       const audioDevices = devices.filter(d => d.kind === 'audioinput');
 
       cameraSelect.innerHTML = '';
-      videoDevices.forEach((device) => {
+      videoDevices.forEach((device, index) => {
         const option = document.createElement('option');
         option.value = device.deviceId;
-        option.text = device.label || `Cámara ${cameraSelect.length + 1}`;
+        option.text = device.label || `Cámara ${index + 1}`;
         cameraSelect.appendChild(option);
       });
 
       micSelect.innerHTML = '';
-      audioDevices.forEach((device) => {
+      audioDevices.forEach((device, index) => {
         const option = document.createElement('option');
         option.value = device.deviceId;
-        option.text = device.label || `Micrófono ${micSelect.length + 1}`;
+        option.text = device.label || `Micrófono ${index + 1}`;
         micSelect.appendChild(option);
       });
     }
@@ -304,22 +304,11 @@
       // Buscamos otra cámara distinta a la primera seleccionada
       const videoDevices = (await navigator.mediaDevices.enumerateDevices())
         .filter(d => d.kind === 'videoinput');
-      let secondCamId = null;
-      for (const d of videoDevices) {
-        if (d.deviceId !== videoDeviceId) {
-          secondCamId = d.deviceId;
-          break;
-        }
-      }
-      if (!secondCamId) {
-        // Si solo hay una cámara, clonamos la misma
-        localStream2 = localStream1.clone();
-      } else {
-        localStream2 = await navigator.mediaDevices.getUserMedia({
-          video: { deviceId: { exact: secondCamId } },
-          audio: false
-        });
-      }
+      let secondCamId = videoDevices.find(d => d.deviceId !== videoDeviceId)?.deviceId;
+
+      localStream2 = secondCamId
+        ? await navigator.mediaDevices.getUserMedia({ video: { deviceId: { exact: secondCamId } }, audio: false })
+        : localStream1.clone();
 
       // Mostrar preview con cámara 1
       previewVideo.srcObject = localStream1;
