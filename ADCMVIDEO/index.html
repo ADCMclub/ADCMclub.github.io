@@ -233,7 +233,7 @@
       <div id="creatorFields">
         <input id="callTitle" placeholder="Título de la llamada" style="width: 200px;"/><br>
         <button id="startCall">Crear llamada</button>
-        <!-- <span id="callCode" style="display:none;color:#fff;font-size:1.1rem;"></span> -->
+        <span id="callCode" style="display:none;color:#fff;font-size:1.1rem;"></span>
       </div>
       <div id="joinerFields">
         <button id="joinCall">Unirse a llamada</button>
@@ -482,7 +482,11 @@
       document.getElementById('joinerFields').style.display = 'none';
       document.getElementById('callTitle').style.display = '';
       document.getElementById('callTitle').value = title || '';
-      document.getElementById('startCall').style.display = 'none'; // Oculta el botón después de crear
+      document.getElementById('startCall').style.display = 'none';
+      // Mostrar el código de la llamada en texto
+      const callCode = document.getElementById('callCode');
+      callCode.style.display = '';
+      callCode.textContent = "Código de la llamada: " + callId;
       document.getElementById('joinedTitle').style.display = 'none';
       updateRecordingButtons();
       document.getElementById('sceneFooterButtons').style.display = 'flex';
