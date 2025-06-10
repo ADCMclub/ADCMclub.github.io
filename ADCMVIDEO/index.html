@@ -113,6 +113,18 @@
     .editor-controls {
       margin-top: 15px;
     }
+    .recording-icon {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      width: 50px;
+      height: 50px;
+      background-color: red;
+      border-radius: 50%;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+      display: none;
+      z-index: 1000;
+    }
   </style>
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
@@ -200,6 +212,8 @@
     <div class="editor-controls"></div>
   </div>
 
+  <div id="recordingIcon" class="recording-icon"></div>
+
   <script>
     // Firebase config
     const firebaseConfig = {
@@ -256,6 +270,7 @@
     const stopRecordingBtn = document.getElementById('stopRecording');
     const asEditorCheckbox = document.getElementById('asEditor');
     const editorInfo = document.getElementById('editorInfo');
+    const recordingIcon = document.getElementById('recordingIcon');
 
     const sceneButtons = [...document.querySelectorAll('#sceneButtons button')];
     const scenes = [...document.querySelectorAll('.scene')];
@@ -550,35 +565,36 @@
       let mixedStream = new MediaStream();
 
       // Combinar ambas streams (local y remoto) para grabar
-      // Para simplificar grabamos la mezcla de ambos localStream1 y 2 + el remoto
       localStream1.getTracks().forEach(track => mixedStream.addTrack(track));
       localStream2.getTracks().forEach(track => mixedStream.addTrack(track));
       if (camsRemote[1].srcObject) {
         camsRemote[1].srcObject.getTracks().forEach(track => mixedStream.addTrack(track));
       }
 
-      mediaRecorder = new MediaRecorder(mixedStream);
+      mediaRecorder = new MediaRecorder(mixedStream, { mimeType: 'video/mp4' });
       mediaRecorder.ondataavailable = event => {
         if (event.data.size > 0) {
           recordedChunks.push(event.data);
         }
       };
       mediaRecorder.onstop = () => {
-        const blob = new Blob(recordedChunks, { type: 'video/webm' });
+        const blob = new Blob(recordedChunks, { type: 'video/mp4' });
         const url = URL.createObjectURL(blob);
 
         const a = document.createElement('a');
         a.style.display = 'none';
         a.href = url;
-        a.download = `grabacion_${Date.now()}.webm`;
+        a.download = `grabacion_${Date.now()}.mp4`;
         document.body.appendChild(a);
         a.click();
         window.URL.revokeObjectURL(url);
         alert('Grabación lista para descargar.');
+        recordingIcon.style.display = 'none'; // Hide recording icon
       };
       mediaRecorder.start();
       startRecordingBtn.disabled = true;
       stopRecordingBtn.disabled = false;
+      recordingIcon.style.display = 'block'; // Show recording icon
     });
 
     stopRecordingBtn.addEventListener('click', () => {
@@ -586,6 +602,7 @@
         mediaRecorder.stop();
         startRecordingBtn.disabled = false;
         stopRecordingBtn.disabled = true;
+        recordingIcon.style.display = 'none'; // Hide recording icon
       }
     });
 
