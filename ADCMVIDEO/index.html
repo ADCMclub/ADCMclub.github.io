@@ -331,7 +331,17 @@
     async function getDevices() {
       try {
         // Request permissions upfront to ensure all devices are accessible
-        await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        const constraints = {
+          video: true,
+          audio: true,
+        };
+
+        // Adjust constraints for mobile devices
+        if (/Mobi|Android/i.test(navigator.userAgent)) {
+          constraints.video = { facingMode: 'user' }; // Default to front-facing camera
+        }
+
+        await navigator.mediaDevices.getUserMedia(constraints);
 
         const devices = await navigator.mediaDevices.enumerateDevices();
         const videoDevices = devices.filter(d => d.kind === 'videoinput');
