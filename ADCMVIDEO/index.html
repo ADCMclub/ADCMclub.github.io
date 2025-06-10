@@ -266,10 +266,11 @@
     </div>
 
     <div style="margin-top: 15px;">
+      <input id="callTitle" placeholder="Título de la llamada" style="width: 200px;"/><br>
       <button id="startCall">Crear llamada</button>
       <button id="joinCall">Unirse a llamada</button>
       <input id="callId" placeholder="ID de llamada" style="width: 200px;"/><br><br>
-
+      <span id="callStatus" style="color:#0f0;font-weight:bold;"></span><br>
       <button id="startRecording">Iniciar grabación</button>
       <button id="stopRecording" disabled>Detener grabación</button>
     </div>
@@ -670,18 +671,36 @@
       assignSceneStreams('scene4');
     });
 
+    // Utilidad para generar un ID corto (6 caracteres alfanuméricos)
+    function generateShortId() {
+      return Math.random().toString(36).substr(2, 6).toUpperCase();
+    }
+
+    // Mostrar estado de conexión
+    function setCallStatus(msg, color = "#0f0") {
+      const el = document.getElementById('callStatus');
+      el.textContent = msg;
+      el.style.color = color;
+    }
+
     // Call creation/join logic
     let callRef = null;
     let callerCandidatesCollection = null;
     let calleeCandidatesCollection = null;
 
     document.getElementById('startCall').addEventListener('click', async () => {
+      // Genera un ID corto y lo usa como clave
+      const shortId = generateShortId();
+      callRef = db.ref('calls/' + shortId);
+      callIdInput.value = shortId;
+
+      // Guarda el título si se proporciona
+      const title = document.getElementById('callTitle').value.trim();
+      if (title) await callRef.child('title').set(title);
+
       peerConnection = new RTCPeerConnection(servers);
       localStream1.getTracks().forEach(track => peerConnection.addTrack(track, localStream1));
       localStream2.getTracks().forEach(track => peerConnection.addTrack(track, localStream2));
-
-      callRef = db.ref('calls').push();
-      callIdInput.value = callRef.key;
 
       callerCandidatesCollection = callRef.child('callerCandidates');
       peerConnection.onicecandidate = event => {
@@ -692,6 +711,10 @@
 
       peerConnection.ontrack = event => {
         assignRemoteStream(event.streams[0]);
+      };
+
+      peerConnection.onconnectionstatechange = () => {
+        if (peerConnection.connectionState === "connected") setCallStatus("Conectado", "#0f0");
       };
 
       const offer = await peerConnection.createOffer();
@@ -709,12 +732,25 @@
         const candidate = new RTCIceCandidate(snapshot.val());
         peerConnection.addIceCandidate(candidate);
       });
+
+      setCallStatus("Esperando conexión...", "#ff0");
     });
 
     document.getElementById('joinCall').addEventListener('click', async () => {
-      const callId = callIdInput.value;
+      const callId = callIdInput.value.trim();
       if (!callId) {
         alert('Por favor ingresa un ID de llamada para unirse.');
+        return;
+      }
+
+      callRef = db.ref('calls/' + callId);
+
+      // Verifica si existe la llamada
+      const offerSnapshot = await callRef.child('offer').once('value');
+      const offer = offerSnapshot.val();
+      if (!offer) {
+        alert('No se encontró una oferta para esta llamada. Verifica el ID de llamada.');
+        setCallStatus("ID no válido", "#f00");
         return;
       }
 
@@ -722,7 +758,6 @@
       localStream1.getTracks().forEach(track => peerConnection.addTrack(track, localStream1));
       localStream2.getTracks().forEach(track => peerConnection.addTrack(track, localStream2));
 
-      callRef = db.ref(`calls/${callId}`);
       calleeCandidatesCollection = callRef.child('calleeCandidates');
       const offerCandidatesCollection = callRef.child('callerCandidates');
 
@@ -736,12 +771,9 @@
         assignRemoteStream(event.streams[0]);
       };
 
-      const offerSnapshot = await callRef.child('offer').once('value');
-      const offer = offerSnapshot.val();
-      if (!offer) {
-        alert('No se encontró una oferta para esta llamada. Verifica el ID de llamada.');
-        return;
-      }
+      peerConnection.onconnectionstatechange = () => {
+        if (peerConnection.connectionState === "connected") setCallStatus("Conectado", "#0f0");
+      };
 
       await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
 
@@ -753,6 +785,8 @@
         const candidate = new RTCIceCandidate(snapshot.val());
         peerConnection.addIceCandidate(candidate).catch(e => console.error('Error adding ICE candidate:', e));
       });
+
+      setCallStatus("Conectando...", "#ff0");
     });
 
     // Previsualización de escenas: muestra cómo se vería cada escena (composición)
