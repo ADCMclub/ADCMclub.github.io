@@ -51,7 +51,7 @@
       display: none;
       justify-content: center;
       align-items: center;
-      gap: 20px;
+      gap: 10px;
       width: 100%;
       max-width: 900px;
       margin: 0 auto 20px;
@@ -173,30 +173,28 @@
       <video id="remoteVideo2" class="main" autoplay playsinline></video>
     </div>
 
-<!-- Escena 3 mejorada: dos cámaras verticales lado a lado -->
-<div id="scene3" class="scene active" style="flex-direction: row; justify-content: center; gap: 15px; background: #222; padding: 15px; border-radius: 12px;">
-  <video id="localVideo3" autoplay muted playsinline style="width: 45%; height: 90vh; object-fit: cover; border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.7); background: black;"></video>
-  <video id="remoteVideo3" autoplay playsinline style="width: 45%; height: 90vh; object-fit: cover; border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.7); background: black;"></video>
-</div>
-
-
+    <!-- Escena 3 mejorada: dos cámaras verticales lado a lado -->
+    <div id="scene3" class="scene">
+      <video id="localVideo3" class="main" autoplay muted playsinline></video>
+      <video id="remoteVideo3" class="main" autoplay playsinline></video>
+    </div>
 
     <!-- Escena 4: Ambas horizontal -->
-    <div id="scene4" class="scene" style="flex-direction: row;">
-      <video id="localVideo4" class="main" autoplay muted playsinline style="width: 45%; height: auto;"></video>
-      <video id="remoteVideo4" class="main" autoplay playsinline style="width: 45%; height: auto;"></video>
+    <div id="scene4" class="scene">
+      <video id="localVideo4" class="main" autoplay muted playsinline></video>
+      <video id="remoteVideo4" class="main" autoplay playsinline></video>
     </div>
 
     <!-- Escena 5: Cam1 grande, Cam2 esquina -->
-    <div id="scene5" class="scene" style="position: relative;">
+    <div id="scene5" class="scene">
       <video id="localVideo5" class="main" autoplay muted playsinline></video>
-      <video id="remoteVideo5" class="small" autoplay playsinline></video>
+      <video id="remoteVideo5" class="main" autoplay playsinline></video>
     </div>
 
     <!-- Escena 6: Cam2 grande, Cam1 esquina -->
-    <div id="scene6" class="scene" style="position: relative;">
+    <div id="scene6" class="scene">
       <video id="remoteVideo6" class="main" autoplay playsinline></video>
-      <video id="localVideo6" class="small" autoplay muted playsinline></video>
+      <video id="localVideo6" class="main" autoplay muted playsinline></video>
     </div>
 
     <div style="margin-top: 15px;">
@@ -406,6 +404,13 @@
         localVideo1.style.display = 'none';
         localVideo2.style.display = 'block';
       });
+
+      scenes.forEach(scene => {
+        scene.addEventListener('click', () => {
+          scenes.forEach(s => s.classList.remove('active'));
+          scene.classList.add('active');
+        });
+      });
     }
 
     // Add keyboard shortcuts for quick scene changes
@@ -562,14 +567,14 @@
         return;
       }
       recordedChunks = [];
-      let mixedStream = new MediaStream();
+      const activeScene = document.querySelector('.scene.active');
+      const mixedStream = new MediaStream();
 
-      // Combinar ambas streams (local y remoto) para grabar
-      localStream1.getTracks().forEach(track => mixedStream.addTrack(track));
-      localStream2.getTracks().forEach(track => mixedStream.addTrack(track));
-      if (camsRemote[1].srcObject) {
-        camsRemote[1].srcObject.getTracks().forEach(track => mixedStream.addTrack(track));
-      }
+      // Combine streams from the active scene
+      const localVideos = activeScene.querySelectorAll('video[id^="localVideo"]');
+      const remoteVideos = activeScene.querySelectorAll('video[id^="remoteVideo"]');
+      localVideos.forEach(video => video.srcObject?.getTracks().forEach(track => mixedStream.addTrack(track)));
+      remoteVideos.forEach(video => video.srcObject?.getTracks().forEach(track => mixedStream.addTrack(track)));
 
       mediaRecorder = new MediaRecorder(mixedStream, { mimeType: 'video/mp4' });
       mediaRecorder.ondataavailable = event => {
