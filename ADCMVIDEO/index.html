@@ -410,160 +410,142 @@
       }
     }
 
+    // Cambiar asignación local: siempre usar localStream1 para mostrar la cámara local en ambas vistas
     function assignLocalStreams() {
+      // Asignar el mismo stream local a todos los elementos de cámara local
       Object.entries(camsLocal).forEach(([key, cam]) => {
-        cam.srcObject = key === '1' ? localStream2 : localStream1;
+        cam.srcObject = localStream1;
         cam.play().catch(() => {});
       });
+      updateScenePreviews();
     }
 
-    // Cambia la escena y resalta el botón activo
-    function switchScene(sceneId) {
-      scenes.forEach(scene => {
-        scene.style.display = 'none';
-        scene.classList.remove('active');
-      });
-      const targetScene = document.getElementById(sceneId);
-      if (targetScene) {
-        targetScene.style.display = 'flex';
-        targetScene.classList.add('active');
-      }
-      document.querySelectorAll('.scene-footer-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.getAttribute('data-scene') === sceneId);
-      });
-      assignSceneStreams(sceneId);
-    }
-
-    // Helper to show/hide creator/joiner fields
-    function showCreatorUI(callId, title) {
-      document.getElementById('creatorFields').style.display = '';
-      document.getElementById('joinerFields').style.display = 'none';
-      document.getElementById('callTitle').style.display = '';
-      document.getElementById('callTitle').value = title || '';
-      document.getElementById('startCall').style.display = 'none';
-      // Mostrar el código de la llamada en texto
-      const callCode = document.getElementById('callCode');
-      callCode.style.display = '';
-      callCode.textContent = "Código de la llamada: " + callId;
-      document.getElementById('joinedTitle').style.display = 'none';
-      updateRecordingButtons();
-      document.getElementById('sceneFooterButtons').style.display = 'flex';
-      setDefaultScene();
-      assignSceneStreams('scene1');
-    }
-    function showJoinerUI(title) {
-      document.getElementById('creatorFields').style.display = 'none';
-      document.getElementById('joinerFields').style.display = 'none';
-      document.getElementById('callTitle').style.display = 'none';
-      // document.getElementById('callCode').style.display = 'none';
-      document.getElementById('joinedTitle').style.display = '';
-      document.getElementById('joinedTitle').textContent = "Título de la llamada: " + (title || '');
-      updateRecordingButtons();
-      document.getElementById('sceneFooterButtons').style.display = 'flex';
-      setDefaultScene();
-      assignSceneStreams('scene1');
-    }
-
-    // --- Scene assignment: always show both videos in all scenes ---
-    // Guardar el último stream remoto recibido
-    let lastRemoteStream = null;
-
-    // Asignar el stream remoto a los elementos de video remotos y refrescar la escena activa
-    function assignRemoteStream(stream) {
-      lastRemoteStream = stream;
-      Object.values(camsRemote).forEach(cam => {
-        if (cam) cam.srcObject = stream;
-      });
-      const activeScene = document.querySelector('.scene.active');
-      if (activeScene) assignSceneStreams(activeScene.id);
-    }
-
-    // Modificar assignSceneStreams para que ambos videos sean el remoto (lastRemoteStream)
+    // Actualizar asignación de escenas para mostrar tanto el stream local como el remoto
     function assignSceneStreams(sceneId) {
-      // Ambos videos muestran el stream remoto
-      const remoteStream = lastRemoteStream || (peerConnection && peerConnection.getReceivers && peerConnection.getReceivers().find(r => r.track && r.track.kind === 'video')?.track && new MediaStream([peerConnection.getReceivers().find(r => r.track && r.track.kind === 'video').track])) || localStream2;
-      Object.entries(camsLocal).forEach(([k, v]) => v && (v.style.display = 'none'));
-      Object.entries(camsRemote).forEach(([k, v]) => v && (v.style.display = 'none'));
+      if (!localStream1 || !lastRemoteStream) return;
       if (sceneId === 'scene1') {
-        camsLocal[1].srcObject = remoteStream;
-        camsRemote[1].srcObject = remoteStream;
+        // Ambos lado a lado
+        camsLocal[1].srcObject = localStream1;
+        camsRemote[1].srcObject = lastRemoteStream;
         camsLocal[1].style.display = '';
         camsRemote[1].style.display = '';
       } else if (sceneId === 'scene2') {
-        camsLocal[2].srcObject = remoteStream;
-        camsRemote[2].srcObject = remoteStream;
+        // Local grande, remoto en PiP (pequeño)
+        camsLocal[2].srcObject = localStream1;
+        camsRemote[2].srcObject = lastRemoteStream;
         camsLocal[2].style.display = '';
         camsRemote[2].style.display = '';
       } else if (sceneId === 'scene3') {
-        camsRemote[3].srcObject = remoteStream;
-        camsLocal[3].srcObject = remoteStream;
+        // Remoto grande, local en PiP
+        camsRemote[3].srcObject = lastRemoteStream;
+        camsLocal[3].srcObject = localStream1;
         camsRemote[3].style.display = '';
         camsLocal[3].style.display = '';
       } else if (sceneId === 'scene4') {
-        camsLocal[4].srcObject = remoteStream;
-        camsRemote[4].srcObject = remoteStream;
+        // Ambos vertical
+        camsLocal[4].srcObject = localStream1;
+        camsRemote[4].srcObject = lastRemoteStream;
         camsLocal[4].style.display = '';
         camsRemote[4].style.display = '';
       } else if (sceneId === 'scene5') {
-        camsLocal[5].srcObject = remoteStream;
-        camsRemote[5].srcObject = remoteStream;
+        // Local grande, remoto pequeño esquina
+        camsLocal[5].srcObject = localStream1;
+        camsRemote[5].srcObject = lastRemoteStream;
         camsLocal[5].style.display = '';
         camsRemote[5].style.display = '';
       } else if (sceneId === 'scene6') {
-        camsRemote[6].srcObject = remoteStream;
-        camsLocal[6].srcObject = remoteStream;
+        // Remoto grande, local pequeño esquina
+        camsRemote[6].srcObject = lastRemoteStream;
+        camsLocal[6].srcObject = localStream1;
         camsRemote[6].style.display = '';
         camsLocal[6].style.display = '';
       }
     }
 
-    // Botones de cambio de escena
-    function setupSceneButtons() {
-      document.querySelectorAll('.scene-btn').forEach(btn => {
-        btn.onclick = function() {
-          if (!isEditor) return;
-          switchScene(this.getAttribute('data-scene'));
-        };
+    // Actualizar el handler "ontrack" para usar un helper que asigne el stream remoto y refresque la escena activa
+    function handleRemoteTrack(stream) {
+      lastRemoteStream = stream;
+      Object.values(camsRemote).forEach(cam => {
+        cam.srcObject = stream;
+        cam.play().catch(() => {});
       });
+      const activeScene = document.querySelector('.scene.active') || document.getElementById('scene1');
+      assignSceneStreams(activeScene.id);
     }
-    function setupSceneFooterButtons() {
-      document.querySelectorAll('.scene-footer-btn').forEach(btn => {
-        btn.onclick = function() {
-          if (!isEditor) return;
-          switchScene(this.getAttribute('data-scene'));
-        };
-      });
-    }
+    // En lugar de llamar directamente a assignRemoteStream, usar handleRemoteTrack:
+    // peerConnection.ontrack = event => { assignRemoteStream(event.streams[0]); };
+    peerConnection.ontrack = event => {
+      handleRemoteTrack(event.streams[0]);
+    };
 
-    // Cambia la escena y resalta el botón activo
-    function switchScene(sceneId) {
-      scenes.forEach(scene => {
-        scene.style.display = 'none';
-        scene.classList.remove('active');
-      });
-      const targetScene = document.getElementById(sceneId);
-      if (targetScene) {
-        targetScene.style.display = 'flex';
-        targetScene.classList.add('active');
+    // Modificar la función de grabación para que se capture una composición dinámica (local a la izquierda y remoto a la derecha)
+    startRecordingBtn.onclick = async function() {
+      if (!isEditor) return;
+      const activeScene = document.querySelector('.scene.active');
+      const videos = activeScene.querySelectorAll('video');
+      // Crear un canvas para componer ambos videos
+      const canvas = document.createElement('canvas');
+      canvas.width = 1280; canvas.height = 720;
+      const ctx = canvas.getContext('2d');
+      function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        if (videos.length >= 2) {
+          // Componer: video local a la izquierda y remoto a la derecha
+          ctx.drawImage(videos[0], 0, 0, canvas.width / 2, canvas.height);
+          ctx.drawImage(videos[1], canvas.width / 2, 0, canvas.width / 2, canvas.height);
+        }
+        requestAnimationFrame(draw);
       }
-      document.querySelectorAll('.scene-footer-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.getAttribute('data-scene') === sceneId);
+      draw();
+      // Mezclar audio de ambos streams
+      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const dest = audioCtx.createMediaStreamDestination();
+      videos.forEach(video => {
+        try {
+          const src = audioCtx.createMediaStreamSource(video.srcObject);
+          src.connect(dest);
+        } catch {}
       });
-      assignSceneStreams(sceneId);
+      const stream = canvas.captureStream(30);
+      dest.stream.getAudioTracks().forEach(track => stream.addTrack(track));
+      mediaRecorder = new MediaRecorder(stream, { mimeType: 'video/webm; codecs=vp9,opus' });
+      recordedChunks = [];
+      mediaRecorder.ondataavailable = e => { if (e.data.size > 0) recordedChunks.push(e.data); };
+      mediaRecorder.onstop = () => {
+        const blob = new Blob(recordedChunks, { type: 'video/webm' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'grabacion.webm';
+        a.click();
+        URL.revokeObjectURL(url);
+      };
+      mediaRecorder.start();
+      startRecordingBtn.disabled = true;
+      stopRecordingBtn.disabled = false;
+      recordingIcon.style.display = '';
+    };
+
+    stopRecordingBtn.onclick = function() {
+      if (!isEditor || !mediaRecorder) return;
+      mediaRecorder.stop();
+      startRecordingBtn.disabled = false;
+      stopRecordingBtn.disabled = true;
+      recordingIcon.style.display = 'none';
+    };
+
+    // --- Solo el editor puede cambiar escenas y grabar ---
+    function updateEditorInfo() {
+      updateRecordingButtons();
+      // Deshabilita/enhabilita botones de escena para no editores
+      document.querySelectorAll('.scene-btn, .scene-footer-btn').forEach(btn => {
+        btn.disabled = !isEditor;
+        btn.style.opacity = isEditor ? '1' : '0.5';
+        btn.style.pointerEvents = isEditor ? '' : 'none';
+      });
     }
 
-    // Initialization
-    document.addEventListener('DOMContentLoaded', async () => {
-      await getDevices();
-      await getStreams();
-      assignLocalStreams();
-      setupSceneButtons();
-      setupSceneFooterButtons();
-      setDefaultScene();
-      updateEditorInfo();
-      assignSceneStreams('scene1');
-    });
-
+    // --- Al entrar a la llamada, determina si es editor ---
     enterCallBtn.addEventListener('click', async () => {
       isEditor = asEditorCheckbox.checked;
       if (!localStream1) {
@@ -625,7 +607,7 @@
       };
 
       peerConnection.ontrack = event => {
-        assignRemoteStream(event.streams[0]);
+        handleRemoteTrack(event.streams[0]);
       };
 
       peerConnection.onconnectionstatechange = () => {
@@ -690,7 +672,7 @@
       };
 
       peerConnection.ontrack = event => {
-        assignRemoteStream(event.streams[0]);
+        handleRemoteTrack(event.streams[0]);
       };
 
       peerConnection.onconnectionstatechange = () => {
@@ -822,45 +804,26 @@
     // --- Grabación solo para el editor ---
     startRecordingBtn.onclick = async function() {
       if (!isEditor) return;
-      // Graba la escena activa (ambos videos en la escena)
       const activeScene = document.querySelector('.scene.active');
       const videos = activeScene.querySelectorAll('video');
-      // Crea un canvas para mezclar ambos videos
+      // Crear un canvas para componer ambos videos
       const canvas = document.createElement('canvas');
-      canvas.width = 1280;
-      canvas.height = 720;
+      canvas.width = 1280; canvas.height = 720;
       const ctx = canvas.getContext('2d');
-      let v1 = videos[0], v2 = videos[1];
-      v1.muted = true; v2.muted = true;
-      v1.play(); v2.play();
       function draw() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        if (activeScene.id === 'scene1') {
-          ctx.drawImage(v1, 0, 0, canvas.width / 2, canvas.height);
-          ctx.drawImage(v2, canvas.width / 2, 0, canvas.width / 2, canvas.height);
-        } else if (activeScene.id === 'scene2') {
-          ctx.drawImage(v1, 0, 0, canvas.width, canvas.height);
-          ctx.drawImage(v2, canvas.width - 320, canvas.height - 180, 320, 180);
-        } else if (activeScene.id === 'scene3') {
-          ctx.drawImage(v1, 0, 0, canvas.width, canvas.height);
-          ctx.drawImage(v2, canvas.width - 320, canvas.height - 180, 320, 180);
-        } else if (activeScene.id === 'scene4') {
-          ctx.drawImage(v1, 0, 0, canvas.width / 2, canvas.height);
-          ctx.drawImage(v2, canvas.width / 2, 0, canvas.width / 2, canvas.height);
-        } else if (activeScene.id === 'scene5') {
-          ctx.drawImage(v1, 0, 0, canvas.width, canvas.height);
-          ctx.drawImage(v2, canvas.width - 320, canvas.height - 180, 320, 180);
-        } else if (activeScene.id === 'scene6') {
-          ctx.drawImage(v1, 0, 0, canvas.width, canvas.height);
-          ctx.drawImage(v2, canvas.width - 320, canvas.height - 180, 320, 180);
+        if (videos.length >= 2) {
+          // Componer: video local a la izquierda y remoto a la derecha
+          ctx.drawImage(videos[0], 0, 0, canvas.width / 2, canvas.height);
+          ctx.drawImage(videos[1], canvas.width / 2, 0, canvas.width / 2, canvas.height);
         }
         requestAnimationFrame(draw);
       }
       draw();
-      // Mezcla audio de ambos streams
+      // Mezclar audio de ambos streams
       const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
       const dest = audioCtx.createMediaStreamDestination();
-      [v1, v2].forEach(video => {
+      videos.forEach(video => {
         try {
           const src = audioCtx.createMediaStreamSource(video.srcObject);
           src.connect(dest);
@@ -948,7 +911,7 @@
       };
 
       peerConnection.ontrack = event => {
-        assignRemoteStream(event.streams[0]);
+        handleRemoteTrack(event.streams[0]);
       };
 
       peerConnection.onconnectionstatechange = () => {
@@ -1013,7 +976,7 @@
       };
 
       peerConnection.ontrack = event => {
-        assignRemoteStream(event.streams[0]);
+        handleRemoteTrack(event.streams[0]);
       };
 
       peerConnection.onconnectionstatechange = () => {
