@@ -4,7 +4,7 @@ const firebaseConfig = {
   authDomain: "fir-rtc-1d4a1.firebaseapp.com",
   databaseURL: "https://fir-rtc-1d4a1-default-rtdb.firebaseio.com",
   projectId: "fir-rtc-1d4a1",
-  storageBucket: "fir-rtc-1d4a1.firebasestorage.app",
+  storageBucket: "fir-rtc-1d4a1.appspot.com",
   messagingSenderId: "786317659414",
   appId: "1:786317659414:web:4b9fe6fecc349647d1d437"
 };
