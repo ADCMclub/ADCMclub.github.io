@@ -308,12 +308,11 @@
     const servers = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
 
     // Global variables
-    let localStream1, localStream2, peerConnection, mediaRecorder;
-    let recordedChunks = [];
+    let localStream1, localStream2, peerConnection;
+    // --- Variables para modo editor y grabación ---
     let isEditor = false;
-    let sessionId = null;
-    let videoEnabled = true;
-    let audioEnabled = true;
+    let mediaRecorder;
+    let recordedChunks = [];
 
     // DOM elements
     const previewVideo = document.getElementById('previewVideo');
@@ -502,40 +501,40 @@
       if (activeScene) assignSceneStreams(activeScene.id);
     }
 
-    // Modificar assignSceneStreams para usar el último stream remoto recibido
+    // Modificar assignSceneStreams para que ambos videos sean el remoto (lastRemoteStream)
     function assignSceneStreams(sceneId) {
-      // Usar el último stream remoto recibido si existe
+      // Ambos videos muestran el stream remoto
       const remoteStream = lastRemoteStream || (peerConnection && peerConnection.getReceivers && peerConnection.getReceivers().find(r => r.track && r.track.kind === 'video')?.track && new MediaStream([peerConnection.getReceivers().find(r => r.track && r.track.kind === 'video').track])) || localStream2;
       Object.entries(camsLocal).forEach(([k, v]) => v && (v.style.display = 'none'));
       Object.entries(camsRemote).forEach(([k, v]) => v && (v.style.display = 'none'));
       if (sceneId === 'scene1') {
-        camsLocal[1].srcObject = localStream1;
+        camsLocal[1].srcObject = remoteStream;
         camsRemote[1].srcObject = remoteStream;
         camsLocal[1].style.display = '';
         camsRemote[1].style.display = '';
       } else if (sceneId === 'scene2') {
-        camsLocal[2].srcObject = localStream1;
+        camsLocal[2].srcObject = remoteStream;
         camsRemote[2].srcObject = remoteStream;
         camsLocal[2].style.display = '';
         camsRemote[2].style.display = '';
       } else if (sceneId === 'scene3') {
         camsRemote[3].srcObject = remoteStream;
-        camsLocal[3].srcObject = localStream1;
+        camsLocal[3].srcObject = remoteStream;
         camsRemote[3].style.display = '';
         camsLocal[3].style.display = '';
       } else if (sceneId === 'scene4') {
-        camsLocal[4].srcObject = localStream1;
+        camsLocal[4].srcObject = remoteStream;
         camsRemote[4].srcObject = remoteStream;
         camsLocal[4].style.display = '';
         camsRemote[4].style.display = '';
       } else if (sceneId === 'scene5') {
-        camsLocal[5].srcObject = localStream1;
+        camsLocal[5].srcObject = remoteStream;
         camsRemote[5].srcObject = remoteStream;
         camsLocal[5].style.display = '';
         camsRemote[5].style.display = '';
       } else if (sceneId === 'scene6') {
         camsRemote[6].srcObject = remoteStream;
-        camsLocal[6].srcObject = localStream1;
+        camsLocal[6].srcObject = remoteStream;
         camsRemote[6].style.display = '';
         camsLocal[6].style.display = '';
       }
@@ -545,6 +544,7 @@
     function setupSceneButtons() {
       document.querySelectorAll('.scene-btn').forEach(btn => {
         btn.onclick = function() {
+          if (!isEditor) return;
           switchScene(this.getAttribute('data-scene'));
         };
       });
@@ -552,6 +552,7 @@
     function setupSceneFooterButtons() {
       document.querySelectorAll('.scene-footer-btn').forEach(btn => {
         btn.onclick = function() {
+          if (!isEditor) return;
           switchScene(this.getAttribute('data-scene'));
         };
       });
@@ -840,6 +841,221 @@
       });
       updateScenePreviews();
     }
+
+    // --- Grabación solo para el editor ---
+    startRecordingBtn.onclick = async function() {
+      if (!isEditor) return;
+      // Graba la escena activa (ambos videos en la escena)
+      const activeScene = document.querySelector('.scene.active');
+      const videos = activeScene.querySelectorAll('video');
+      // Crea un canvas para mezclar ambos videos
+      const canvas = document.createElement('canvas');
+      canvas.width = 1280;
+      canvas.height = 720;
+      const ctx = canvas.getContext('2d');
+      let v1 = videos[0], v2 = videos[1];
+      v1.muted = true; v2.muted = true;
+      v1.play(); v2.play();
+      function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        if (activeScene.id === 'scene1') {
+          ctx.drawImage(v1, 0, 0, canvas.width / 2, canvas.height);
+          ctx.drawImage(v2, canvas.width / 2, 0, canvas.width / 2, canvas.height);
+        } else if (activeScene.id === 'scene2') {
+          ctx.drawImage(v1, 0, 0, canvas.width, canvas.height);
+          ctx.drawImage(v2, canvas.width - 320, canvas.height - 180, 320, 180);
+        } else if (activeScene.id === 'scene3') {
+          ctx.drawImage(v1, 0, 0, canvas.width, canvas.height);
+          ctx.drawImage(v2, canvas.width - 320, canvas.height - 180, 320, 180);
+        } else if (activeScene.id === 'scene4') {
+          ctx.drawImage(v1, 0, 0, canvas.width / 2, canvas.height);
+          ctx.drawImage(v2, canvas.width / 2, 0, canvas.width / 2, canvas.height);
+        } else if (activeScene.id === 'scene5') {
+          ctx.drawImage(v1, 0, 0, canvas.width, canvas.height);
+          ctx.drawImage(v2, canvas.width - 320, canvas.height - 180, 320, 180);
+        } else if (activeScene.id === 'scene6') {
+          ctx.drawImage(v1, 0, 0, canvas.width, canvas.height);
+          ctx.drawImage(v2, canvas.width - 320, canvas.height - 180, 320, 180);
+        }
+        requestAnimationFrame(draw);
+      }
+      draw();
+      // Mezcla audio de ambos streams
+      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const dest = audioCtx.createMediaStreamDestination();
+      [v1, v2].forEach(video => {
+        try {
+          const src = audioCtx.createMediaStreamSource(video.srcObject);
+          src.connect(dest);
+        } catch {}
+      });
+      const stream = canvas.captureStream(30);
+      dest.stream.getAudioTracks().forEach(track => stream.addTrack(track));
+      mediaRecorder = new MediaRecorder(stream, { mimeType: 'video/webm; codecs=vp9,opus' });
+      recordedChunks = [];
+      mediaRecorder.ondataavailable = e => { if (e.data.size > 0) recordedChunks.push(e.data); };
+      mediaRecorder.onstop = () => {
+        const blob = new Blob(recordedChunks, { type: 'video/webm' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'grabacion.webm';
+        a.click();
+        URL.revokeObjectURL(url);
+      };
+      mediaRecorder.start();
+      startRecordingBtn.disabled = true;
+      stopRecordingBtn.disabled = false;
+      recordingIcon.style.display = '';
+    };
+
+    stopRecordingBtn.onclick = function() {
+      if (!isEditor || !mediaRecorder) return;
+      mediaRecorder.stop();
+      startRecordingBtn.disabled = false;
+      stopRecordingBtn.disabled = true;
+      recordingIcon.style.display = 'none';
+    };
+
+    // --- Solo el editor puede cambiar escenas y grabar ---
+    function updateEditorInfo() {
+      updateRecordingButtons();
+      // Deshabilita/enhabilita botones de escena para no editores
+      document.querySelectorAll('.scene-btn, .scene-footer-btn').forEach(btn => {
+        btn.disabled = !isEditor;
+        btn.style.opacity = isEditor ? '1' : '0.5';
+        btn.style.pointerEvents = isEditor ? '' : 'none';
+      });
+    }
+
+    // --- Al entrar a la llamada, determina si es editor ---
+    enterCallBtn.addEventListener('click', async () => {
+      isEditor = asEditorCheckbox.checked;
+      if (!localStream1) {
+        alert('Por favor selecciona cámara y micrófono y acepta permisos.');
+        return;
+      }
+      document.querySelector('.pre-call').classList.add('hide');
+      document.querySelector('.controls').classList.remove('hide');
+      assignLocalStreams();
+      setDefaultScene();
+      setupSceneButtons();
+      setupSceneFooterButtons();
+      updateEditorInfo();
+      // Forzar mostrar el video local en la escena predeterminada
+      assignSceneStreams('scene1');
+    });
+
+    // --- Al crear o unirse a llamada, actualiza controles de editor ---
+    document.getElementById('startCall').addEventListener('click', async () => {
+      isCreator = true;
+      // Genera un ID corto y lo usa como clave
+      const shortId = generateShortId();
+      callRef = db.ref('calls/' + shortId);
+      callIdInput.value = shortId;
+      const title = document.getElementById('callTitle').value.trim();
+      if (title) await callRef.child('title').set(title);
+
+      // Hide join fields, show code and title
+      showCreatorUI(shortId, title);
+
+      peerConnection = new RTCPeerConnection(servers);
+      localStream1.getTracks().forEach(track => peerConnection.addTrack(track, localStream1));
+      localStream2.getTracks().forEach(track => peerConnection.addTrack(track, localStream2));
+
+      callerCandidatesCollection = callRef.child('callerCandidates');
+      peerConnection.onicecandidate = event => {
+        if (event.candidate) {
+          callerCandidatesCollection.push(event.candidate.toJSON());
+        }
+      };
+
+      peerConnection.ontrack = event => {
+        assignRemoteStream(event.streams[0]);
+      };
+
+      peerConnection.onconnectionstatechange = () => {
+        if (peerConnection.connectionState === "connected") setCallStatus("Conectado", "#0f0");
+      };
+
+      const offer = await peerConnection.createOffer();
+      await peerConnection.setLocalDescription(offer);
+      await callRef.child('offer').set({ type: offer.type, sdp: offer.sdp });
+
+      callRef.child('answer').on('value', async snapshot => {
+        const answer = snapshot.val();
+        if (answer && !peerConnection.currentRemoteDescription) {
+          await peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
+        }
+      });
+
+      callRef.child('calleeCandidates').on('child_added', snapshot => {
+        const candidate = new RTCIceCandidate(snapshot.val());
+        peerConnection.addIceCandidate(candidate);
+      });
+
+      setCallStatus("Esperando conexión...", "#ff0");
+    });
+
+    document.getElementById('joinCall').addEventListener('click', async () => {
+      isCreator = false;
+      const callId = callIdInput.value.trim();
+      if (!callId) {
+        alert('Por favor ingresa un ID de llamada para unirse.');
+        return;
+      }
+
+      callRef = db.ref('calls/' + callId);
+
+      // Get title and show only title for joiner
+      const titleSnap = await callRef.child('title').once('value');
+      const title = titleSnap.val();
+      showJoinerUI(title);
+
+      // Verifica si existe la llamada
+      const offerSnapshot = await callRef.child('offer').once('value');
+      const offer = offerSnapshot.val();
+      if (!offer) {
+        alert('No se encontró una oferta para esta llamada. Verifica el ID de llamada.');
+        setCallStatus("ID no válido", "#f00");
+        // No ocultar/join UI ni avanzar, simplemente salir
+        return;
+      }
+
+      peerConnection = new RTCPeerConnection(servers);
+      localStream1.getTracks().forEach(track => peerConnection.addTrack(track, localStream1));
+      localStream2.getTracks().forEach(track => peerConnection.addTrack(track, localStream2));
+
+      calleeCandidatesCollection = callRef.child('calleeCandidates');
+      const offerCandidatesCollection = callRef.child('callerCandidates');
+
+      peerConnection.onicecandidate = event => {
+        if (event.candidate) {
+          calleeCandidatesCollection.push(event.candidate.toJSON());
+        }
+      };
+
+      peerConnection.ontrack = event => {
+        assignRemoteStream(event.streams[0]);
+      };
+
+      peerConnection.onconnectionstatechange = () => {
+        if (peerConnection.connectionState === "connected") setCallStatus("Conectado", "#0f0");
+      };
+
+      await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
+
+      const answer = await peerConnection.createAnswer();
+      await peerConnection.setLocalDescription(answer);
+      await callRef.child('answer').set({ type: answer.type, sdp: answer.sdp });
+
+      offerCandidatesCollection.on('child_added', snapshot => {
+        const candidate = new RTCIceCandidate(snapshot.val());
+        peerConnection.addIceCandidate(candidate).catch(e => console.error('Error adding ICE candidate:', e));
+      });
+
+      setCallStatus("Conectando...", "#ff0");
+    });
   </script>
 </body>
 </html>
