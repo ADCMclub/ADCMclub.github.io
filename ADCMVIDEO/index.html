@@ -230,10 +230,15 @@
     </div>
 
     <div style="margin-top: 15px;">
-      <input id="callTitle" placeholder="Título de la llamada" style="width: 200px;"/><br>
-      <button id="startCall">Crear llamada</button>
-      <button id="joinCall">Unirse a llamada</button>
-      <input id="callId" placeholder="ID de llamada" style="width: 200px;"/><br><br>
+      <div id="creatorFields">
+        <input id="callTitle" placeholder="Título de la llamada" style="width: 200px;"/><br>
+        <button id="startCall">Crear llamada</button>
+        <span id="callCode" style="display:none;color:#fff;font-size:1.1rem;"></span>
+      </div>
+      <div id="joinerFields">
+        <button id="joinCall">Unirse a llamada</button>
+        <input id="callId" placeholder="ID de llamada" style="width: 200px;"/><br>
+      </div>
       <span id="callStatus" style="color:#0f0;font-weight:bold;"></span><br>
       <button id="startRecording">Iniciar grabación</button>
       <button id="stopRecording" disabled>Detener grabación</button>
@@ -470,9 +475,30 @@
       updateCloudScenePreview(sceneId);
     }
 
-    // Asigna los streams correctos a los videos de cada escena grupal
+    // Helper to show/hide creator/joiner fields
+    function showCreatorUI(callId, title) {
+      document.getElementById('creatorFields').style.display = '';
+      document.getElementById('joinerFields').style.display = 'none';
+      document.getElementById('callTitle').style.display = '';
+      document.getElementById('callTitle').value = title || '';
+      document.getElementById('callCode').style.display = '';
+      document.getElementById('callCode').textContent = "Código de llamada: " + callId;
+      document.getElementById('joinedTitle').style.display = '';
+      document.getElementById('joinedTitle').textContent = "Título de la llamada: " + (title || '');
+    }
+    function showJoinerUI(title) {
+      document.getElementById('creatorFields').style.display = 'none';
+      document.getElementById('joinerFields').style.display = 'none';
+      document.getElementById('callTitle').style.display = 'none';
+      document.getElementById('callCode').style.display = 'none';
+      document.getElementById('joinedTitle').style.display = '';
+      document.getElementById('joinedTitle').textContent = "Título de la llamada: " + (title || '');
+    }
+
+    // --- Scene assignment: always show both videos in all scenes ---
     function assignSceneStreams(sceneId) {
       const remoteStream = peerConnection?.getRemoteStreams?.()[0] || localStream2;
+      // Always show both videos for all scenes
       Object.entries(camsLocal).forEach(([k, v]) => v && (v.style.display = 'none'));
       Object.entries(camsRemote).forEach(([k, v]) => v && (v.style.display = 'none'));
       if (sceneId === 'scene1') {
@@ -650,6 +676,9 @@
       const el = document.getElementById('callStatus');
       el.textContent = msg;
       el.style.color = color;
+      if (msg === "Conectado") {
+        hideCallInputsAfterConnect();
+      }
     }
 
     // Call creation/join logic
@@ -662,10 +691,11 @@
       const shortId = generateShortId();
       callRef = db.ref('calls/' + shortId);
       callIdInput.value = shortId;
-
-      // Guarda el título si se proporciona
       const title = document.getElementById('callTitle').value.trim();
       if (title) await callRef.child('title').set(title);
+
+      // Hide join fields, show code and title
+      showCreatorUI(shortId, title);
 
       peerConnection = new RTCPeerConnection(servers);
       localStream1.getTracks().forEach(track => peerConnection.addTrack(track, localStream1));
@@ -714,19 +744,10 @@
 
       callRef = db.ref('calls/' + callId);
 
-      // Obtener el título de la llamada y mostrarlo
+      // Get title and show only title for joiner
       const titleSnap = await callRef.child('title').once('value');
       const title = titleSnap.val();
-      if (title) {
-        document.getElementById('joinedTitle').textContent = "Título de la llamada: " + title;
-        document.getElementById('joinedTitle').style.display = '';
-      } else {
-        document.getElementById('joinedTitle').textContent = '';
-        document.getElementById('joinedTitle').style.display = 'none';
-      }
-      // Oculta el input de título y el código para el usuario que se une
-      document.getElementById('callTitle').style.display = 'none';
-      callIdInput.style.display = 'none';
+      showJoinerUI(title);
 
       // Verifica si existe la llamada
       const offerSnapshot = await callRef.child('offer').once('value');
