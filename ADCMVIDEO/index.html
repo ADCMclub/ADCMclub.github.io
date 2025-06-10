@@ -153,12 +153,12 @@
 
   <div class="controls section hide">
     <div id="sceneButtons">
-      <button data-scene="scene1" class="active">Escena 1 (Cámara 1)</button>
-      <button data-scene="scene2">Escena 2 (Cámara 2)</button>
-      <button data-scene="scene3">Escena 3 (Ambos vertical)</button>
-      <button data-scene="scene4">Escena 4 (Ambos horizontal)</button>
-      <button data-scene="scene5">Escena 5 (Cam1 grande, Cam2 esquina)</button>
-      <button data-scene="scene6">Escena 6 (Cam2 grande, Cam1 esquina)</button>
+      <button data-scene="scene1" class="active">Escena 1 </button>
+      <button data-scene="scene2">Escena 2 </button>
+      <button data-scene="scene3">Escena 3 </button>
+      <button data-scene="scene4">Escena 4 </button>
+      <button data-scene="scene5">Escena 5 </button>
+      <button data-scene="scene6">Escena 6 </button>
     </div>
 
     <!-- Escena 1: Solo cámara 1 -->
@@ -371,88 +371,23 @@
     function setupSceneButtons() {
       sceneButtons.forEach(btn => {
         btn.addEventListener('click', () => {
+          // Update active button
           sceneButtons.forEach(b => b.classList.remove('active'));
           btn.classList.add('active');
 
-          scenes.forEach(scene => {
-            scene.classList.remove('active');
-            if (scene.id === btn.dataset.scene) {
-              scene.classList.add('active');
-            }
-          });
-
-          // Update scene state for the current session
-          db.ref(`sessions/${sessionId}/scene`).set(btn.dataset.scene);
-        });
-      });
-
-      // Listen for scene changes within the session
-      db.ref(`sessions/${sessionId}/scene`).on('value', snapshot => {
-        const sceneId = snapshot.val();
-        if (sceneId) {
-          sceneButtons.forEach(b => b.classList.remove('active'));
+          // Update active scene
           scenes.forEach(scene => scene.classList.remove('active'));
-          document.querySelector(`[data-scene="${sceneId}"]`).classList.add('active');
-          document.getElementById(sceneId).classList.add('active');
-        }
-      });
-    }
-
-    // Update scene visibility logic for scene 1 and 2
-    function setupSceneVisibility() {
-      // Scene 1: Focus on local user (camera 1)
-      const scene1 = document.getElementById('scene1');
-      scene1.addEventListener('click', () => {
-        camsLocal[1].style.display = 'block';
-        camsRemote[1].style.display = 'none';
-      });
-
-      // Scene 2: Focus on remote user (camera 2)
-      const scene2 = document.getElementById('scene2');
-      scene2.addEventListener('click', () => {
-        camsLocal[2].style.display = 'none';
-        camsRemote[2].style.display = 'block';
-      });
-
-      // Ensure other scenes toggle visibility correctly
-      scenes.forEach(scene => {
-        scene.addEventListener('click', () => {
-          scenes.forEach(s => s.classList.remove('active'));
-          scene.classList.add('active');
+          const targetScene = document.getElementById(btn.dataset.scene);
+          if (targetScene) {
+            targetScene.classList.add('active');
+          } else {
+            console.error(`Scene with ID "${btn.dataset.scene}" not found.`);
+          }
         });
       });
     }
 
-    // Add keyboard shortcuts for quick scene changes
-    function setupKeyboardShortcuts() {
-      document.addEventListener('keydown', (event) => {
-        if (event.shiftKey) {
-          const sceneKey = event.key;
-          const sceneButton = document.querySelector(`#sceneButtons button[data-scene="scene${sceneKey}"]`);
-          if (sceneButton) {
-            sceneButton.click();
-          }
-        }
-      });
-    }
-
-    // Toggle video/audio en preview
-    toggleVideoBtn.addEventListener('click', () => {
-      videoEnabled = !videoEnabled;
-      localStream1.getVideoTracks().forEach(track => track.enabled = videoEnabled);
-      localStream2.getVideoTracks().forEach(track => track.enabled = videoEnabled);
-      toggleVideoBtn.classList.toggle('active', videoEnabled);
-      toggleVideoBtn.textContent = videoEnabled ? 'Video Activado' : 'Video Desactivado';
-    });
-
-    toggleAudioBtn.addEventListener('click', () => {
-      audioEnabled = !audioEnabled;
-      localStream1.getAudioTracks().forEach(track => track.enabled = audioEnabled);
-      toggleAudioBtn.classList.toggle('active', audioEnabled);
-      toggleAudioBtn.textContent = audioEnabled ? 'Micrófono Activado' : 'Micrófono Desactivado';
-    });
-
-    // Entrada a llamada - habilita controles
+    // Ensure scene switching is enabled after entering a call
     enterCallBtn.addEventListener('click', async () => {
       isEditor = asEditorCheckbox.checked;
       if (!localStream1) {
@@ -465,7 +400,7 @@
       initializeSession(); // Initialize session-specific state
       assignLocalStreams();
       setDefaultScene(); // Set scene 4 as default
-      setupSceneButtons();
+      setupSceneButtons(); // Enable scene switching
       setupEditorControls(); // Add editor controls
     });
 
@@ -520,6 +455,8 @@
         const candidate = new RTCIceCandidate(snapshot.val());
         peerConnection.addIceCandidate(candidate);
       });
+
+      enableSceneSwitching(); // Enable scene switching after call creation
     });
 
     joinCallBtn.addEventListener('click', async () => {
@@ -565,6 +502,8 @@
         const candidate = new RTCIceCandidate(snapshot.val());
         peerConnection.addIceCandidate(candidate);
       });
+
+      enableSceneSwitching(); // Enable scene switching after joining a call
     });
 
     // Grabación
