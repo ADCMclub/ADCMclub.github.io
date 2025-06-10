@@ -309,26 +309,36 @@
 
     // Obtener dispositivos
     async function getDevices() {
-      const devices = await navigator.mediaDevices.enumerateDevices();
+      try {
+        const devices = await navigator.mediaDevices.enumerateDevices();
 
-      const videoDevices = devices.filter(d => d.kind === 'videoinput');
-      const audioDevices = devices.filter(d => d.kind === 'audioinput');
+        const videoDevices = devices.filter(d => d.kind === 'videoinput');
+        const audioDevices = devices.filter(d => d.kind === 'audioinput');
 
-      cameraSelect.innerHTML = '';
-      videoDevices.forEach((device, index) => {
-        const option = document.createElement('option');
-        option.value = device.deviceId;
-        option.text = device.label || `Cámara ${index + 1}`;
-        cameraSelect.appendChild(option);
-      });
+        cameraSelect.innerHTML = '';
+        videoDevices.forEach((device, index) => {
+          const option = document.createElement('option');
+          option.value = device.deviceId;
+          option.text = device.label || `Cámara ${index + 1}`;
+          cameraSelect.appendChild(option);
+        });
 
-      micSelect.innerHTML = '';
-      audioDevices.forEach((device, index) => {
-        const option = document.createElement('option');
-        option.value = device.deviceId;
-        option.text = device.label || `Micrófono ${index + 1}`;
-        micSelect.appendChild(option);
-      });
+        micSelect.innerHTML = '';
+        audioDevices.forEach((device, index) => {
+          const option = document.createElement('option');
+          option.value = device.deviceId;
+          option.text = device.label || `Micrófono ${index + 1}`;
+          micSelect.appendChild(option);
+        });
+
+        // Ensure compatibility for iOS devices
+        if (videoDevices.length === 0 || audioDevices.length === 0) {
+          alert('Por favor, habilita permisos de cámara y micrófono en tu dispositivo.');
+        }
+      } catch (error) {
+        console.error('Error al obtener dispositivos:', error);
+        alert('No se pudieron obtener los dispositivos. Verifica los permisos.');
+      }
     }
 
     // Obtener streams para ambas cámaras
@@ -410,6 +420,8 @@
           const targetScene = document.getElementById(btn.dataset.scene);
           if (targetScene) {
             targetScene.classList.add('active');
+          } else {
+            console.error(`Scene with ID "${btn.dataset.scene}" not found.`);
           }
         });
       });
