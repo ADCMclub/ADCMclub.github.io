@@ -330,6 +330,9 @@
     // Utility functions
     async function getDevices() {
       try {
+        // Request permissions upfront to ensure all devices are accessible
+        await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+
         const devices = await navigator.mediaDevices.enumerateDevices();
         const videoDevices = devices.filter(d => d.kind === 'videoinput');
         const audioDevices = devices.filter(d => d.kind === 'audioinput');
