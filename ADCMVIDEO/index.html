@@ -390,34 +390,6 @@
       });
     }
 
-    function setupSceneButtons() {
-      sceneButtons.forEach(btn => {
-        btn.addEventListener('click', () => {
-          const sceneId = btn.getAttribute('data-scene');
-          if (sceneId) {
-            switchScene(sceneId);
-          }
-        });
-      });
-    }
-
-    // Call setupSceneButtons immediately after declaring it
-    setupSceneButtons();
-
-    function setDefaultScene() {
-      switchScene('scene4');
-    }
-
-    function initializeSession() {
-      sessionId = Math.random().toString(36).substr(2, 9);
-      db.ref(`sessions/${sessionId}/scene`).set('scene1');
-    }
-
-    function setupEditorControls() {
-      editorInfo.classList.toggle('hide', !isEditor);
-      startRecordingBtn.disabled = !isEditor;
-    }
-
     function switchScene(sceneId) {
       scenes.forEach(scene => {
         scene.style.display = 'none';
@@ -448,6 +420,34 @@
             video.play().catch(e => console.error('Error playing remote video:', e));
           }
         });
+
+        // Update the scene in Firebase
+        if (sessionId) {
+          db.ref(`sessions/${sessionId}/scene`).set(sceneId);
+        }
+      }
+    }
+
+    function setupSceneButtons() {
+      sceneButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const sceneId = btn.getAttribute('data-scene');
+          if (sceneId) {
+            switchScene(sceneId);
+          }
+        });
+      });
+    }
+
+    // Listen for scene changes in Firebase
+    function listenForSceneChanges() {
+      if (sessionId) {
+        db.ref(`sessions/${sessionId}/scene`).on('value', snapshot => {
+          const sceneId = snapshot.val();
+          if (sceneId) {
+            switchScene(sceneId);
+          }
+        });
       }
     }
 
@@ -466,6 +466,7 @@
       assignLocalStreams();
       setupEditorControls();
       setDefaultScene();
+      listenForSceneChanges(); // Start listening for scene changes
     });
 
     startCallBtn.addEventListener('click', async () => {
@@ -526,11 +527,17 @@
       };
 
       peerConnection.ontrack = event => {
-        assignRemoteStream(event.streams[0]);
+        const remoteStream = event.streams[0];
+        assignRemoteStream(remoteStream); // Ensure remote streams are assigned properly
       };
 
       const offerSnapshot = await callDoc.child('offer').once('value');
       const offer = offerSnapshot.val();
+      if (!offer) {
+        alert('No se encontró una oferta para esta llamada. Verifica el ID de llamada.');
+        return;
+      }
+
       await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
 
       const answer = await peerConnection.createAnswer();
@@ -539,7 +546,7 @@
 
       offerCandidatesCollection.on('child_added', snapshot => {
         const candidate = new RTCIceCandidate(snapshot.val());
-        peerConnection.addIceCandidate(candidate);
+        peerConnection.addIceCandidate(candidate).catch(e => console.error('Error adding ICE candidate:', e));
       });
     });
 
