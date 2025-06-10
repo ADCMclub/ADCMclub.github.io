@@ -8,23 +8,86 @@ const firebaseConfig = {
   messagingSenderId: "786317659414",
   appId: "1:786317659414:web:4b9fe6fecc349647d1d437"
 };
-
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
+const previewVideo = document.getElementById('previewVideo');
 const localVideo = document.getElementById('localVideo');
 const remoteVideo = document.getElementById('remoteVideo');
+const cameraSelect = document.getElementById('cameraSelect');
+const micSelect = document.getElementById('micSelect');
+const toggleVideoBtn = document.getElementById('toggleVideo');
+const toggleAudioBtn = document.getElementById('toggleAudio');
+const enterCallBtn = document.getElementById('enterCall');
+const callIdInput = document.getElementById('callId');
 const startCallBtn = document.getElementById('startCall');
 const joinCallBtn = document.getElementById('joinCall');
-const callIdInput = document.getElementById('callId');
 
-let localStream, peerConnection;
-const servers = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
+let localStream;
+let peerConnection;
+let isCaller = false;
+let videoEnabled = true;
+let audioEnabled = true;
 
-async function init() {
-  localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+const servers = {
+  iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]
+};
+
+// Cargar dispositivos
+async function loadDevices() {
+  const devices = await navigator.mediaDevices.enumerateDevices();
+  cameraSelect.innerHTML = '';
+  micSelect.innerHTML = '';
+
+  devices.forEach(device => {
+    if (device.kind === 'videoinput') {
+      cameraSelect.innerHTML += `<option value="${device.deviceId}">${device.label || 'Cámara'}</option>`;
+    } else if (device.kind === 'audioinput') {
+      micSelect.innerHTML += `<option value="${device.deviceId}">${device.label || 'Micrófono'}</option>`;
+    }
+  });
+}
+
+// Previsualización
+async function startPreview() {
+  const constraints = {
+    video: { deviceId: cameraSelect.value ? { exact: cameraSelect.value } : undefined },
+    audio: { deviceId: micSelect.value ? { exact: micSelect.value } : undefined }
+  };
+
+  if (localStream) {
+    localStream.getTracks().forEach(track => track.stop());
+  }
+
+  localStream = await navigator.mediaDevices.getUserMedia(constraints);
+  previewVideo.srcObject = localStream;
+}
+
+cameraSelect.onchange = startPreview;
+micSelect.onchange = startPreview;
+
+toggleVideoBtn.onclick = () => {
+  videoEnabled = !videoEnabled;
+  localStream.getVideoTracks().forEach(track => track.enabled = videoEnabled);
+  toggleVideoBtn.classList.toggle('active', videoEnabled);
+  toggleVideoBtn.textContent = videoEnabled ? "Video Activado" : "Video Apagado";
+};
+
+toggleAudioBtn.onclick = () => {
+  audioEnabled = !audioEnabled;
+  localStream.getAudioTracks().forEach(track => track.enabled = audioEnabled);
+  toggleAudioBtn.classList.toggle('active', audioEnabled);
+  toggleAudioBtn.textContent = audioEnabled ? "Micrófono Activado" : "Micrófono Silenciado";
+};
+
+// Entrar a llamada
+enterCallBtn.onclick = async () => {
+  document.querySelector('.pre-call').classList.add('hide');
+  document.querySelector('.controls').classList.remove('hide');
   localVideo.srcObject = localStream;
+};
 
+async function initCall() {
   peerConnection = new RTCPeerConnection(servers);
   localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
 
@@ -40,11 +103,9 @@ async function init() {
   };
 }
 
-let isCaller = false;
-
 startCallBtn.onclick = async () => {
   isCaller = true;
-  await init();
+  await initCall();
   const callRef = db.ref().push();
   callIdInput.value = callRef.key;
 
@@ -67,7 +128,7 @@ startCallBtn.onclick = async () => {
 
 joinCallBtn.onclick = async () => {
   isCaller = false;
-  await init();
+  await initCall();
   const callRef = db.ref(callIdInput.value);
 
   const snapshot = await callRef.once('value');
@@ -83,3 +144,9 @@ joinCallBtn.onclick = async () => {
     peerConnection.addIceCandidate(candidate);
   });
 };
+
+// Inicializar
+(async () => {
+  await loadDevices();
+  await startPreview();
+})();
