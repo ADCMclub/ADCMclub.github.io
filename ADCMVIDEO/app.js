@@ -1,4 +1,3 @@
-// 🔥 CONFIGURA TU PROYECTO FIREBASE ABAJO:
 const firebaseConfig = {
   apiKey: "AIzaSyC6shbQniv5FeXnJYaSasbGKdYibDWhxV8",
   authDomain: "fir-rtc-1d4a1.firebaseapp.com",
@@ -37,13 +36,10 @@ window.onload = async () => {
     const devices = await navigator.mediaDevices.enumerateDevices();
     cameraSelect.innerHTML = '';
     micSelect.innerHTML = '';
-
     devices.forEach(device => {
-      if (device.kind === 'videoinput') {
-        cameraSelect.innerHTML += `<option value="${device.deviceId}">${device.label || 'Cámara'}</option>`;
-      } else if (device.kind === 'audioinput') {
-        micSelect.innerHTML += `<option value="${device.deviceId}">${device.label || 'Micrófono'}</option>`;
-      }
+      const option = `<option value="${device.deviceId}">${device.label || device.kind}</option>`;
+      if (device.kind === 'videoinput') cameraSelect.innerHTML += option;
+      if (device.kind === 'audioinput') micSelect.innerHTML += option;
     });
   }
 
@@ -52,11 +48,7 @@ window.onload = async () => {
       video: cameraSelect.value ? { deviceId: { exact: cameraSelect.value } } : true,
       audio: micSelect.value ? { deviceId: { exact: micSelect.value } } : true
     };
-
-    if (localStream) {
-      localStream.getTracks().forEach(track => track.stop());
-    }
-
+    if (localStream) localStream.getTracks().forEach(track => track.stop());
     localStream = await navigator.mediaDevices.getUserMedia(constraints);
     previewVideo.srcObject = localStream;
   }
@@ -87,18 +79,14 @@ window.onload = async () => {
   async function initCall() {
     peerConnection = new RTCPeerConnection(servers);
     localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
-
     peerConnection.ontrack = event => {
       console.log("Recibiendo media remota...");
       remoteVideo.srcObject = event.streams[0];
     };
-
     peerConnection.onicecandidate = event => {
-      if (event.candidate && peerConnection.remoteDescription) {
-        const candidate = event.candidate.toJSON();
+      if (event.candidate) {
         const role = isCaller ? 'caller' : 'callee';
-        console.log("Enviando ICE candidate:", candidate);
-        db.ref(`${callIdInput.value}/candidates/${role}`).push(candidate);
+        db.ref(`${callIdInput.value}/candidates/${role}`).push(event.candidate.toJSON());
       }
     };
   }
@@ -107,47 +95,49 @@ window.onload = async () => {
     isCaller = true;
     await initCall();
     const callRef = db.ref().push();
-    callIdInput.value = callRef.key;
-    console.log("ID de llamada generado:", callRef.key);
+    const callId = callRef.key;
+    callIdInput.value = callId;
 
     const offer = await peerConnection.createOffer();
     await peerConnection.setLocalDescription(offer);
-    callRef.set({ offer });
 
+    // Añadir timestamp
+    await callRef.set({
+      offer,
+      timestamp: firebase.database.ServerValue.TIMESTAMP
+    });
+
+    // Auto-eliminar en 24h (en milisegundos)
+    setTimeout(() => {
+      db.ref(callId).remove();
+    }, 86400000); // 24 * 60 * 60 * 1000
+
+    // Esperar respuesta
     callRef.on('value', async snapshot => {
       const data = snapshot.val();
-      if (!peerConnection.currentRemoteDescription && data?.answer) {
+      if (data?.answer && !peerConnection.currentRemoteDescription) {
         console.log("Recibiendo respuesta...");
         await peerConnection.setRemoteDescription(new RTCSessionDescription(data.answer));
       }
     });
 
-    db.ref(`${callRef.key}/candidates/callee`).on('child_added', snapshot => {
+    db.ref(`${callId}/candidates/callee`).on('child_added', snapshot => {
       const candidate = new RTCIceCandidate(snapshot.val());
-      console.log("Añadiendo ICE desde callee...");
       peerConnection.addIceCandidate(candidate);
     });
   };
 
   joinCallBtn.onclick = async () => {
     const callId = callIdInput.value.trim();
-    if (!callId) {
-      alert("Debes ingresar un ID de llamada");
-      return;
-    }
-
+    if (!callId) return alert("Debes ingresar un ID de llamada");
     isCaller = false;
     await initCall();
+
     const callRef = db.ref(callId);
     const snapshot = await callRef.once('value');
     const callData = snapshot.val();
+    if (!callData?.offer) return alert("No se encontró una oferta válida.");
 
-    if (!callData?.offer) {
-      alert("Oferta no encontrada en esa llamada.");
-      return;
-    }
-
-    console.log("Unido a la llamada con ID:", callId);
     await peerConnection.setRemoteDescription(new RTCSessionDescription(callData.offer));
     const answer = await peerConnection.createAnswer();
     await peerConnection.setLocalDescription(answer);
@@ -155,7 +145,6 @@ window.onload = async () => {
 
     db.ref(`${callId}/candidates/caller`).on('child_added', snapshot => {
       const candidate = new RTCIceCandidate(snapshot.val());
-      console.log("Añadiendo ICE desde caller...");
       peerConnection.addIceCandidate(candidate);
     });
   };
