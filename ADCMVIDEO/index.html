@@ -387,58 +387,30 @@
         const audioDeviceId = micSelect.value;
 
         localStream1 = await navigator.mediaDevices.getUserMedia({
-          video: { deviceId: videoDeviceId ? { exact: videoDeviceId } : undefined },
-          audio: { deviceId: audioDeviceId ? { exact: audioDeviceId } : undefined },
+          video: videoDeviceId ? { deviceId: { exact: videoDeviceId } } : true,
+          audio: audioDeviceId ? { deviceId: { exact: audioDeviceId } } : true,
         });
 
-        const videoDevices = (await navigator.mediaDevices.enumerateDevices())
-          .filter(d => d.kind === 'videoinput');
+        // Get second camera if available
+        const videoDevices = (await navigator.mediaDevices.enumerateDevices()).filter(d => d.kind === 'videoinput');
         const secondCamId = videoDevices.find(d => d.deviceId !== videoDeviceId)?.deviceId;
-
         localStream2 = secondCamId
           ? await navigator.mediaDevices.getUserMedia({ video: { deviceId: { exact: secondCamId } }, audio: false })
           : localStream1.clone();
 
         previewVideo.srcObject = localStream1;
-        previewVideo.play().catch(e => console.error('Error playing preview video:', e));
+        previewVideo.play().catch(() => {});
       } catch (error) {
-        console.error('Error al obtener streams:', error);
-        alert('No se pudieron obtener los streams. Verifica los permisos.');
+        alert('No se pudo acceder a la cámara o micrófono. Permisos denegados o no disponibles.');
       }
     }
 
     function assignLocalStreams() {
       Object.entries(camsLocal).forEach(([key, cam]) => {
         cam.srcObject = key === '1' ? localStream2 : localStream1;
-        cam.play().catch(e => console.error(`Error playing local video ${key}:`, e));
+        cam.play().catch(() => {});
       });
     }
-
-    function toggleStream(trackType, enabled, button, activeText, inactiveText) {
-      localStream1.getTracks().filter(track => track.kind === trackType).forEach(track => track.enabled = enabled);
-      button.classList.toggle('active', enabled);
-      button.textContent = enabled ? activeText : inactiveText;
-    }
-
-    toggleVideoBtn.addEventListener('click', () => {
-      videoEnabled = !videoEnabled;
-      toggleStream('video', videoEnabled, toggleVideoBtn, 'Video Activado', 'Video Desactivado');
-    });
-
-    toggleAudioBtn.addEventListener('click', () => {
-      audioEnabled = !audioEnabled;
-      toggleStream('audio', audioEnabled, toggleAudioBtn, 'Micrófono Activado', 'Micrófono Desactivado');
-    });
-
-    cameraSelect.addEventListener('change', async () => {
-      await getStreams();
-      assignLocalStreams();
-    });
-
-    micSelect.addEventListener('change', async () => {
-      await getStreams();
-      assignLocalStreams();
-    });
 
     // Cambia la escena y resalta el botón activo
     function switchScene(sceneId) {
@@ -1056,6 +1028,100 @@
 
       setCallStatus("Conectando...", "#ff0");
     });
+
+    // --- Fix: toggle video/audio and camera switching for mobile ---
+
+    // Helper to get new stream with current device selections and track states
+    async function refreshStreamsAndTracks() {
+      try {
+        const videoDeviceId = cameraSelect.value;
+        const audioDeviceId = micSelect.value;
+        // Always request both video and audio, but set enabled state after
+        const newStream = await navigator.mediaDevices.getUserMedia({
+          video: videoDeviceId ? { deviceId: { exact: videoDeviceId } } : true,
+          audio: audioDeviceId ? { deviceId: { exact: audioDeviceId } } : true,
+        });
+        // Replace tracks in localStream1
+        if (localStream1) {
+          // Stop old tracks
+          localStream1.getTracks().forEach(track => track.stop());
+        }
+        localStream1 = newStream;
+        // Set enabled state for tracks
+        localStream1.getVideoTracks().forEach(track => track.enabled = videoEnabled);
+        localStream1.getAudioTracks().forEach(track => track.enabled = audioEnabled);
+        previewVideo.srcObject = localStream1;
+        previewVideo.play().catch(() => {});
+        assignLocalStreams();
+      } catch (e) {
+        alert('No se pudo acceder a la cámara o micrófono. Permisos denegados o no disponibles.');
+      }
+    }
+
+    // Track state
+    let videoEnabled = true;
+    let audioEnabled = true;
+
+    // Toggle video
+    toggleVideoBtn.addEventListener('click', async () => {
+      videoEnabled = !videoEnabled;
+      if (localStream1) {
+        localStream1.getVideoTracks().forEach(track => track.enabled = videoEnabled);
+      }
+      toggleVideoBtn.classList.toggle('active', videoEnabled);
+      toggleVideoBtn.textContent = videoEnabled ? 'Video Activado' : 'Video Desactivado';
+      // On some mobile browsers, need to re-acquire stream to apply camera change
+      await refreshStreamsAndTracks();
+    });
+
+    // Toggle audio
+    toggleAudioBtn.addEventListener('click', async () => {
+      audioEnabled = !audioEnabled;
+      if (localStream1) {
+        localStream1.getAudioTracks().forEach(track => track.enabled = audioEnabled);
+      }
+      toggleAudioBtn.classList.toggle('active', audioEnabled);
+      toggleAudioBtn.textContent = audioEnabled ? 'Micrófono Activado' : 'Micrófono Desactivado';
+      await refreshStreamsAndTracks();
+    });
+
+    // Camera/mic selection change
+    cameraSelect.addEventListener('change', async () => {
+      await refreshStreamsAndTracks();
+    });
+    micSelect.addEventListener('change', async () => {
+      await refreshStreamsAndTracks();
+    });
+
+    // --- Fix: assignLocalStreams should always use current localStream1 ---
+    function assignLocalStreams() {
+      Object.entries(camsLocal).forEach(([key, cam]) => {
+        cam.srcObject = key === '1' ? localStream2 : localStream1;
+        cam.play().catch(() => {});
+      });
+    }
+
+    // --- Fix: getStreams should not set enabled state, let refreshStreamsAndTracks handle it ---
+    async function getStreams() {
+      try {
+        const videoDeviceId = cameraSelect.value;
+        const audioDeviceId = micSelect.value;
+        localStream1 = await navigator.mediaDevices.getUserMedia({
+          video: videoDeviceId ? { deviceId: { exact: videoDeviceId } } : true,
+          audio: audioDeviceId ? { deviceId: { exact: audioDeviceId } } : true,
+        });
+        // Get second camera if available
+        const videoDevices = (await navigator.mediaDevices.enumerateDevices()).filter(d => d.kind === 'videoinput');
+        const secondCamId = videoDevices.find(d => d.deviceId !== videoDeviceId)?.deviceId;
+        localStream2 = secondCamId
+          ? await navigator.mediaDevices.getUserMedia({ video: { deviceId: { exact: secondCamId } }, audio: false })
+          : localStream1.clone();
+        previewVideo.srcObject = localStream1;
+        previewVideo.play().catch(() => {});
+      } catch (error) {
+        alert('No se pudo acceder a la cámara o micrófono. Permisos denegados o no disponibles.');
+      }
+    }
   </script>
 </body>
 </html>
