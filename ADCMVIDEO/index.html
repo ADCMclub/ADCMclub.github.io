@@ -375,6 +375,37 @@
       });
     }
 
+    // Update scene visibility logic for scene 1 and 2
+    function setupSceneVisibility() {
+      const scene1 = document.getElementById('scene1');
+      const scene2 = document.getElementById('scene2');
+      const localVideo1 = document.getElementById('localVideo1');
+      const localVideo2 = document.getElementById('localVideo2');
+
+      scene1.addEventListener('click', () => {
+        localVideo1.style.display = 'block';
+        localVideo2.style.display = 'none';
+      });
+
+      scene2.addEventListener('click', () => {
+        localVideo1.style.display = 'none';
+        localVideo2.style.display = 'block';
+      });
+    }
+
+    // Add keyboard shortcuts for quick scene changes
+    function setupKeyboardShortcuts() {
+      document.addEventListener('keydown', (event) => {
+        if (event.shiftKey) {
+          const sceneKey = event.key;
+          const sceneButton = document.querySelector(`#sceneButtons button[data-scene="scene${sceneKey}"]`);
+          if (sceneButton) {
+            sceneButton.click();
+          }
+        }
+      });
+    }
+
     // Toggle video/audio en preview
     toggleVideoBtn.addEventListener('click', () => {
       videoEnabled = !videoEnabled;
@@ -564,6 +595,8 @@
       await getStreams();
       assignLocalStreams();
       setupSceneButtons();
+      setupSceneVisibility();
+      setupKeyboardShortcuts();
 
       // Actualizar streams si cambian selects
       cameraSelect.addEventListener('change', async () => {
