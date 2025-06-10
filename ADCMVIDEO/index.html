@@ -125,6 +125,36 @@
       display: none;
       z-index: 1000;
     }
+
+    @media (max-width: 768px) {
+      body {
+        padding: 10px;
+      }
+      h1 {
+        font-size: 1.5rem;
+      }
+      video.main {
+        width: 100%;
+        height: auto;
+      }
+      video.small {
+        width: 40%;
+        bottom: 5px;
+        right: 5px;
+      }
+      .scene {
+        min-height: 240px;
+        padding: 5px;
+      }
+      #sceneButtons button {
+        font-size: 0.9rem;
+        padding: 6px 10px;
+      }
+      select, input, button {
+        font-size: 0.9rem;
+        padding: 8px;
+      }
+    }
   </style>
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
@@ -380,8 +410,6 @@
           const targetScene = document.getElementById(btn.dataset.scene);
           if (targetScene) {
             targetScene.classList.add('active');
-          } else {
-            console.error(`Scene with ID "${btn.dataset.scene}" not found.`);
           }
         });
       });
