@@ -789,22 +789,22 @@
       setCallStatus("Conectando...", "#ff0");
     });
 
-    // Previsualización de escenas: muestra cómo se vería cada escena (composición)
+    // Previsualización de escenas: muestra cómo se vería cada escena (composición grupal)
     function updateScenePreviews() {
       // Usuario 1: localStream1, Usuario 2: remoteStream (peerConnection) o localStream2
       const remoteStream = peerConnection?.getRemoteStreams?.()[0] || localStream2;
 
-      // Escena 1: Solo usuario 1
-      setPreviewScene('previewScene1', [localStream1]);
-      // Escena 2: Solo usuario 2
-      setPreviewScene('previewScene2', [remoteStream]);
-      // Escena 3: usuario 1 y 2 vertical alado horizontalmente
+      // Escena 1: Solo usuario 1 (solo local)
+      setPreviewScene('previewScene1', [localStream1], 'single');
+      // Escena 2: Solo usuario 2 (solo remoto)
+      setPreviewScene('previewScene2', [remoteStream], 'single');
+      // Escena 3: usuario 1 y 2 vertical alado horizontalmente (ambos)
       setPreviewScene('previewScene3', [localStream1, remoteStream], 'side');
-      // Escena 4: usuario 1 y 2 horizontal uno alado del otro
+      // Escena 4: usuario 1 y 2 horizontal uno alado del otro (ambos)
       setPreviewScene('previewScene4', [localStream1, remoteStream], 'side');
-      // Escena 5: usuario 1 grande, usuario 2 pequeño a un lado
+      // Escena 5: usuario 1 grande, usuario 2 pequeño a un lado (ambos)
       setPreviewScene('previewScene5', [localStream1, remoteStream], 'pip1');
-      // Escena 6: usuario 2 grande, usuario 1 pequeño a un lado
+      // Escena 6: usuario 2 grande, usuario 1 pequeño a un lado (ambos)
       setPreviewScene('previewScene6', [remoteStream, localStream1], 'pip2');
     }
 
@@ -826,7 +826,7 @@
         return;
       }
 
-      // Si hay dos streams, hacer composición en canvas
+      // Si hay dos streams, hacer composición en canvas (grupal)
       const canvas = document.createElement('canvas');
       canvas.width = 120;
       canvas.height = 80;
@@ -844,19 +844,18 @@
         new Promise(res => v1.onloadeddata = res),
         new Promise(res => v2.onloadeddata = res)
       ]).then(() => {
-        // Dibuja según el layout
         function draw() {
           ctx.clearRect(0, 0, canvas.width, canvas.height);
           if (layout === 'side') {
-            // Dos videos lado a lado
+            // Dos videos lado a lado (grupal)
             ctx.drawImage(v1, 0, 0, canvas.width / 2, canvas.height);
             ctx.drawImage(v2, canvas.width / 2, 0, canvas.width / 2, canvas.height);
           } else if (layout === 'pip1') {
-            // Usuario 1 grande, usuario 2 pequeño esquina
+            // Usuario 1 grande, usuario 2 pequeño esquina (grupal)
             ctx.drawImage(v1, 0, 0, canvas.width, canvas.height);
             ctx.drawImage(v2, canvas.width - 40, canvas.height - 30, 40, 30);
           } else if (layout === 'pip2') {
-            // Usuario 2 grande, usuario 1 pequeño esquina
+            // Usuario 2 grande, usuario 1 pequeño esquina (grupal)
             ctx.drawImage(v1, 0, 0, canvas.width, canvas.height);
             ctx.drawImage(v2, canvas.width - 40, canvas.height - 30, 40, 30);
           }
