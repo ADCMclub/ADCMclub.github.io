@@ -89,13 +89,16 @@ window.onload = async () => {
     localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
 
     peerConnection.ontrack = event => {
+      console.log("Recibiendo media remota...");
       remoteVideo.srcObject = event.streams[0];
     };
 
     peerConnection.onicecandidate = event => {
-      if (event.candidate) {
+      if (event.candidate && peerConnection.remoteDescription) {
         const candidate = event.candidate.toJSON();
-        db.ref(`${callIdInput.value}/candidates/${isCaller ? 'caller' : 'callee'}`).push(candidate);
+        const role = isCaller ? 'caller' : 'callee';
+        console.log("Enviando ICE candidate:", candidate);
+        db.ref(`${callIdInput.value}/candidates/${role}`).push(candidate);
       }
     };
   }
@@ -105,6 +108,7 @@ window.onload = async () => {
     await initCall();
     const callRef = db.ref().push();
     callIdInput.value = callRef.key;
+    console.log("ID de llamada generado:", callRef.key);
 
     const offer = await peerConnection.createOffer();
     await peerConnection.setLocalDescription(offer);
@@ -113,35 +117,49 @@ window.onload = async () => {
     callRef.on('value', async snapshot => {
       const data = snapshot.val();
       if (!peerConnection.currentRemoteDescription && data?.answer) {
+        console.log("Recibiendo respuesta...");
         await peerConnection.setRemoteDescription(new RTCSessionDescription(data.answer));
       }
     });
 
     db.ref(`${callRef.key}/candidates/callee`).on('child_added', snapshot => {
       const candidate = new RTCIceCandidate(snapshot.val());
+      console.log("Añadiendo ICE desde callee...");
       peerConnection.addIceCandidate(candidate);
     });
   };
 
   joinCallBtn.onclick = async () => {
+    const callId = callIdInput.value.trim();
+    if (!callId) {
+      alert("Debes ingresar un ID de llamada");
+      return;
+    }
+
     isCaller = false;
     await initCall();
-    const callRef = db.ref(callIdInput.value);
+    const callRef = db.ref(callId);
     const snapshot = await callRef.once('value');
     const callData = snapshot.val();
 
+    if (!callData?.offer) {
+      alert("Oferta no encontrada en esa llamada.");
+      return;
+    }
+
+    console.log("Unido a la llamada con ID:", callId);
     await peerConnection.setRemoteDescription(new RTCSessionDescription(callData.offer));
     const answer = await peerConnection.createAnswer();
     await peerConnection.setLocalDescription(answer);
     callRef.update({ answer });
 
-    db.ref(`${callIdInput.value}/candidates/caller`).on('child_added', snapshot => {
+    db.ref(`${callId}/candidates/caller`).on('child_added', snapshot => {
       const candidate = new RTCIceCandidate(snapshot.val());
+      console.log("Añadiendo ICE desde caller...");
       peerConnection.addIceCandidate(candidate);
     });
   };
 
-  // Solicita acceso y carga dispositivos
   await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
   await loadDevices();
   await startPreview();
