@@ -180,7 +180,6 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-storage-compat.js"></script>
 </head>
 <body>
-
   <h1>ADCM VIDEO</h1>
 
   <div class="pre-call section">
@@ -201,68 +200,33 @@
   </div>
 
   <div class="controls section hide">
-    <!-- Escena 1: Solo cámara 1 -->
+    <!-- Elimina escenas individuales, solo deja escenas grupales (ambos usuarios) -->
+    <!-- Escena 1: Ambos lado a lado -->
     <div id="scene1" class="scene">
-      <div class="scene-name">Escena 1</div>
+      <div class="scene-name">Ambos lado a lado</div>
       <video id="localVideo1" class="main" autoplay muted playsinline></video>
+      <video id="remoteVideo1" class="main" autoplay playsinline></video>
       <div class="scene-controls">
-        <button class="scene-btn" data-scene="scene2">Ir a Escena 2</button>
+        <button class="scene-btn" data-scene="scene2">Ir a PiP Local grande</button>
       </div>
-      <video id="preview1" class="preview" autoplay muted playsinline style="width:120px;position:absolute;top:10px;right:10px;border:2px solid #fff;background:#222;"></video>
     </div>
-
-    <!-- Escena 2: Solo cámara 2 -->
+    <!-- Escena 2: Local grande, remoto pequeño -->
     <div id="scene2" class="scene">
-      <div class="scene-name">Escena 2</div>
-      <video id="remoteVideo2" class="main" autoplay playsinline></video>
+      <div class="scene-name">Local grande, remoto pequeño</div>
+      <video id="localVideo2" class="main" autoplay muted playsinline></video>
+      <video id="remoteVideo2" class="small" autoplay playsinline></video>
       <div class="scene-controls">
-        <button class="scene-btn" data-scene="scene1">Ir a Escena 1</button>
+        <button class="scene-btn" data-scene="scene3">Ir a PiP Remoto grande</button>
       </div>
-      <video id="preview2" class="preview" autoplay muted playsinline style="width:120px;position:absolute;top:10px;right:10px;border:2px solid #fff;background:#222;"></video>
     </div>
-
-    <!-- Escena 3: dos cámaras verticales lado a lado -->
+    <!-- Escena 3: Remoto grande, local pequeño -->
     <div id="scene3" class="scene">
-      <div class="scene-name">Escena 3</div>
-      <video id="localVideo3" class="main" autoplay muted playsinline></video>
+      <div class="scene-name">Remoto grande, local pequeño</div>
       <video id="remoteVideo3" class="main" autoplay playsinline></video>
+      <video id="localVideo3" class="small" autoplay muted playsinline></video>
       <div class="scene-controls">
-        <button class="scene-btn" data-scene="scene4">Ir a Escena 4</button>
+        <button class="scene-btn" data-scene="scene1">Ir a Ambos lado a lado</button>
       </div>
-      <video id="preview3" class="preview" autoplay muted playsinline style="width:120px;position:absolute;top:10px;right:10px;border:2px solid #fff;background:#222;"></video>
-    </div>
-
-    <!-- Escena 4: Ambas horizontal -->
-    <div id="scene4" class="scene">
-      <div class="scene-name">Escena 4</div>
-      <video id="localVideo4" class="main" autoplay muted playsinline></video>
-      <video id="remoteVideo4" class="main" autoplay playsinline></video>
-      <div class="scene-controls">
-        <button class="scene-btn" data-scene="scene5">Ir a Escena 5</button>
-      </div>
-      <video id="preview4" class="preview" autoplay muted playsinline style="width:120px;position:absolute;top:10px;right:10px;border:2px solid #fff;background:#222;"></video>
-    </div>
-
-    <!-- Escena 5: Cam1 grande, Cam2 esquina -->
-    <div id="scene5" class="scene">
-      <div class="scene-name">Escena 5</div>
-      <video id="localVideo5" class="main" autoplay muted playsinline></video>
-      <video id="remoteVideo5" class="small" autoplay playsinline></video>
-      <div class="scene-controls">
-        <button class="scene-btn" data-scene="scene6">Ir a Escena 6</button>
-      </div>
-      <video id="preview5" class="preview" autoplay muted playsinline style="width:120px;position:absolute;top:10px;right:10px;border:2px solid #fff;background:#222;"></video>
-    </div>
-
-    <!-- Escena 6: Cam2 grande, Cam1 esquina -->
-    <div id="scene6" class="scene">
-      <div class="scene-name">Escena 6</div>
-      <video id="remoteVideo6" class="main" autoplay playsinline></video>
-      <video id="localVideo6" class="small" autoplay muted playsinline></video>
-      <div class="scene-controls">
-        <button class="scene-btn" data-scene="scene1">Ir a Escena 1</button>
-      </div>
-      <video id="preview6" class="preview" autoplay muted playsinline style="width:120px;position:absolute;top:10px;right:10px;border:2px solid #fff;background:#222;"></video>
     </div>
 
     <div style="margin-top: 15px;">
@@ -274,46 +238,21 @@
       <button id="startRecording">Iniciar grabación</button>
       <button id="stopRecording" disabled>Detener grabación</button>
     </div>
-
+    <div id="joinedTitle" style="margin-top:10px;color:#fff;font-size:1.1rem;display:none;"></div>
     <p id="editorInfo" class="hide">Estás en modo editor. Solo tú puedes grabar.</p>
     <div class="editor-controls"></div>
 
     <!-- Botones para cambiar de escena -->
     <div id="sceneFooterButtons" style="margin-top:30px; display:flex; justify-content:center; gap:10px;">
-      <button class="scene-footer-btn" data-scene="scene1">Escena 1</button>
-      <button class="scene-footer-btn" data-scene="scene2">Escena 2</button>
-      <button class="scene-footer-btn" data-scene="scene3">Escena 3</button>
-      <button class="scene-footer-btn" data-scene="scene4">Escena 4</button>
-      <button class="scene-footer-btn" data-scene="scene5">Escena 5</button>
-      <button class="scene-footer-btn" data-scene="scene6">Escena 6</button>
+      <button class="scene-footer-btn" data-scene="scene1">Ambos lado a lado</button>
+      <button class="scene-footer-btn" data-scene="scene2">Local grande</button>
+      <button class="scene-footer-btn" data-scene="scene3">Remoto grande</button>
     </div>
 
-    <!-- Agrega la previsualización de escenas debajo de los botones de cambio de escena -->
-    <div id="scenePreviewContainer" style="margin-top:30px; display:flex; justify-content:center; gap:10px; flex-wrap:wrap;">
-      <div style="display:flex; flex-direction:column; align-items:center;">
-        <span style="color:#fff;font-size:0.95rem;">Escena 1</span>
-        <video id="previewScene1" width="120" height="80" muted playsinline style="background:#222; border:2px solid #555; border-radius:8px;"></video>
-      </div>
-      <div style="display:flex; flex-direction:column; align-items:center;">
-        <span style="color:#fff;font-size:0.95rem;">Escena 2</span>
-        <video id="previewScene2" width="120" height="80" muted playsinline style="background:#222; border:2px solid #555; border-radius:8px;"></video>
-      </div>
-      <div style="display:flex; flex-direction:column; align-items:center;">
-        <span style="color:#fff;font-size:0.95rem;">Escena 3</span>
-        <video id="previewScene3" width="120" height="80" muted playsinline style="background:#222; border:2px solid #555; border-radius:8px;"></video>
-      </div>
-      <div style="display:flex; flex-direction:column; align-items:center;">
-        <span style="color:#fff;font-size:0.95rem;">Escena 4</span>
-        <video id="previewScene4" width="120" height="80" muted playsinline style="background:#222; border:2px solid #555; border-radius:8px;"></video>
-      </div>
-      <div style="display:flex; flex-direction:column; align-items:center;">
-        <span style="color:#fff;font-size:0.95rem;">Escena 5</span>
-        <video id="previewScene5" width="120" height="80" muted playsinline style="background:#222; border:2px solid #555; border-radius:8px;"></video>
-      </div>
-      <div style="display:flex; flex-direction:column; align-items:center;">
-        <span style="color:#fff;font-size:0.95rem;">Escena 6</span>
-        <video id="previewScene6" width="120" height="80" muted playsinline style="background:#222; border:2px solid #555; border-radius:8px;"></video>
-      </div>
+    <!-- Sección para mostrar la previsualización de la escena activa (en la nube) -->
+    <div id="cloudScenePreviewSection" style="margin-top:30px;">
+      <h3 style="color:#fff;">Vista previa de la escena activa (en la nube)</h3>
+      <video id="cloudScenePreview" width="320" height="180" muted autoplay playsinline style="background:#222; border:2px solid #555; border-radius:8px;"></video>
     </div>
   </div>
 
@@ -463,6 +402,56 @@
       assignLocalStreams();
     });
 
+    // Actualiza la escena activa en la nube y la previsualización
+    function updateCloudScenePreview(sceneId) {
+      const remoteStream = peerConnection?.getRemoteStreams?.()[0] || localStream2;
+      const preview = document.getElementById('cloudScenePreview');
+      // Detener cualquier stream anterior
+      if (preview.srcObject) {
+        preview.srcObject.getTracks().forEach(track => track.stop && track.stop());
+        preview.srcObject = null;
+      }
+      // Composición según la escena
+      const canvas = document.createElement('canvas');
+      canvas.width = 320;
+      canvas.height = 180;
+      const ctx = canvas.getContext('2d');
+      const vLocal = document.createElement('video');
+      const vRemote = document.createElement('video');
+      vLocal.muted = true; vRemote.muted = true;
+      vLocal.autoplay = true; vRemote.autoplay = true;
+      vLocal.playsInline = true; vRemote.playsInline = true;
+      vLocal.srcObject = localStream1 || null;
+      vRemote.srcObject = remoteStream || null;
+
+      Promise.all([
+        new Promise(res => vLocal.onloadeddata = res),
+        new Promise(res => vRemote.onloadeddata = res)
+      ]).then(() => {
+        function draw() {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          if (sceneId === 'scene1') {
+            // Ambos lado a lado
+            ctx.drawImage(vLocal, 0, 0, canvas.width / 2, canvas.height);
+            ctx.drawImage(vRemote, canvas.width / 2, 0, canvas.width / 2, canvas.height);
+          } else if (sceneId === 'scene2') {
+            // Local grande, remoto pequeño
+            ctx.drawImage(vLocal, 0, 0, canvas.width, canvas.height);
+            ctx.drawImage(vRemote, canvas.width - 80, canvas.height - 60, 80, 60);
+          } else if (sceneId === 'scene3') {
+            // Remoto grande, local pequeño
+            ctx.drawImage(vRemote, 0, 0, canvas.width, canvas.height);
+            ctx.drawImage(vLocal, canvas.width - 80, canvas.height - 60, 80, 60);
+          }
+          requestAnimationFrame(draw);
+        }
+        draw();
+      });
+      const stream = canvas.captureStream();
+      preview.srcObject = stream;
+      preview.play().catch(() => {});
+    }
+
     // Cambia la escena y resalta el botón activo
     function switchScene(sceneId) {
       scenes.forEach(scene => {
@@ -474,50 +463,33 @@
         targetScene.style.display = 'flex';
         targetScene.classList.add('active');
       }
-      // Resalta el botón activo
       document.querySelectorAll('.scene-footer-btn').forEach(btn => {
         btn.classList.toggle('active', btn.getAttribute('data-scene') === sceneId);
       });
-
-      // Asigna los streams correctos a cada escena según la descripción
       assignSceneStreams(sceneId);
+      updateCloudScenePreview(sceneId);
     }
 
-    // Asigna los streams correctos a los videos de cada escena según la descripción
+    // Asigna los streams correctos a los videos de cada escena grupal
     function assignSceneStreams(sceneId) {
-      // Usuario 1: localStream1, Usuario 2: remoteStream (peerConnection) o localStream2 si no hay conexión
       const remoteStream = peerConnection?.getRemoteStreams?.()[0] || localStream2;
-
-      // Mostrar SIEMPRE los videos de la escena activa, ocultar los demás
       Object.entries(camsLocal).forEach(([k, v]) => v && (v.style.display = 'none'));
       Object.entries(camsRemote).forEach(([k, v]) => v && (v.style.display = 'none'));
-
       if (sceneId === 'scene1') {
         camsLocal[1].srcObject = localStream1;
+        camsRemote[1].srcObject = remoteStream;
         camsLocal[1].style.display = '';
+        camsRemote[1].style.display = '';
       } else if (sceneId === 'scene2') {
+        camsLocal[2].srcObject = localStream1;
         camsRemote[2].srcObject = remoteStream;
+        camsLocal[2].style.display = '';
         camsRemote[2].style.display = '';
       } else if (sceneId === 'scene3') {
-        camsLocal[3].srcObject = localStream1;
         camsRemote[3].srcObject = remoteStream;
-        camsLocal[3].style.display = '';
+        camsLocal[3].srcObject = localStream1;
         camsRemote[3].style.display = '';
-      } else if (sceneId === 'scene4') {
-        camsLocal[4].srcObject = localStream1;
-        camsRemote[4].srcObject = remoteStream;
-        camsLocal[4].style.display = '';
-        camsRemote[4].style.display = '';
-      } else if (sceneId === 'scene5') {
-        camsLocal[5].srcObject = localStream1;
-        camsRemote[5].srcObject = remoteStream;
-        camsLocal[5].style.display = '';
-        camsRemote[5].style.display = '';
-      } else if (sceneId === 'scene6') {
-        camsRemote[6].srcObject = remoteStream;
-        camsLocal[6].srcObject = localStream1;
-        camsRemote[6].style.display = '';
-        camsLocal[6].style.display = '';
+        camsLocal[3].style.display = '';
       }
     }
 
@@ -529,8 +501,6 @@
         };
       });
     }
-
-    // Botones de cambio de escena en el pie
     function setupSceneFooterButtons() {
       document.querySelectorAll('.scene-footer-btn').forEach(btn => {
         btn.onclick = function() {
@@ -538,10 +508,8 @@
         };
       });
     }
-
-    // Set default scene
     function setDefaultScene() {
-      switchScene('scene4');
+      switchScene('scene1');
     }
 
     // Helper: disable all tracks in a stream
@@ -651,7 +619,8 @@
       setupSceneFooterButtons();
       setDefaultScene();
       updateEditorInfo();
-      assignSceneStreams('scene4');
+      assignSceneStreams('scene1');
+      updateCloudScenePreview('scene1');
     });
 
     enterCallBtn.addEventListener('click', async () => {
@@ -668,7 +637,7 @@
       setupSceneFooterButtons();
       updateEditorInfo();
       // Forzar mostrar el video local en la escena predeterminada
-      assignSceneStreams('scene4');
+      assignSceneStreams('scene1');
     });
 
     // Utilidad para generar un ID corto (6 caracteres alfanuméricos)
@@ -744,6 +713,20 @@
       }
 
       callRef = db.ref('calls/' + callId);
+
+      // Obtener el título de la llamada y mostrarlo
+      const titleSnap = await callRef.child('title').once('value');
+      const title = titleSnap.val();
+      if (title) {
+        document.getElementById('joinedTitle').textContent = "Título de la llamada: " + title;
+        document.getElementById('joinedTitle').style.display = '';
+      } else {
+        document.getElementById('joinedTitle').textContent = '';
+        document.getElementById('joinedTitle').style.display = 'none';
+      }
+      // Oculta el input de título y el código para el usuario que se une
+      document.getElementById('callTitle').style.display = 'none';
+      callIdInput.style.display = 'none';
 
       // Verifica si existe la llamada
       const offerSnapshot = await callRef.child('offer').once('value');
