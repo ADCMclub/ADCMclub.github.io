@@ -3,77 +3,589 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>WebRTC con Firebase</title>
+  <title>WebRTC con Firebase - Escenas y Grabación</title>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
-      background: #f0f2f5;
+      background: #111; /* Dark mode background */
+      color: #f4f7fa; /* Light text for better contrast */
       margin: 0;
       padding: 20px;
       text-align: center;
-      color: #333;
     }
-    h1 { color: #2c3e50; }
+    h1 {
+      color: #f4f7fa; /* Light heading text for better contrast */
+      margin-bottom: 15px;
+    }
     video {
-      width: 300px;
-      max-width: 100%;
       border-radius: 10px;
-      margin: 10px 0;
       background: #000;
+      max-width: 100%;
     }
-    .pre-call, .controls {
-      margin: 20px auto;
-      max-width: 500px;
+    #videoContainer {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-bottom: 15px;
+    }
+    video.main {
+      border: 2px solid #007bff;
+      border-radius: 10px;
+      width: 60%;
+      height: auto;
+    }
+    video.small {
+      border: 2px solid #28a745;
+      border-radius: 10px;
+      width: 25%;
+      height: auto;
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      z-index: 10;
+      box-shadow: 0 0 8px rgba(0,0,0,0.7);
+      background: black;
+    }
+    .scene {
+      position: relative;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      gap: 20px;
+      width: 100%;
+      max-width: 900px;
+      margin: 0 auto 20px;
+      min-height: 360px;
+      background: #222; /* Dark mode for scenes */
+      border-radius: 12px;
+      padding: 10px;
+      box-sizing: border-box;
+    }
+    .scene.active {
+      display: flex;
+    }
+    #sceneButtons button {
+      padding: 8px 15px;
+      margin: 5px;
+      cursor: pointer;
+      border: none;
+      border-radius: 6px;
+      background: #ddd;
+      transition: background-color 0.3s;
+      color: #333; /* Dark text for better contrast on light buttons */
+    }
+    #sceneButtons button.active {
+      background: #007bff;
+      color: white;
     }
     select, input, button {
       margin: 5px;
       padding: 10px;
       font-size: 1rem;
       border-radius: 5px;
+      cursor: pointer;
+      background: #333; /* Dark mode buttons */
+      color: #f4f7fa; /* Light text for better contrast on dark buttons */
+      border: 1px solid #555;
     }
     .toggle-btn {
       background-color: #ccc;
       color: #000;
+      cursor: pointer;
+      border: none;
     }
-    .active {
+    .toggle-btn.active {
       background-color: #007bff;
       color: #fff;
     }
     .hide {
       display: none;
     }
+    #editorInfo {
+      font-size: 0.9rem;
+      color: #f4f7fa; /* Light text for better contrast */
+      margin-top: 10px;
+    }
+    .pre-call, .controls {
+      max-width: 900px;
+      margin: 0 auto 20px;
+    }
+    .editor-controls {
+      margin-top: 15px;
+    }
   </style>
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-storage-compat.js"></script>
 </head>
 <body>
 
-  <h1>Previsualización de llamada</h1>
+  <h1>WebRTC con Firebase - Escenas y Grabación</h1>
 
-  <div class="pre-call">
-    <video id="previewVideo" autoplay muted playsinline></video><br>
-    
-    <label for="cameraSelect">Cámara:</label>
-    <select id="cameraSelect"></select><br>
+  <div class="pre-call section">
+    <video id="previewVideo" autoplay muted playsinline style="width: 100%; max-width: 600px; border-radius:10px; background:#000;"></video><br>
 
-    <label for="micSelect">Micrófono:</label>
+    <label for="cameraSelect">Cámara del dispositivo (Participante):</label>
+    <select id="cameraSelect"></select>
+
+    <label for="micSelect">Micrófono del dispositivo (Participante):</label>
     <select id="micSelect"></select><br>
 
     <button id="toggleVideo" class="toggle-btn active">Video Activado</button>
     <button id="toggleAudio" class="toggle-btn active">Micrófono Activado</button><br>
 
+    <input type="checkbox" id="asEditor" /> <label for="asEditor">Entrar como editor (solo editor graba)</label><br>
+
     <button id="enterCall">Entrar a la llamada</button>
   </div>
 
-  <div class="controls hide">
-    <video id="localVideo" autoplay muted playsinline></video>
-    <video id="remoteVideo" autoplay playsinline></video><br>
+  <div class="controls section hide">
+    <div id="sceneButtons">
+      <button data-scene="scene1" class="active">Escena 1 (Cámara 1)</button>
+      <button data-scene="scene2">Escena 2 (Cámara 2)</button>
+      <button data-scene="scene3">Escena 3 (Ambos vertical)</button>
+      <button data-scene="scene4">Escena 4 (Ambos horizontal)</button>
+      <button data-scene="scene5">Escena 5 (Cam1 grande, Cam2 esquina)</button>
+      <button data-scene="scene6">Escena 6 (Cam2 grande, Cam1 esquina)</button>
+    </div>
 
-    <button id="startCall">Crear llamada</button>
-    <button id="joinCall">Unirse a llamada</button>
-    <input id="callId" placeholder="ID de llamada" />
+    <!-- Escena 1: Solo cámara 1 -->
+    <div id="scene1" class="scene active">
+      <video id="localVideo1" class="main" autoplay muted playsinline></video>
+      <video id="remoteVideo1" class="main" autoplay playsinline></video>
+    </div>
+
+    <!-- Escena 2: Solo cámara 2 -->
+    <div id="scene2" class="scene">
+      <video id="localVideo2" class="main" autoplay muted playsinline></video>
+      <video id="remoteVideo2" class="main" autoplay playsinline></video>
+    </div>
+
+<!-- Escena 3 mejorada: dos cámaras verticales lado a lado -->
+<div id="scene3" class="scene active" style="flex-direction: row; justify-content: center; gap: 15px; background: #222; padding: 15px; border-radius: 12px;">
+  <video id="localVideo3" autoplay muted playsinline style="width: 45%; height: 90vh; object-fit: cover; border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.7); background: black;"></video>
+  <video id="remoteVideo3" autoplay playsinline style="width: 45%; height: 90vh; object-fit: cover; border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.7); background: black;"></video>
+</div>
+
+
+
+    <!-- Escena 4: Ambas horizontal -->
+    <div id="scene4" class="scene" style="flex-direction: row;">
+      <video id="localVideo4" class="main" autoplay muted playsinline style="width: 45%; height: auto;"></video>
+      <video id="remoteVideo4" class="main" autoplay playsinline style="width: 45%; height: auto;"></video>
+    </div>
+
+    <!-- Escena 5: Cam1 grande, Cam2 esquina -->
+    <div id="scene5" class="scene" style="position: relative;">
+      <video id="localVideo5" class="main" autoplay muted playsinline></video>
+      <video id="remoteVideo5" class="small" autoplay playsinline></video>
+    </div>
+
+    <!-- Escena 6: Cam2 grande, Cam1 esquina -->
+    <div id="scene6" class="scene" style="position: relative;">
+      <video id="remoteVideo6" class="main" autoplay playsinline></video>
+      <video id="localVideo6" class="small" autoplay muted playsinline></video>
+    </div>
+
+    <div style="margin-top: 15px;">
+      <button id="startCall">Crear llamada</button>
+      <button id="joinCall">Unirse a llamada</button>
+      <input id="callId" placeholder="ID de llamada" style="width: 200px;"/><br><br>
+
+      <button id="startRecording">Iniciar grabación</button>
+      <button id="stopRecording" disabled>Detener grabación</button>
+    </div>
+
+    <p id="editorInfo" class="hide">Estás en modo editor. Solo tú puedes grabar.</p>
+    <div class="editor-controls"></div>
   </div>
 
-  <script src="app.js"></script>
+  <script>
+    // Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyC6shbQniv5FeXnJYaSasbGKdYibDWhxV8",
+      authDomain: "fir-rtc-1d4a1.firebaseapp.com",
+      databaseURL: "https://fir-rtc-1d4a1-default-rtdb.firebaseio.com",
+      projectId: "fir-rtc-1d4a1",
+      storageBucket: "fir-rtc-1d4a1.appspot.com",
+      messagingSenderId: "786317659414",
+      appId: "1:786317659414:web:4b9fe6fecc349647d1d437"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    const storage = firebase.storage();
+
+    const servers = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
+
+    // Streams y conexiones
+    let localStream1, localStream2;
+    let peerConnection;
+    let isCaller = false;
+    let videoEnabled = true;
+    let audioEnabled = true;
+
+    // DOM
+    const previewVideo = document.getElementById('previewVideo');
+
+    const camsLocal = {
+      1: document.getElementById('localVideo1'),
+      2: document.getElementById('localVideo2'),
+      3: document.getElementById('localVideo3'),
+      4: document.getElementById('localVideo4'),
+      5: document.getElementById('localVideo5'),
+      6: document.getElementById('localVideo6'),
+    };
+    const camsRemote = {
+      1: document.getElementById('remoteVideo1'),
+      2: document.getElementById('remoteVideo2'),
+      3: document.getElementById('remoteVideo3'),
+      4: document.getElementById('remoteVideo4'),
+      5: document.getElementById('remoteVideo5'),
+      6: document.getElementById('remoteVideo6'),
+    };
+
+    const cameraSelect = document.getElementById('cameraSelect');
+    const micSelect = document.getElementById('micSelect');
+    const toggleVideoBtn = document.getElementById('toggleVideo');
+    const toggleAudioBtn = document.getElementById('toggleAudio');
+    const enterCallBtn = document.getElementById('enterCall');
+    const callIdInput = document.getElementById('callId');
+    const startCallBtn = document.getElementById('startCall');
+    const joinCallBtn = document.getElementById('joinCall');
+    const startRecordingBtn = document.getElementById('startRecording');
+    const stopRecordingBtn = document.getElementById('stopRecording');
+    const asEditorCheckbox = document.getElementById('asEditor');
+    const editorInfo = document.getElementById('editorInfo');
+
+    const sceneButtons = [...document.querySelectorAll('#sceneButtons button')];
+    const scenes = [...document.querySelectorAll('.scene')];
+
+    let mediaRecorder;
+    let recordedChunks = [];
+
+    let isEditor = false;
+
+    // Obtener dispositivos
+    async function getDevices() {
+      const devices = await navigator.mediaDevices.enumerateDevices();
+
+      const videoDevices = devices.filter(d => d.kind === 'videoinput');
+      const audioDevices = devices.filter(d => d.kind === 'audioinput');
+
+      cameraSelect.innerHTML = '';
+      videoDevices.forEach((device) => {
+        const option = document.createElement('option');
+        option.value = device.deviceId;
+        option.text = device.label || `Cámara ${cameraSelect.length + 1}`;
+        cameraSelect.appendChild(option);
+      });
+
+      micSelect.innerHTML = '';
+      audioDevices.forEach((device) => {
+        const option = document.createElement('option');
+        option.value = device.deviceId;
+        option.text = device.label || `Micrófono ${micSelect.length + 1}`;
+        micSelect.appendChild(option);
+      });
+    }
+
+    // Obtener streams para ambas cámaras
+    async function getStreams() {
+      const videoDeviceId = cameraSelect.value;
+      const audioDeviceId = micSelect.value;
+
+      // Local stream 1 con video y audio seleccionados
+      localStream1 = await navigator.mediaDevices.getUserMedia({
+        video: { deviceId: videoDeviceId ? { exact: videoDeviceId } : undefined },
+        audio: { deviceId: audioDeviceId ? { exact: audioDeviceId } : undefined },
+      });
+
+      // Para la segunda cámara, intentar otro video distinto si hay más cámaras
+      // Buscamos otra cámara distinta a la primera seleccionada
+      const videoDevices = (await navigator.mediaDevices.enumerateDevices())
+        .filter(d => d.kind === 'videoinput');
+      let secondCamId = null;
+      for (const d of videoDevices) {
+        if (d.deviceId !== videoDeviceId) {
+          secondCamId = d.deviceId;
+          break;
+        }
+      }
+      if (!secondCamId) {
+        // Si solo hay una cámara, clonamos la misma
+        localStream2 = localStream1.clone();
+      } else {
+        localStream2 = await navigator.mediaDevices.getUserMedia({
+          video: { deviceId: { exact: secondCamId } },
+          audio: false
+        });
+      }
+
+      // Mostrar preview con cámara 1
+      previewVideo.srcObject = localStream1;
+    }
+
+    // Mostrar streams en todos los videos locales
+    function assignLocalStreams() {
+      camsLocal[1].srcObject = localStream1;
+      camsLocal[2].srcObject = localStream2;
+      camsLocal[3].srcObject = localStream1;
+      camsLocal[4].srcObject = localStream1;
+      camsLocal[5].srcObject = localStream1;
+      camsLocal[6].srcObject = localStream2;
+    }
+
+    // Asignar el stream remoto a los videos correspondientes
+    function assignRemoteStream(stream) {
+      if (!isEditor) {
+        camsRemote[1].srcObject = stream;
+        camsRemote[2].srcObject = stream;
+        camsRemote[3].srcObject = stream;
+        camsRemote[4].srcObject = stream;
+        camsRemote[5].srcObject = stream;
+        camsRemote[6].srcObject = stream;
+      }
+    }
+
+    // Default to scene 4 upon entering
+    function setDefaultScene() {
+      sceneButtons.forEach(b => b.classList.remove('active'));
+      scenes.forEach(scene => scene.classList.remove('active'));
+      document.querySelector('[data-scene="scene4"]').classList.add('active');
+      document.getElementById('scene4').classList.add('active');
+    }
+
+    // Allow all participants to change scenes
+    function setupSceneButtons() {
+      sceneButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          sceneButtons.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+
+          scenes.forEach(scene => {
+            scene.classList.remove('active');
+            if (scene.id === btn.dataset.scene) {
+              scene.classList.add('active');
+            }
+          });
+
+          // Notify all participants of scene change
+          db.ref('scene').set(btn.dataset.scene);
+        });
+      });
+
+      // Listen for scene changes
+      db.ref('scene').on('value', snapshot => {
+        const sceneId = snapshot.val();
+        if (sceneId) {
+          sceneButtons.forEach(b => b.classList.remove('active'));
+          scenes.forEach(scene => scene.classList.remove('active'));
+          document.querySelector(`[data-scene="${sceneId}"]`).classList.add('active');
+          document.getElementById(sceneId).classList.add('active');
+        }
+      });
+    }
+
+    // Toggle video/audio en preview
+    toggleVideoBtn.addEventListener('click', () => {
+      videoEnabled = !videoEnabled;
+      localStream1.getVideoTracks().forEach(track => track.enabled = videoEnabled);
+      localStream2.getVideoTracks().forEach(track => track.enabled = videoEnabled);
+      toggleVideoBtn.classList.toggle('active', videoEnabled);
+      toggleVideoBtn.textContent = videoEnabled ? 'Video Activado' : 'Video Desactivado';
+    });
+
+    toggleAudioBtn.addEventListener('click', () => {
+      audioEnabled = !audioEnabled;
+      localStream1.getAudioTracks().forEach(track => track.enabled = audioEnabled);
+      toggleAudioBtn.classList.toggle('active', audioEnabled);
+      toggleAudioBtn.textContent = audioEnabled ? 'Micrófono Activado' : 'Micrófono Desactivado';
+    });
+
+    // Entrada a llamada - habilita controles
+    enterCallBtn.addEventListener('click', async () => {
+      isEditor = asEditorCheckbox.checked;
+      if (!localStream1) {
+        alert('Por favor selecciona cámara y micrófono y acepta permisos.');
+        return;
+      }
+      document.querySelector('.pre-call').classList.add('hide');
+      document.querySelector('.controls').classList.remove('hide');
+
+      assignLocalStreams();
+      setDefaultScene(); // Set scene 4 as default
+      setupSceneButtons();
+      setupEditorControls(); // Add editor controls
+    });
+
+    // WebRTC y Firebase - creación y unión de llamada
+    startCallBtn.addEventListener('click', async () => {
+      isCaller = true;
+      peerConnection = new RTCPeerConnection(servers);
+
+      // Agregar tracks de ambas cámaras
+      localStream1.getTracks().forEach(track => peerConnection.addTrack(track, localStream1));
+      localStream2.getTracks().forEach(track => peerConnection.addTrack(track, localStream2));
+
+      const callDoc = db.ref('calls').push();
+      callIdInput.value = callDoc.key;
+
+      // ICE candidates
+      const callerCandidatesCollection = callDoc.child('callerCandidates');
+      peerConnection.onicecandidate = event => {
+        if (event.candidate) {
+          callerCandidatesCollection.push(event.candidate.toJSON());
+        }
+      };
+
+      // Remoto
+      const calleeCandidatesCollection = callDoc.child('calleeCandidates');
+
+      peerConnection.ontrack = event => {
+        const remoteStream = event.streams[0];
+        assignRemoteStream(remoteStream);
+      };
+
+      // Crear offer
+      const offer = await peerConnection.createOffer();
+      await peerConnection.setLocalDescription(offer);
+
+      await callDoc.child('offer').set({
+        type: offer.type,
+        sdp: offer.sdp
+      });
+
+      // Escuchar answer
+      callDoc.child('answer').on('value', async snapshot => {
+        const answer = snapshot.val();
+        if (!peerConnection.currentRemoteDescription && answer) {
+          const rtcAnswer = new RTCSessionDescription(answer);
+          await peerConnection.setRemoteDescription(rtcAnswer);
+        }
+      });
+
+      // Escuchar candidatos callee
+      calleeCandidatesCollection.on('child_added', snapshot => {
+        const candidate = new RTCIceCandidate(snapshot.val());
+        peerConnection.addIceCandidate(candidate);
+      });
+    });
+
+    joinCallBtn.addEventListener('click', async () => {
+      const callId = callIdInput.value;
+      if (!callId) {
+        alert('Por favor ingresa un ID de llamada para unirse.');
+        return;
+      }
+      peerConnection = new RTCPeerConnection(servers);
+
+      // Agregar tracks locales
+      localStream1.getTracks().forEach(track => peerConnection.addTrack(track, localStream1));
+      localStream2.getTracks().forEach(track => peerConnection.addTrack(track, localStream2));
+
+      const callDoc = db.ref('calls/' + callId);
+      const answerCandidatesCollection = callDoc.child('calleeCandidates');
+      const offerCandidatesCollection = callDoc.child('callerCandidates');
+
+      peerConnection.onicecandidate = event => {
+        if (event.candidate) {
+          answerCandidatesCollection.push(event.candidate.toJSON());
+        }
+      };
+
+      peerConnection.ontrack = event => {
+        const remoteStream = event.streams[0];
+        assignRemoteStream(remoteStream);
+      };
+
+      const offerSnapshot = await callDoc.child('offer').once('value');
+      const offer = offerSnapshot.val();
+      await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
+
+      const answer = await peerConnection.createAnswer();
+      await peerConnection.setLocalDescription(answer);
+
+      await callDoc.child('answer').set({
+        type: answer.type,
+        sdp: answer.sdp
+      });
+
+      offerCandidatesCollection.on('child_added', snapshot => {
+        const candidate = new RTCIceCandidate(snapshot.val());
+        peerConnection.addIceCandidate(candidate);
+      });
+    });
+
+    // Grabación
+    startRecordingBtn.addEventListener('click', () => {
+      if (!isEditor) {
+        alert('Solo el editor puede grabar.');
+        return;
+      }
+      if (!peerConnection) {
+        alert('Primero debes iniciar o unirte a una llamada.');
+        return;
+      }
+      recordedChunks = [];
+      let mixedStream = new MediaStream();
+
+      // Combinar ambas streams (local y remoto) para grabar
+      // Para simplificar grabamos la mezcla de ambos localStream1 y 2 + el remoto
+      localStream1.getTracks().forEach(track => mixedStream.addTrack(track));
+      localStream2.getTracks().forEach(track => mixedStream.addTrack(track));
+      if (camsRemote[1].srcObject) {
+        camsRemote[1].srcObject.getTracks().forEach(track => mixedStream.addTrack(track));
+      }
+
+      mediaRecorder = new MediaRecorder(mixedStream);
+      mediaRecorder.ondataavailable = event => {
+        if (event.data.size > 0) {
+          recordedChunks.push(event.data);
+        }
+      };
+      mediaRecorder.onstop = () => {
+        const blob = new Blob(recordedChunks, { type: 'video/webm' });
+        const url = URL.createObjectURL(blob);
+
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = url;
+        a.download = `grabacion_${Date.now()}.webm`;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        alert('Grabación lista para descargar.');
+      };
+      mediaRecorder.start();
+      startRecordingBtn.disabled = true;
+      stopRecordingBtn.disabled = false;
+    });
+
+    stopRecordingBtn.addEventListener('click', () => {
+      if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+        mediaRecorder.stop();
+        startRecordingBtn.disabled = false;
+        stopRecordingBtn.disabled = true;
+      }
+    });
+
+    // Inicializar dispositivos y UI
+    (async () => {
+      await getDevices();
+      await getStreams();
+      assignLocalStreams();
+      setupSceneButtons();
+
+      // Actualizar streams si cambian selects
+      cameraSelect.addEventListener('change', async () => {
+        await getStreams();
+        assignLocalStreams();
+      });
+      micSelect.addEventListener('change', async () => {
+        await getStreams();
+        assignLocalStreams();
+      });
+    })();
+  </script>
 </body>
 </html>
