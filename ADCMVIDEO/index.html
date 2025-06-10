@@ -164,12 +164,10 @@
     <!-- Escena 1: Solo cámara 1 -->
     <div id="scene1" class="scene active">
       <video id="localVideo1" class="main" autoplay muted playsinline></video>
-      <video id="remoteVideo1" class="main" autoplay playsinline></video>
     </div>
 
     <!-- Escena 2: Solo cámara 2 -->
     <div id="scene2" class="scene">
-      <video id="localVideo2" class="main" autoplay muted playsinline></video>
       <video id="remoteVideo2" class="main" autoplay playsinline></video>
     </div>
 
@@ -390,21 +388,21 @@
 
     // Update scene visibility logic for scene 1 and 2
     function setupSceneVisibility() {
+      // Scene 1: Focus on local user (camera 1)
       const scene1 = document.getElementById('scene1');
-      const scene2 = document.getElementById('scene2');
-      const localVideo1 = document.getElementById('localVideo1');
-      const localVideo2 = document.getElementById('localVideo2');
-
       scene1.addEventListener('click', () => {
-        localVideo1.style.display = 'block';
-        localVideo2.style.display = 'none';
+        camsLocal[1].style.display = 'block';
+        camsRemote[1].style.display = 'none';
       });
 
+      // Scene 2: Focus on remote user (camera 2)
+      const scene2 = document.getElementById('scene2');
       scene2.addEventListener('click', () => {
-        localVideo1.style.display = 'none';
-        localVideo2.style.display = 'block';
+        camsLocal[2].style.display = 'none';
+        camsRemote[2].style.display = 'block';
       });
 
+      // Ensure other scenes toggle visibility correctly
       scenes.forEach(scene => {
         scene.addEventListener('click', () => {
           scenes.forEach(s => s.classList.remove('active'));
@@ -535,7 +533,7 @@
 
       peerConnection.ontrack = event => {
         const remoteStream = event.streams[0];
-        assignRemoteStream(remoteStream);
+        assignRemoteStream(remoteStream); // Ensure remote stream is assigned to all scenes
       };
 
       const offerSnapshot = await callDoc.child('offer').once('value');
