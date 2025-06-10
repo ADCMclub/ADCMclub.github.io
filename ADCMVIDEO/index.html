@@ -403,6 +403,7 @@
     }
 
     function switchScene(sceneId) {
+      // Hide all scenes and deactivate buttons
       scenes.forEach(scene => {
         scene.style.display = 'none';
         scene.classList.remove('active');
@@ -410,6 +411,7 @@
 
       sceneButtons.forEach(btn => btn.classList.remove('active'));
 
+      // Activate the selected scene and button
       const targetScene = document.getElementById(sceneId);
       const targetButton = document.querySelector(`button[data-scene="${sceneId}"]`);
 
@@ -418,6 +420,7 @@
         targetScene.classList.add('active');
         targetButton.classList.add('active');
 
+        // Assign streams to videos in the scene
         const localVideos = targetScene.querySelectorAll('video[id^="localVideo"]');
         const remoteVideos = targetScene.querySelectorAll('video[id^="remoteVideo"]');
 
@@ -432,7 +435,7 @@
             video.play().catch(e => console.error('Error playing remote video:', e));
           }
         });
-z      }
+      }
     }
 
     function setupSceneButtons() {
@@ -445,6 +448,32 @@ z      }
         });
       });
     }
+
+    function setDefaultScene() {
+      const defaultSceneId = 'scene1'; // Set the default scene ID
+      switchScene(defaultSceneId);
+    }
+
+    async function initializePage() {
+      await getDevices();
+      await getStreams();
+      assignLocalStreams();
+      setupSceneButtons(); // Ensure scene buttons are initialized
+      setDefaultScene(); // Set the default scene
+    }
+
+    document.addEventListener('DOMContentLoaded', initializePage);
+
+    // Event listeners for camera and microphone selection
+    cameraSelect.addEventListener('change', async () => {
+      await getStreams();
+      assignLocalStreams();
+    });
+
+    micSelect.addEventListener('change', async () => {
+      await getStreams();
+      assignLocalStreams();
+    });
 
     enterCallBtn.addEventListener('click', async () => {
       isEditor = asEditorCheckbox.checked;
@@ -603,24 +632,6 @@ z      }
         stopRecordingBtn.disabled = true;
         recordingIcon.style.display = 'none';
       }
-    });
-
-    document.addEventListener('DOMContentLoaded', async () => {
-      await getDevices();
-      await getStreams();
-      assignLocalStreams();
-      setupSceneButtons();
-      setDefaultScene();
-    });
-
-    cameraSelect.addEventListener('change', async () => {
-      await getStreams();
-      assignLocalStreams();
-    });
-
-    micSelect.addEventListener('change', async () => {
-      await getStreams();
-      assignLocalStreams();
     });
   </script>
 </body>
