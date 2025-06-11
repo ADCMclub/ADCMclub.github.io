@@ -20,6 +20,12 @@
       font-family: Arial, sans-serif;
       color: white;
       overflow-x: hidden;
+      /* Oculta la barra de desplazamiento */
+      scrollbar-width: none; /* Firefox */
+      -ms-overflow-style: none;  /* IE 10+ */
+    }
+    body::-webkit-scrollbar {
+      display: none; /* Chrome/Safari/Webkit */
     }
     #particles-js {
       position: fixed;
@@ -32,6 +38,7 @@
       position: relative;
       padding: 2rem;
       z-index: 1;
+      padding-bottom: 120px; /* Espacio para el player flotante */
     }
     h1 {
       text-align: center;
@@ -166,28 +173,38 @@
       user-select: none;
     }
     /* Iframe flotante inferior */
-.floating-player {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  width: 100vw;
-  height: 100px;
-  z-index: 9999;
-  box-shadow: 0 -2px 12px #bfa76a33;
-  background: #18181b;
-  border-top-left-radius: 12px;
-  border-top-right-radius: 12px;
-  overflow: hidden;
-}
-@media (max-width: 600px) {
-  .floating-player {
-    height: 70px;
-  }
-}
-body {
-  padding-bottom: 110px; /* espacio para el player flotante */
-}
+    .floating-player {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      width: 100vw;
+      height: 100px;
+      z-index: 9999;
+      box-shadow: 0 -2px 12px #bfa76a33;
+      background: #18181b;
+      border-top-left-radius: 12px;
+      border-top-right-radius: 12px;
+      overflow: hidden;
+      /* Oculta cualquier scroll interno */
+      scrollbar-width: none;
+    }
+    .floating-player::-webkit-scrollbar {
+      display: none;
+    }
+    .floating-player iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      overflow: hidden;
+      /* Oculta scroll dentro del iframe si lo tuviera */
+      scrollbar-width: none;
+    }
+    @media (max-width: 600px) {
+      .floating-player {
+        height: 70px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -317,7 +334,7 @@ body {
 <!-- Iframe flotante inferior -->
 <div class="floating-player">
   <iframe src="https://sintonizaradio.com/estaciones/dcmixec/embed/playersmall?theme=dark"
-    style="width:100%;height:100%;border:none;" frameborder="0" allowfullscreen="allowfullscreen"></iframe>
+    style="width:100%;height:100%;border:none;overflow:hidden;" frameborder="0" allowfullscreen="allowfullscreen"></iframe>
 </div>
 
 <!-- Particles.js library -->
