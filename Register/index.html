@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
   <title>Login & Registro | 𝓐𝓓𝓒𝓜.𝒞𝓁𝓊𝒷</title>
   <link rel="icon" href="https://images.guns.lol/TO1Qe.png" />
 
@@ -10,6 +10,12 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+
+  <!-- Configuración para modo app en iOS -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="apple-touch-icon" sizes="180x180" href="https://images.guns.lol/TO1Qe.png">
+  <link rel="apple-touch-startup-image" href="https://images.guns.lol/candado.png">
 
   <style>
     /* Reset básico */
@@ -393,7 +399,18 @@ body {
   display: block; /* visible cuando tiene la clase */
 }
 
-
+/* Quitar bordes de búsqueda */
+input[type="search"] {
+  -webkit-appearance: none;
+  appearance: none;
+  border: none;
+  outline: none;
+  background: none;
+}
+input[type="search"]::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+  appearance: none;
+}
   </style>
 </head>
 <body>
