@@ -17,7 +17,15 @@
     <meta property="og:image" content="https://images.guns.lol/OrFsw.png">
     <meta name="twitter:image" content="https://images.guns.lol/OrFsw.png">
     <style>
+        /* Mejoras de adaptabilidad para móvil y PC */
+        html {
+            box-sizing: border-box;
+        }
+        *, *:before, *:after {
+            box-sizing: inherit;
+        }
         body {
+            min-width: 320px;
             background: linear-gradient(135deg, #ffeaea 0%, #ffb3b3 100%);
             font-family: 'Montserrat', Arial, sans-serif;
             margin: 0;
@@ -124,6 +132,7 @@
         .search-section {
             position: relative;
             max-width: 440px;
+            width: 95vw;
             margin: 0 auto 36px auto;
             text-align: center;
         }
@@ -194,6 +203,8 @@
             border-radius: 22px;
             box-shadow: 0 8px 32px #b71c1c22;
             width: 300px;
+            min-width: 220px;
+            max-width: 95vw;
             padding: 28px 24px;
             text-align: center;
             position: relative;
@@ -213,6 +224,8 @@
         .item-img {
             width: 130px;
             height: 130px;
+            min-width: 90px;
+            min-height: 90px;
             object-fit: cover;
             border-radius: 50%;
             margin-bottom: 18px;
@@ -279,8 +292,9 @@
             border-radius: 22px;
             box-shadow: 0 4px 24px #b71c1c22;
             max-width: 700px;
+            width: 95vw;
             margin: 44px auto 0 auto;
-            padding: 32px 28px;
+            padding: 32px 12px;
             text-align: left;
             animation: fadeInUp 1.2s;
             border: 2px solid #b71c1c;
@@ -308,6 +322,7 @@
             align-items: center;
             gap: 16px;
             min-width: 220px;
+            max-width: 95vw;
             transition: transform 0.2s, box-shadow 0.2s;
             border: 1.5px solid #b71c1c;
             animation: fadeInUp 1s;
@@ -397,8 +412,9 @@
         .modal-content {
             background: #fff;
             border-radius: 22px;
-            padding: 36px 28px;
+            padding: 36px 12px;
             max-width: 500px;
+            width: 95vw;
             box-shadow: 0 8px 40px #b71c1c33;
             position: relative;
             animation: fadeInUp 0.7s;
@@ -477,13 +493,39 @@
             .banks-list { gap: 18px; }
             .bank-card { min-width: 160px; }
             #floatingNotice { padding: 14px 10vw; font-size: 1em;}
+            .store-container { gap: 18px; }
         }
         @media (max-width: 700px) {
-            .store-container { flex-direction: column; align-items: center;}
-            .item-card { width: 95vw;}
-            .banks-list { flex-direction: column; align-items: center;}
-            .bank-card { width: 95vw; min-width: unset;}
+            .store-container { flex-direction: column; align-items: center; gap: 18px;}
+            .item-card { width: 98vw; min-width: 0; }
+            .banks-list { flex-direction: column; align-items: center; gap: 18px;}
+            .bank-card { width: 98vw; min-width: unset;}
             #floatingNotice { padding: 10px 2vw; font-size: 0.95em;}
+            .payment-section { padding: 18px 4vw; }
+            .modal-content { padding: 18px 4vw; }
+            h1 { font-size: 1.5em; }
+            .logo-text { font-size: 1.3em; }
+            .item-img { width: 90px; height: 90px; }
+        }
+        @media (max-width: 500px) {
+            .header { padding: 12px 2vw; }
+            .logo-img { width: 38px; height: 38px; }
+            .logo-text { font-size: 1em; }
+            .item-card { padding: 18px 6px; }
+            .modal-content { padding: 8px 2vw; }
+            .promo-bar { font-size: 1em; padding: 10px 0; }
+            .promo-btn { padding: 7px 18px; font-size: 0.95em; }
+            .terms-btn { padding: 8px 18px; font-size: 0.95em; }
+            .gdrive-logo { width: 24px; height: 24px; }
+            footer { padding: 18px 0 10px 0; font-size: 0.95em; }
+        }
+        /* Mejoras para scroll y touch en móvil */
+        .modal-bg, .modal-content {
+            touch-action: manipulation;
+        }
+        /* Evita zoom en inputs en iOS */
+        input, button, select, textarea {
+            font-size: 16px;
         }
     </style>
 </head>
