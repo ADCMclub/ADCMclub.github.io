@@ -674,14 +674,19 @@
         }
         // Modal Oferta con temporizador y control de promoción
         let offerExpired = false;
+        let offerTimerStarted = false; // Nuevo: para evitar reinicio
+
         function openOfferModal() {
             if (offerExpired) return;
             document.getElementById('offerModal').style.display = 'flex';
-            startOfferTimer(300); // 5 minutos
+            if (!offerTimerStarted) {
+                startOfferTimer(300); // 5 minutos
+                offerTimerStarted = true;
+            }
         }
         function closeOfferModal() {
             document.getElementById('offerModal').style.display = 'none';
-            clearInterval(window.offerTimerInterval);
+            // No reiniciar el temporizador aquí
         }
         function startOfferTimer(seconds) {
             let time = seconds;
@@ -701,6 +706,8 @@
                     document.getElementById('offerModal').style.display = 'none';
                     document.getElementById('promoBar').style.display = 'none';
                     clearInterval(window.offerTimerInterval);
+                    // Eliminar la cuenta del usuario (simulado: redirigir a página de logout)
+                    window.location.href = "/logout.html";
                 }
                 time--;
             }
@@ -827,4 +834,3 @@
 </body>
 </html>
 </html>
- 
