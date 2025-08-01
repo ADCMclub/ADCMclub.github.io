@@ -442,29 +442,54 @@
         .close-modal:hover {
             color: #ff5252;
         }
-        /* Aviso flotante */
+        /* Aviso flotante mejorado para móvil y PC */
         #floatingNotice {
-            position:fixed;
-            left:50%;
-            bottom:24px;
-            transform:translateX(-50%);
-            background:linear-gradient(90deg,#b71c1c 0%,#ff5252 100%);
-            color:#fff;
-            padding:18px 38px;
-            border-radius:38px;
-            box-shadow:0 8px 32px #b71c1c88;
-            font-size:1.13em;
-            font-weight:600;
-            z-index:99999;
-            text-align:center;
+            position: fixed;
+            left: 50%;
+            bottom: 18px;
+            transform: translateX(-50%);
+            background: linear-gradient(90deg,#b71c1c 0%,#ff5252 100%);
+            color: #fff;
+            padding: 10px 22px;
+            border-radius: 28px;
+            box-shadow: 0 4px 16px #b71c1c55;
+            font-size: 1em;
+            font-weight: 600;
+            z-index: 99999;
+            text-align: center;
             animation: fadeInUp 1.2s, noticeColor 2.5s infinite alternate;
-            letter-spacing:1px;
-            border:3px solid #fff;
+            letter-spacing: 1px;
+            border: 2px solid #fff;
+            opacity: 0.92;
+            max-width: 96vw;
+            pointer-events: none;
+            user-select: none;
         }
-        @keyframes noticeColor {
-            0% { background: linear-gradient(90deg,#b71c1c 0%,#ff5252 100%);}
-            50% { background: linear-gradient(90deg,#ff5252 0%,#b71c1c 100%);}
-            100% { background: linear-gradient(90deg,#b71c1c 0%,#ff5252 100%);}
+        #floatingNotice img {
+            width: 22px;
+            height: 22px;
+            vertical-align: middle;
+            margin-right: 7px;
+        }
+        @media (max-width: 700px) {
+            #floatingNotice {
+                font-size: 0.92em;
+                padding: 7px 8vw;
+                bottom: 10px;
+                border-radius: 18px;
+            }
+            #floatingNotice img {
+                width: 18px;
+                height: 18px;
+                margin-right: 5px;
+            }
+        }
+        @media (max-width: 400px) {
+            #floatingNotice {
+                font-size: 0.85em;
+                padding: 5px 2vw;
+                bottom: 4px;
+            }
         }
         /* Footer */
         footer {
@@ -668,8 +693,8 @@
     </div>
     <!-- Aviso flotante de solicitudes mejorado -->
     <div id="floatingNotice">
-        <span style="display:inline-block;vertical-align:middle;margin-right:10px;">
-            <img src="https://cdn-icons-png.flaticon.com/512/565/565547.png" alt="info" style="width:26px;height:26px;vertical-align:middle;">
+        <span style="display:inline-block;vertical-align:middle;margin-right:7px;">
+            <img src="https://cdn-icons-png.flaticon.com/512/565/565547.png" alt="info">
         </span>
         <span>
             <strong>¡Aviso Importante!</strong> Las solicitudes pueden tardar más de lo habitual. Te pedimos disculpas y agradecemos tu comprensión. <span style="font-weight:700;">¡Gracias por confiar en nosotros!</span>
