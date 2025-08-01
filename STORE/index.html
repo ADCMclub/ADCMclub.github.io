@@ -484,10 +484,26 @@
             margin-right: 0;
         }
         #floatingNotice strong {
-            color: #fff700;
+            color: #fff;
             text-shadow: 0 1px 6px #b71c1c88;
             font-size: 1.05em;
             margin-right: 4px;
+        }
+        #floatingNotice .notice-tap {
+            display: inline-block;
+            margin-left: 8px;
+            font-size: 0.93em;
+            color: #fff700;
+            font-weight: 700;
+            animation: tapPulse 1.2s infinite alternate;
+            vertical-align: middle;
+            letter-spacing: 0.5px;
+            text-shadow: 0 1px 6px #b71c1c88;
+        }
+        @keyframes tapPulse {
+            0% { opacity: 0.7; transform: scale(1);}
+            60% { opacity: 1; transform: scale(1.12);}
+            100% { opacity: 0.7; transform: scale(1);}
         }
         #floatingNotice .notice-details {
             display: none;
@@ -496,6 +512,9 @@
             font-size: 0.97em;
             color: #fff;
             text-shadow: 0 1px 6px #b71c1c88;
+        }
+        #floatingNotice.open .notice-tap {
+            display: none;
         }
         #floatingNotice.open .notice-details {
             display: block;
@@ -734,6 +753,7 @@
             <img src="https://cdn-icons-png.flaticon.com/512/565/565547.png" alt="info">
         </span>
         <strong>¡Aviso Importante!</strong>
+        <span class="notice-tap">Toca aquí</span>
         <span class="notice-details">
             Las solicitudes pueden tardar más de lo habitual.<br>
             <span style="color:#fff;text-shadow:0 1px 6px #b71c1c88;">Te pedimos disculpas y agradecemos tu comprensión.</span>
