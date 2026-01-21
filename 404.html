@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>404 - ADCM.Club</title>
+    <link rel="icon" href="https://images.guns.lol/TO1Qe.png">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #1a1a1a;
+            color: white;
+            font-family: 'Raleway', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            text-align: center;
+            background-image: 
+                radial-gradient(circle at 25% 25%, rgba(255, 0, 0, 0.1) 0%, transparent 55%),
+                radial-gradient(circle at 75% 75%, rgba(139, 0, 0, 0.1) 0%, transparent 55%);
+        }
+        
+        .container {
+            padding: 40px;
+            max-width: 600px;
+        }
+        
+        .error {
+            font-size: 120px;
+            font-weight: 900;
+            color: #ff0000;
+            text-shadow: 0 0 30px rgba(255, 0, 0, 0.5);
+            margin: 0;
+            line-height: 1;
+        }
+        
+        h1 {
+            font-size: 32px;
+            margin: 20px 0;
+            color: white;
+        }
+        
+        p {
+            color: #ccc;
+            font-size: 18px;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+        
+        .logo {
+            width: 150px;
+            height: 150px;
+            margin: 30px auto;
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        .buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+        
+        .btn {
+            padding: 12px 30px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(45deg, #8b0000, #ff0000);
+            color: white;
+            box-shadow: 0 4px 15px rgba(255, 0, 0, 0.4);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(255, 0, 0, 0.6);
+        }
+        
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 2px solid #ff0000;
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255, 0, 0, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img src="https://images.guns.lol/TO1Qe.png" alt="ADCM Logo" class="logo">
+        
+        <div class="error">404</div>
+        
+        <h1>¡Ups! Página perdida en el espacio</h1>
+        
+        <p>
+            La página que estás buscando no existe o ha sido movida.<br>
+            No te preocupes, aún puedes volver a la seguridad de nuestro servidor.
+        </p>
+        
+        <div class="buttons">
+            <a href="/" class="btn btn-primary">
+                🏠 Volver al inicio
+            </a>
+            <a href="https://discord.gg/nByGf7sM79" class="btn btn-secondary" target="_blank">
+                🚀 Ir a Discord
+            </a>
+        </div>
+        
+        <p style="margin-top: 40px; font-size: 14px; color: #666;">
+            © 2025 ADCM.Club - Todos los derechos reservados
+        </p>
+    </div>
+</body>
+</html>
