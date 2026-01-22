@@ -74,7 +74,7 @@
             background: rgba(10, 10, 10, 0.95);
             backdrop-filter: blur(20px);
             border-bottom: 1px solid rgba(42, 42, 42, 0.5);
-            padding: 1.2rem 2rem;
+            padding: 1rem 2rem;
             position: fixed;
             top: 0;
             left: 0;
@@ -83,25 +83,58 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            animation: slideDown 0.5s cubic-bezier(0.16, 1, 0.3, 1);
         }
         
-        .logo {
+        @keyframes slideDown {
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        .logo-container {
             display: flex;
             align-items: center;
             gap: 1rem;
+            text-decoration: none;
         }
         
         .logo-icon {
-            width: 40px;
-            height: 40px;
+            width: 50px;
+            height: 50px;
             background: linear-gradient(135deg, var(--accent-red), var(--accent-red-dark));
-            border-radius: 10px;
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: 800;
-            font-size: 1.2rem;
+            font-size: 1.5rem;
             color: white;
+            transition: var(--transition-smooth);
+            animation: pulseLogo 3s infinite;
+        }
+        
+        @keyframes pulseLogo {
+            0%, 100% {
+                box-shadow: 0 0 0 0 rgba(211, 47, 47, 0.4);
+            }
+            50% {
+                box-shadow: 0 0 0 10px rgba(211, 47, 47, 0);
+            }
+        }
+        
+        .logo-icon:hover {
+            transform: rotate(15deg) scale(1.1);
+        }
+        
+        .logo-text {
+            display: flex;
+            flex-direction: column;
         }
         
         .logo-text h1 {
@@ -111,6 +144,7 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             letter-spacing: -0.5px;
+            transition: var(--transition-smooth);
         }
         
         .logo-text span {
@@ -138,10 +172,29 @@
             display: flex;
             align-items: center;
             gap: 0.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .nav-btn::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(211, 47, 47, 0.2);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+        
+        .nav-btn:hover::after {
+            width: 300px;
+            height: 300px;
         }
         
         .nav-btn:hover {
-            background: rgba(211, 47, 47, 0.1);
             border-color: var(--accent-red);
             transform: translateY(-2px);
         }
@@ -164,14 +217,32 @@
             align-items: center;
             justify-content: center;
             font-weight: 600;
+            animation: bounce 2s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
         }
         
         /* Hero Section */
         .hero {
             padding: 8rem 2rem 4rem;
             text-align: center;
-            max-width: 800px;
+            max-width: 900px;
             margin: 0 auto;
+            animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
         
         .hero h2 {
@@ -194,6 +265,65 @@
             margin-right: auto;
         }
         
+        /* Buscador */
+        .search-container {
+            max-width: 600px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both;
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .search-box {
+            position: relative;
+            width: 100%;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 1rem 1rem 1rem 3rem;
+            background: rgba(42, 42, 42, 0.5);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: var(--transition-smooth);
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: var(--accent-red);
+            box-shadow: 0 0 0 3px rgba(211, 47, 47, 0.2);
+        }
+        
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+            pointer-events: none;
+        }
+        
+        .search-stats {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        
         /* Filtros */
         .filters {
             display: flex;
@@ -202,24 +332,43 @@
             margin: 2rem auto;
             max-width: 800px;
             padding: 0 1rem;
+            flex-wrap: wrap;
+            animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.4s both;
         }
         
         .filter-btn {
             padding: 0.8rem 1.5rem;
             background: rgba(42, 42, 42, 0.5);
             border: none;
-            border-radius: 6px;
+            border-radius: 8px;
             color: var(--text-secondary);
             font-weight: 500;
             cursor: pointer;
             transition: var(--transition-smooth);
             white-space: nowrap;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .filter-btn::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--accent-red);
+            transition: width 0.3s ease;
         }
         
         .filter-btn.active,
         .filter-btn:hover {
-            background: var(--accent-red);
             color: white;
+        }
+        
+        .filter-btn.active::before,
+        .filter-btn:hover::before {
+            width: 100%;
         }
         
         /* Catálogo Grid */
@@ -236,29 +385,29 @@
             margin-top: 2rem;
         }
         
-        /* Tarjeta de producto - Diseño minimalista */
+        /* Tarjeta de producto */
         .product-card {
             background: var(--card-bg);
             border: 1px solid var(--card-border);
-            border-radius: 12px;
+            border-radius: 16px;
             overflow: hidden;
             transition: var(--transition-smooth);
             position: relative;
             opacity: 0;
-            transform: translateY(20px);
-            animation: cardAppear 0.6s forwards;
+            transform: translateY(20px) scale(0.95);
+            animation: cardAppear 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
         
         @keyframes cardAppear {
             to {
                 opacity: 1;
-                transform: translateY(0);
+                transform: translateY(0) scale(1);
             }
         }
         
         .product-card:hover {
             border-color: var(--accent-red);
-            transform: translateY(-8px);
+            transform: translateY(-10px) scale(1.02);
             box-shadow: var(--shadow-hard);
         }
         
@@ -267,12 +416,42 @@
             top: 1rem;
             right: 1rem;
             padding: 0.4rem 0.8rem;
-            background: var(--accent-red);
+            background: linear-gradient(135deg, var(--accent-red), var(--accent-red-dark));
             color: white;
-            border-radius: 4px;
+            border-radius: 20px;
             font-size: 0.75rem;
             font-weight: 600;
             z-index: 2;
+            animation: badgePulse 2s infinite;
+        }
+        
+        @keyframes badgePulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .stock-badge {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            padding: 0.4rem 0.8rem;
+            background: rgba(0, 0, 0, 0.7);
+            color: var(--text-primary);
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            z-index: 2;
+            backdrop-filter: blur(10px);
+        }
+        
+        .stock-low {
+            color: var(--accent-red);
+            animation: pulseRed 2s infinite;
+        }
+        
+        @keyframes pulseRed {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
         }
         
         .product-image {
@@ -280,6 +459,11 @@
             height: 200px;
             object-fit: cover;
             border-bottom: 1px solid var(--card-border);
+            transition: transform 0.5s ease;
+        }
+        
+        .product-card:hover .product-image {
+            transform: scale(1.1);
         }
         
         .product-content {
@@ -305,6 +489,7 @@
             font-weight: 700;
             color: var(--accent-gold);
             white-space: nowrap;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
         }
         
         .product-price .old-price {
@@ -319,6 +504,10 @@
             font-size: 0.95rem;
             margin-bottom: 1.5rem;
             line-height: 1.5;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
         }
         
         /* Botones de acción */
@@ -330,7 +519,7 @@
         .action-btn {
             padding: 1rem;
             border: none;
-            border-radius: 8px;
+            border-radius: 10px;
             font-weight: 600;
             cursor: pointer;
             transition: var(--transition-smooth);
@@ -339,31 +528,51 @@
             justify-content: center;
             gap: 0.75rem;
             font-size: 0.95rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .action-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: 0.5s;
+        }
+        
+        .action-btn:hover::before {
+            left: 100%;
         }
         
         .btn-add-cart {
-            background: rgba(42, 42, 42, 0.5);
+            background: linear-gradient(135deg, rgba(42, 42, 42, 0.8), rgba(30, 30, 30, 0.8));
             color: var(--text-primary);
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
         
         .btn-add-cart:hover {
-            background: rgba(211, 47, 47, 0.1);
+            background: linear-gradient(135deg, rgba(211, 47, 47, 0.2), rgba(183, 28, 28, 0.2));
             border-color: var(--accent-red);
+            transform: translateY(-3px);
         }
         
         .btn-buy-now {
             background: linear-gradient(135deg, var(--accent-red), var(--accent-red-dark));
             color: white;
+            border: 2px solid transparent;
         }
         
         .btn-buy-now:hover {
             background: linear-gradient(135deg, var(--accent-red-light), var(--accent-red));
-            transform: translateY(-2px);
-            box-shadow: 0 4px 20px rgba(211, 47, 47, 0.3);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(211, 47, 47, 0.4);
+            border-color: white;
         }
         
-        /* Modal de pago - Diseño profesional */
+        /* Modal de pago */
         .payment-modal {
             display: none;
             position: fixed;
@@ -371,7 +580,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.9);
             backdrop-filter: blur(10px);
             z-index: 2000;
             align-items: center;
@@ -386,18 +595,18 @@
         }
         
         .modal-content {
-            background: var(--card-bg);
-            border-radius: 16px;
+            background: linear-gradient(135deg, var(--card-bg), #161616);
+            border-radius: 20px;
             width: 100%;
             max-width: 500px;
             border: 1px solid var(--card-border);
             overflow: hidden;
-            animation: modalSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            animation: modalSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1);
         }
         
         @keyframes modalSlideUp {
             from {
-                transform: translateY(30px) scale(0.95);
+                transform: translateY(50px) scale(0.9);
                 opacity: 0;
             }
             to {
@@ -412,6 +621,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            background: linear-gradient(90deg, rgba(211, 47, 47, 0.1), rgba(41, 98, 255, 0.1));
         }
         
         .modal-title {
@@ -438,16 +648,15 @@
         .modal-close:hover {
             background: rgba(211, 47, 47, 0.1);
             color: var(--accent-red);
+            transform: rotate(90deg);
         }
         
         .modal-body {
-            padding: 1.5rem;
+            padding: 2rem;
         }
         
-        /* Métodos de pago */
         .payment-methods {
             display: grid;
-            grid-template-columns: 1fr 1fr;
             gap: 1rem;
             margin-bottom: 2rem;
         }
@@ -457,18 +666,35 @@
             background: rgba(42, 42, 42, 0.5);
             border: 2px solid transparent;
             border-radius: 12px;
-            text-align: center;
             cursor: pointer;
             transition: var(--transition-smooth);
             display: flex;
-            flex-direction: column;
             align-items: center;
-            gap: 0.75rem;
+            gap: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .payment-method::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--accent-red);
+            transform: scaleY(0);
+            transition: transform 0.3s ease;
+        }
+        
+        .payment-method:hover::before,
+        .payment-method.active::before {
+            transform: scaleY(1);
         }
         
         .payment-method:hover {
             background: rgba(211, 47, 47, 0.1);
-            border-color: rgba(211, 47, 47, 0.3);
+            transform: translateX(5px);
         }
         
         .payment-method.active {
@@ -478,89 +704,100 @@
         
         .payment-icon {
             font-size: 2rem;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            transition: var(--transition-smooth);
         }
         
         .payment-method.card .payment-icon {
-            color: #ffffff;
-        }
-        
-        .payment-method.crypto .payment-icon {
+            background: rgba(41, 98, 255, 0.1);
             color: var(--crypto-blue);
         }
         
-        .payment-method h4 {
-            font-size: 1rem;
-            font-weight: 600;
-            margin: 0;
+        .payment-method.crypto .payment-icon {
+            background: rgba(197, 160, 71, 0.1);
+            color: var(--accent-gold);
         }
         
-        .payment-method small {
+        .payment-method:hover .payment-icon {
+            transform: scale(1.1) rotate(10deg);
+        }
+        
+        .payment-info h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin: 0 0 0.25rem 0;
+            color: var(--text-primary);
+        }
+        
+        .payment-info small {
             color: var(--text-secondary);
             font-size: 0.85rem;
         }
         
-        /* Formularios */
-        .payment-form {
+        .payment-details {
             display: none;
+            animation: fadeIn 0.5s ease;
         }
         
-        .payment-form.active {
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .payment-details.active {
             display: block;
-            animation: formSlide 0.4s ease;
         }
         
-        @keyframes formSlide {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        .crypto-info {
+            background: rgba(41, 98, 255, 0.1);
+            border: 1px solid rgba(41, 98, 255, 0.3);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1rem 0;
         }
         
-        .form-group {
-            margin-bottom: 1.25rem;
+        .crypto-address {
+            font-family: 'Monaco', 'Consolas', monospace;
+            font-size: 0.9rem;
+            word-break: break-all;
+            color: var(--crypto-blue);
+            margin: 0.5rem 0;
+            padding: 0.5rem;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 6px;
         }
         
-        .form-label {
-            display: block;
-            margin-bottom: 0.5rem;
-            color: var(--text-secondary);
+        .btn-copy {
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, var(--crypto-blue), #1e40af);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
             font-size: 0.9rem;
             font-weight: 500;
-        }
-        
-        .form-input {
-            width: 100%;
-            padding: 1rem;
-            background: rgba(42, 42, 42, 0.5);
-            border: 1px solid var(--card-border);
-            border-radius: 8px;
-            color: var(--text-primary);
-            font-size: 1rem;
             transition: var(--transition-smooth);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
         
-        .form-input:focus {
-            outline: none;
-            border-color: var(--accent-red);
-            box-shadow: 0 0 0 2px rgba(211, 47, 47, 0.2);
+        .btn-copy:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(41, 98, 255, 0.4);
         }
         
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-        }
-        
-        .submit-btn {
+        .continue-btn {
             width: 100%;
             padding: 1rem;
             background: linear-gradient(135deg, var(--accent-red), var(--accent-red-dark));
             border: none;
-            border-radius: 8px;
+            border-radius: 10px;
             color: white;
             font-weight: 600;
             font-size: 1rem;
@@ -570,46 +807,13 @@
             align-items: center;
             justify-content: center;
             gap: 0.75rem;
-            margin-top: 1rem;
+            margin-top: 1.5rem;
         }
         
-        .submit-btn:hover {
+        .continue-btn:hover {
             background: linear-gradient(135deg, var(--accent-red-light), var(--accent-red));
-            transform: translateY(-2px);
-            box-shadow: 0 4px 20px rgba(211, 47, 47, 0.3);
-        }
-        
-        /* Info Crypto */
-        .crypto-info {
-            background: rgba(41, 98, 255, 0.1);
-            border: 1px solid rgba(41, 98, 255, 0.3);
-            border-radius: 8px;
-            padding: 1rem;
-            margin: 1rem 0;
-        }
-        
-        .crypto-address {
-            font-family: monospace;
-            font-size: 0.9rem;
-            word-break: break-all;
-            color: var(--crypto-blue);
-            margin: 0.5rem 0;
-        }
-        
-        .btn-copy {
-            padding: 0.5rem 1rem;
-            background: var(--crypto-blue);
-            color: white;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            font-weight: 500;
-            transition: var(--transition-smooth);
-        }
-        
-        .btn-copy:hover {
-            opacity: 0.9;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(211, 47, 47, 0.4);
         }
         
         /* Widget Carrito */
@@ -618,11 +822,17 @@
             bottom: 2rem;
             right: 2rem;
             z-index: 999;
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
         }
         
         .cart-btn {
-            width: 60px;
-            height: 60px;
+            width: 70px;
+            height: 70px;
             background: linear-gradient(135deg, var(--accent-red), var(--accent-red-dark));
             border-radius: 50%;
             display: flex;
@@ -636,24 +846,146 @@
         }
         
         .cart-btn:hover {
-            transform: scale(1.1) rotate(5deg);
+            transform: scale(1.1) rotate(15deg);
         }
         
         .cart-badge {
             position: absolute;
-            top: -5px;
-            right: -5px;
+            top: -8px;
+            right: -8px;
             background: var(--accent-gold);
             color: black;
-            width: 25px;
-            height: 25px;
+            width: 28px;
+            height: 28px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: 700;
             font-size: 0.85rem;
+            box-shadow: 0 4px 10px rgba(197, 160, 71, 0.3);
+            animation: pulse 2s infinite;
         }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        
+        /* Inventario Modal */
+        .inventory-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(10px);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            animation: modalFadeIn 0.3s ease;
+        }
+        
+        .inventory-content {
+            background: linear-gradient(135deg, var(--card-bg), #161616);
+            border-radius: 20px;
+            width: 100%;
+            max-width: 800px;
+            max-height: 80vh;
+            border: 1px solid var(--card-border);
+            overflow: hidden;
+            animation: modalSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        
+        .inventory-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--card-border);
+            background: linear-gradient(90deg, rgba(211, 47, 47, 0.1), rgba(41, 98, 255, 0.1));
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .inventory-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .inventory-body {
+            padding: 1.5rem;
+            overflow-y: auto;
+            max-height: calc(80vh - 120px);
+        }
+        
+        .inventory-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: rgba(42, 42, 42, 0.5);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: var(--transition-smooth);
+        }
+        
+        .stat-card:hover {
+            border-color: var(--accent-red);
+            transform: translateY(-5px);
+        }
+        
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--accent-gold);
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        
+        .inventory-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        
+        .inventory-table th {
+            background: rgba(42, 42, 42, 0.7);
+            padding: 1rem;
+            text-align: left;
+            color: var(--text-secondary);
+            font-weight: 500;
+            border-bottom: 1px solid var(--card-border);
+        }
+        
+        .inventory-table td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--card-border);
+            color: var(--text-primary);
+        }
+        
+        .inventory-table tr:hover {
+            background: rgba(211, 47, 47, 0.05);
+        }
+        
+        .stock-cell {
+            font-weight: 600;
+        }
+        
+        .stock-high { color: var(--success); }
+        .stock-medium { color: var(--accent-gold); }
+        .stock-low { color: var(--accent-red); }
         
         /* Footer */
         .footer {
@@ -661,6 +993,7 @@
             padding: 3rem 2rem;
             border-top: 1px solid var(--card-border);
             text-align: center;
+            background: rgba(10, 10, 10, 0.8);
         }
         
         .footer-content {
@@ -678,30 +1011,16 @@
         @media (max-width: 768px) {
             .header {
                 padding: 1rem;
+                flex-direction: column;
+                gap: 1rem;
             }
             
             .hero {
-                padding: 6rem 1rem 3rem;
+                padding: 7rem 1rem 3rem;
             }
             
             .hero h2 {
                 font-size: 2.5rem;
-            }
-            
-            .filters {
-                flex-wrap: wrap;
-                justify-content: flex-start;
-                overflow-x: auto;
-                padding-bottom: 0.5rem;
-            }
-            
-            .filter-btn {
-                font-size: 0.9rem;
-                padding: 0.6rem 1.2rem;
-            }
-            
-            .catalog {
-                padding: 1rem;
             }
             
             .products-grid {
@@ -709,17 +1028,18 @@
                 gap: 1.5rem;
             }
             
-            .payment-methods {
-                grid-template-columns: 1fr;
-            }
-            
-            .modal-content {
+            .inventory-content {
                 margin: 1rem;
             }
             
             .cart-widget {
                 bottom: 1rem;
                 right: 1rem;
+            }
+            
+            .cart-btn {
+                width: 60px;
+                height: 60px;
             }
         }
         
@@ -732,12 +1052,18 @@
                 display: none;
             }
             
-            .form-row {
-                grid-template-columns: 1fr;
+            .filters {
+                justify-content: flex-start;
+                overflow-x: auto;
+                padding-bottom: 0.5rem;
             }
             
-            .logo-text h1 {
-                font-size: 1.2rem;
+            .stat-card {
+                padding: 1rem;
+            }
+            
+            .stat-value {
+                font-size: 2rem;
             }
         }
         
@@ -750,13 +1076,13 @@
             background: var(--secondary-dark);
         }
         
-        ::-webkit-scrollbar-thumb {
-            background: var(--accent-red);
+        ::-webkitrollbar-thumb {
+            background: linear-gradient(135deg, var(--accent-red), var(--accent-red-dark));
             border-radius: 5px;
         }
         
         ::-webkit-scrollbar-thumb:hover {
-            background: var(--accent-red-light);
+            background: linear-gradient(135deg, var(--accent-red-light), var(--accent-red));
         }
     </style>
     
@@ -766,18 +1092,22 @@
 <body>
     <!-- Header -->
     <header class="header">
-        <div class="logo">
+        <a href="/" class="logo-container">
             <div class="logo-icon">ADCM</div>
             <div class="logo-text">
-                <h1>CATÁLOGO PREMIUM</h1>
+                <h1>ADCM.CLUB CATÁLOGO</h1>
                 <span>Productos digitales exclusivos</span>
             </div>
-        </div>
+        </a>
         
         <div class="nav-actions">
             <button class="nav-btn" onclick="window.location.href='/'">
                 <i class="fas fa-home"></i>
                 <span>Inicio</span>
+            </button>
+            <button class="nav-btn" id="inventoryBtn">
+                <i class="fas fa-chart-bar"></i>
+                <span>Inventario</span>
             </button>
             <button class="nav-btn cart-indicator" id="cartBtn">
                 <i class="fas fa-shopping-cart"></i>
@@ -791,12 +1121,25 @@
     <section class="hero">
         <h2>Catálogo Exclusivo</h2>
         <p class="hero-subtitle">
-            Productos y servicios digitales premium para profesionales. 
-            Compra segura con múltiples métodos de pago.
+            Descubre nuestra colección premium de productos digitales y servicios exclusivos. 
+            Calidad garantizada y entrega inmediata.
         </p>
         
+        <!-- Buscador -->
+        <div class="search-container">
+            <div class="search-box">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" class="search-input" id="searchInput" placeholder="Buscar productos...">
+            </div>
+            <div class="search-stats">
+                <span id="productCount">Cargando productos...</span>
+                <span id="searchResults"></span>
+            </div>
+        </div>
+        
+        <!-- Filtros -->
         <div class="filters">
-            <button class="filter-btn active" data-filter="all">Todos</button>
+            <button class="filter-btn active" data-filter="all">Todos los productos</button>
             <button class="filter-btn" data-filter="digital">Productos Digitales</button>
             <button class="filter-btn" data-filter="services">Servicios</button>
             <button class="filter-btn" data-filter="membership">Membresías</button>
@@ -815,7 +1158,7 @@
     <div class="payment-modal" id="paymentModal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 class="modal-title" id="modalTitle">Completar Compra</h3>
+                <h3 class="modal-title" id="modalTitle">Selecciona método de pago</h3>
                 <button class="modal-close" id="closeModalBtn">
                     <i class="fas fa-times"></i>
                 </button>
@@ -827,9 +1170,9 @@
                         <div class="payment-icon">
                             <i class="fas fa-credit-card"></i>
                         </div>
-                        <div>
+                        <div class="payment-info">
                             <h4>Tarjeta / PayPal</h4>
-                            <small>Pago instantáneo</small>
+                            <small>Pago instantáneo y seguro</small>
                         </div>
                     </div>
                     
@@ -837,83 +1180,150 @@
                         <div class="payment-icon">
                             <i class="fas fa-coins"></i>
                         </div>
-                        <div>
-                            <h4>Crypto</h4>
-                            <small>Criptomonedas</small>
+                        <div class="payment-info">
+                            <h4>Criptomonedas</h4>
+                            <small>BTC, ETH, USDT, BNB</small>
                         </div>
                     </div>
                 </div>
                 
-                <!-- Formulario Tarjeta -->
-                <form id="cardForm" class="payment-form active">
-                    <div class="form-group">
-                        <label class="form-label">Email</label>
-                        <input type="email" class="form-input" placeholder="tu@email.com" required>
+                <!-- Detalles Tarjeta/PayPal -->
+                <div class="payment-details active" id="cardDetails">
+                    <div style="text-align: center; padding: 2rem 0;">
+                        <i class="fas fa-lock" style="font-size: 3rem; color: var(--accent-red); margin-bottom: 1rem;"></i>
+                        <h4 style="margin-bottom: 0.5rem;">Pago seguro con tarjeta o PayPal</h4>
+                        <p style="color: var(--text-secondary); margin-bottom: 2rem;">
+                            Serás redirigido a nuestra pasarela de pago segura para completar la transacción.
+                        </p>
+                        <button class="continue-btn" id="continueCardBtn">
+                            <i class="fab fa-cc-visa"></i>
+                            <span>Continuar al pago</span>
+                        </button>
                     </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label">Nombre completo</label>
-                        <input type="text" class="form-input" placeholder="Juan Pérez" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label">Número de tarjeta</label>
-                        <input type="text" class="form-input" placeholder="1234 5678 9012 3456" maxlength="19" required>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label class="form-label">Fecha expiración</label>
-                            <input type="text" class="form-input" placeholder="MM/AA" maxlength="5" required>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label class="form-label">CVV</label>
-                            <input type="text" class="form-input" placeholder="123" maxlength="3" required>
-                        </div>
-                    </div>
-                    
-                    <button type="submit" class="submit-btn">
-                        <i class="fas fa-lock"></i>
-                        <span>Pagar ahora</span>
-                    </button>
-                </form>
+                </div>
                 
-                <!-- Formulario Crypto -->
-                <form id="cryptoForm" class="payment-form">
-                    <div class="form-group">
-                        <label class="form-label">Criptomoneda</label>
-                        <select class="form-input" id="cryptoSelect">
-                            <option value="BTC">Bitcoin (BTC)</option>
-                            <option value="ETH">Ethereum (ETH)</option>
-                            <option value="USDT">USDT</option>
-                            <option value="BNB">BNB</option>
-                        </select>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label">Dirección para el pago</label>
+                <!-- Detalles Crypto -->
+                <div class="payment-details" id="cryptoDetails">
+                    <div style="text-align: center; padding: 1rem 0;">
+                        <i class="fas fa-coins" style="font-size: 3rem; color: var(--accent-gold); margin-bottom: 1rem;"></i>
+                        <h4 style="margin-bottom: 0.5rem;">Pago con criptomonedas</h4>
+                        <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                            Envía el pago a la siguiente dirección:
+                        </p>
+                        
                         <div class="crypto-info">
+                            <div style="margin-bottom: 1rem;">
+                                <select class="form-input" id="cryptoSelect" style="width: 100%;">
+                                    <option value="BTC">Bitcoin (BTC)</option>
+                                    <option value="ETH">Ethereum (ETH)</option>
+                                    <option value="USDT">USDT (TRC20)</option>
+                                    <option value="BNB">BNB (BEP20)</option>
+                                </select>
+                            </div>
+                            
+                            <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 0.5rem;">
+                                Dirección para el pago:
+                            </p>
                             <p class="crypto-address" id="cryptoAddress"></p>
-                            <button type="button" class="btn-copy" id="copyAddressBtn">
+                            
+                            <div style="margin-top: 1rem;">
+                                <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 0.5rem;">
+                                    Monto a pagar:
+                                </p>
+                                <div style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; margin-bottom: 1rem;">
+                                    <input type="text" class="form-input" id="cryptoAmount" readonly style="text-align: center; width: 200px;">
+                                    <span id="cryptoCurrency" style="font-weight: 600; color: var(--accent-gold);">BTC</span>
+                                </div>
+                            </div>
+                            
+                            <button class="btn-copy" id="copyAddressBtn">
                                 <i class="fas fa-copy"></i> Copiar dirección
                             </button>
                         </div>
+                        
+                        <button class="continue-btn" id="continueCryptoBtn">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Confirmar pago</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Inventario -->
+    <div class="inventory-modal" id="inventoryModal">
+        <div class="inventory-content">
+            <div class="inventory-header">
+                <h3 class="inventory-title">📊 Inventario y Estadísticas</h3>
+                <button class="modal-close" id="closeInventoryBtn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="inventory-body">
+                <div class="inventory-stats">
+                    <div class="stat-card">
+                        <div class="stat-value" id="totalProducts">0</div>
+                        <div class="stat-label">Productos Totales</div>
                     </div>
                     
-                    <div class="form-group">
-                        <label class="form-label">Monto a pagar</label>
-                        <div style="display: flex; align-items: center; gap: 1rem;">
-                            <input type="text" class="form-input" id="cryptoAmount" readonly>
-                            <span id="cryptoCurrency" style="font-weight: 600;">BTC</span>
+                    <div class="stat-card">
+                        <div class="stat-value" id="totalStock">0</div>
+                        <div class="stat-label">Unidades en Stock</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-value" id="totalSold">0</div>
+                        <div class="stat-label">Unidades Vendidas</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-value" id="totalValue">$0</div>
+                        <div class="stat-label">Valor Total</div>
+                    </div>
+                </div>
+                
+                <h4 style="margin: 2rem 0 1rem 0; color: var(--text-primary);">📋 Detalle del Inventario</h4>
+                <div style="overflow-x: auto;">
+                    <table class="inventory-table">
+                        <thead>
+                            <tr>
+                                <th>Producto</th>
+                                <th>Categoría</th>
+                                <th>Precio</th>
+                                <th>Stock</th>
+                                <th>Vendidos</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody id="inventoryTableBody">
+                            <!-- Datos cargados dinámicamente -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div style="margin-top: 2rem; padding: 1rem; background: rgba(42, 42, 42, 0.3); border-radius: 10px;">
+                    <h4 style="margin-bottom: 0.5rem; color: var(--text-primary);">📈 Estadísticas de Ventas</h4>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem;">
+                        <div>
+                            <div style="color: var(--text-secondary); font-size: 0.9rem;">Ventas Hoy</div>
+                            <div style="font-size: 1.5rem; font-weight: 600; color: var(--success);" id="salesToday">0</div>
+                        </div>
+                        <div>
+                            <div style="color: var(--text-secondary); font-size: 0.9rem;">Ventas Esta Semana</div>
+                            <div style="font-size: 1.5rem; font-weight: 600; color: var(--success);" id="salesWeek">0</div>
+                        </div>
+                        <div>
+                            <div style="color: var(--text-secondary); font-size: 0.9rem;">Ingresos Totales</div>
+                            <div style="font-size: 1.5rem; font-weight: 600; color: var(--accent-gold);" id="totalRevenue">$0</div>
+                        </div>
+                        <div>
+                            <div style="color: var(--text-secondary); font-size: 0.9rem;">Productos Agotados</div>
+                            <div style="font-size: 1.5rem; font-weight: 600; color: var(--accent-red);" id="outOfStock">0</div>
                         </div>
                     </div>
-                    
-                    <button type="submit" class="submit-btn">
-                        <i class="fas fa-check-circle"></i>
-                        <span>Confirmar pago</span>
-                    </button>
-                </form>
+                </div>
             </div>
         </div>
     </div>
@@ -931,8 +1341,9 @@
         <div class="footer-content">
             <p class="footer-text">© 2024 ADCM.Club - Todos los derechos reservados</p>
             <p class="footer-text">
-                <i class="fas fa-shield-alt"></i> Pagos seguros | 
-                <i class="fas fa-bolt"></i> Entrega inmediata
+                <i class="fas fa-shield-alt" style="color: var(--success);"></i> Pagos 100% seguros | 
+                <i class="fas fa-bolt" style="color: var(--accent-red);"></i> Entrega inmediata |
+                <i class="fas fa-headset" style="color: var(--crypto-blue);"></i> Soporte 24/7
             </p>
         </div>
     </footer>
@@ -940,8 +1351,8 @@
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        // Datos de productos - Más realistas
-        const products = [
+        // Base de datos de productos con stock
+        let productsDB = [
             {
                 id: 1,
                 name: "Membresía Elite Pro",
@@ -951,7 +1362,9 @@
                 oldPrice: 89.99,
                 image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
                 badge: "POPULAR",
-                features: ["Acceso total", "Soporte 24/7", "Contenido exclusivo"]
+                stock: 15,
+                sold: 42,
+                sku: "MEM-ELITE-001"
             },
             {
                 id: 2,
@@ -961,7 +1374,9 @@
                 price: 79.99,
                 image: "https://images.unsplash.com/photo-1561070791-2526d30994b5?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
                 badge: "NUEVO",
-                features: ["100+ recursos", "Formatos editables", "Actualizaciones"]
+                stock: 28,
+                sold: 31,
+                sku: "DIG-DESIGN-002"
             },
             {
                 id: 3,
@@ -970,7 +1385,9 @@
                 description: "Sesión de consultoría personalizada para optimizar tu presencia digital y estrategia.",
                 price: 149.99,
                 image: "https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-                features: ["2 horas", "Análisis completo", "Plan personalizado"]
+                stock: 10,
+                sold: 18,
+                sku: "SERV-CONS-003"
             },
             {
                 id: 4,
@@ -981,7 +1398,9 @@
                 oldPrice: 499.99,
                 image: "https://images.unsplash.com/photo-1555949963-aa79dcee981c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
                 badge: "OFERTA",
-                features: ["Automatización", "Integraciones", "Soporte técnico"]
+                stock: 5,
+                sold: 23,
+                sku: "SOFT-AUTO-004"
             },
             {
                 id: 5,
@@ -990,7 +1409,9 @@
                 description: "Domina Discord desde cero hasta nivel experto con este curso completo y certificado.",
                 price: 99.99,
                 image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-                features: ["40 lecciones", "Certificación", "Comunidad privada"]
+                stock: 35,
+                sold: 67,
+                sku: "DIG-CURSO-005"
             },
             {
                 id: 6,
@@ -999,7 +1420,9 @@
                 description: "Desarrollo completo de servidor Discord personalizado con todas las integraciones necesarias.",
                 price: 199.99,
                 image: "https://images.unsplash.com/photo-1611224923853-80b023f02d71?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-                features: ["Diseño único", "Bots personalizados", "Configuración"]
+                stock: 8,
+                sold: 12,
+                sku: "SERV-DEV-006"
             },
             {
                 id: 7,
@@ -1010,7 +1433,9 @@
                 oldPrice: 699.99,
                 image: "https://images.unsplash.com/photo-1634942537034-2531766767d1?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
                 badge: "RECOMENDADO",
-                features: ["12 meses", "Eventos exclusivos", "Soporte VIP"]
+                stock: 12,
+                sold: 29,
+                sku: "MEM-ANUAL-007"
             },
             {
                 id: 8,
@@ -1019,7 +1444,32 @@
                 description: "Solución API empresarial para integraciones avanzadas y procesamiento de datos.",
                 price: 499.99,
                 image: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-                features: ["API REST", "Documentación", "Soporte enterprise"]
+                stock: 3,
+                sold: 7,
+                sku: "SOFT-API-008"
+            },
+            {
+                id: 9,
+                name: "Pack Redes Sociales Pro",
+                category: "digital",
+                description: "Contenido listo para redes sociales, incluye posts, stories y banners para todas las plataformas.",
+                price: 69.99,
+                image: "https://images.unsplash.com/photo-1611262588024-d12430b98920?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                badge: "NUEVO",
+                stock: 45,
+                sold: 89,
+                sku: "DIG-SOCIAL-009"
+            },
+            {
+                id: 10,
+                name: "Auditoría de Seguridad",
+                category: "services",
+                description: "Auditoría completa de seguridad para servidores Discord y sistemas relacionados.",
+                price: 249.99,
+                image: "https://images.unsplash.com/photo-1563013544-824ae1b704d3?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                stock: 6,
+                sold: 14,
+                sku: "SERV-AUDIT-010"
             }
         ];
 
@@ -1027,16 +1477,19 @@
         let cart = JSON.parse(localStorage.getItem('adcm_cart')) || [];
         let currentProduct = null;
         let selectedPaymentMethod = 'card';
+        let salesHistory = JSON.parse(localStorage.getItem('adcm_sales')) || [];
 
         // Inicializar catálogo
         function initCatalog() {
             const grid = document.getElementById('productsGrid');
             grid.innerHTML = '';
             
-            products.forEach((product, index) => {
+            productsDB.forEach((product, index) => {
                 const card = createProductCard(product, index);
                 grid.appendChild(card);
             });
+            
+            updateProductCount();
         }
 
         // Crear tarjeta de producto
@@ -1057,8 +1510,21 @@
                 oldPriceHTML = `<span class="old-price">$${product.oldPrice}</span>`;
             }
             
+            let stockBadgeClass = 'stock-badge';
+            let stockText = `${product.stock} disponibles`;
+            
+            if (product.stock <= 3) {
+                stockBadgeClass += ' stock-low';
+                stockText = `¡Solo ${product.stock} disponibles!`;
+            } else if (product.stock <= 10) {
+                stockText = `${product.stock} disponibles`;
+            }
+            
+            const stockBadgeHTML = `<div class="${stockBadgeClass}">${stockText}</div>`;
+            
             card.innerHTML = `
                 ${badgeHTML}
+                ${stockBadgeHTML}
                 <img src="${product.image}" alt="${product.name}" class="product-image">
                 <div class="product-content">
                     <div class="product-header">
@@ -1070,19 +1536,55 @@
                     </div>
                     <p class="product-description">${product.description}</p>
                     <div class="product-actions">
-                        <button class="action-btn btn-add-cart" data-id="${product.id}">
+                        <button class="action-btn btn-add-cart" data-id="${product.id}" ${product.stock <= 0 ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : ''}>
                             <i class="fas fa-cart-plus"></i>
-                            Agregar al carrito
+                            ${product.stock <= 0 ? 'Agotado' : 'Agregar al carrito'}
                         </button>
-                        <button class="action-btn btn-buy-now" data-id="${product.id}">
+                        <button class="action-btn btn-buy-now" data-id="${product.id}" ${product.stock <= 0 ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : ''}>
                             <i class="fas fa-bolt"></i>
-                            Comprar ahora
+                            ${product.stock <= 0 ? 'Agotado' : 'Comprar ahora'}
                         </button>
                     </div>
                 </div>
             `;
             
             return card;
+        }
+
+        // Actualizar contador de productos
+        function updateProductCount() {
+            const totalProducts = productsDB.length;
+            const totalInStock = productsDB.reduce((sum, product) => sum + product.stock, 0);
+            const totalSold = productsDB.reduce((sum, product) => sum + product.sold, 0);
+            
+            document.getElementById('productCount').textContent = 
+                `${totalProducts} productos (${totalInStock} disponibles, ${totalSold} vendidos)`;
+        }
+
+        // Inicializar buscador
+        function initSearch() {
+            const searchInput = document.getElementById('searchInput');
+            const productCards = document.querySelectorAll('.product-card');
+            
+            searchInput.addEventListener('input', function(e) {
+                const searchTerm = e.target.value.toLowerCase().trim();
+                let visibleCount = 0;
+                
+                productCards.forEach(card => {
+                    const title = card.querySelector('.product-title').textContent.toLowerCase();
+                    const description = card.querySelector('.product-description').textContent.toLowerCase();
+                    
+                    if (title.includes(searchTerm) || description.includes(searchTerm)) {
+                        card.style.display = 'block';
+                        visibleCount++;
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+                
+                document.getElementById('searchResults').textContent = 
+                    searchTerm ? `${visibleCount} resultados encontrados` : '';
+            });
         }
 
         // Inicializar filtros
@@ -1098,10 +1600,12 @@
                     this.classList.add('active');
                     
                     const filter = this.dataset.filter;
+                    let visibleCount = 0;
                     
                     productCards.forEach(card => {
                         if (filter === 'all' || card.dataset.category === filter) {
                             card.style.display = 'block';
+                            visibleCount++;
                         } else {
                             card.style.display = 'none';
                         }
@@ -1123,12 +1627,12 @@
                 const addCartBtn = e.target.closest('.btn-add-cart');
                 const buyNowBtn = e.target.closest('.btn-buy-now');
                 
-                if (addCartBtn) {
+                if (addCartBtn && !addCartBtn.disabled) {
                     const productId = parseInt(addCartBtn.dataset.id);
                     addToCart(productId);
                 }
                 
-                if (buyNowBtn) {
+                if (buyNowBtn && !buyNowBtn.disabled) {
                     const productId = parseInt(buyNowBtn.dataset.id);
                     showPurchaseModal(productId, true);
                 }
@@ -1152,7 +1656,7 @@
             
             let total = 0;
             const itemsHTML = cart.map((item, index) => {
-                const product = products.find(p => p.id === item.productId);
+                const product = productsDB.find(p => p.id === item.productId);
                 if (!product) return '';
                 
                 total += product.price * item.quantity;
@@ -1247,13 +1751,24 @@
 
         // Agregar al carrito
         function addToCart(productId) {
-            const product = products.find(p => p.id === productId);
-            if (!product) return;
+            const product = productsDB.find(p => p.id === productId);
+            if (!product || product.stock <= 0) return;
             
             // Verificar si ya está en el carrito
             const existingItem = cart.find(item => item.productId === productId);
             if (existingItem) {
-                existingItem.quantity += 1;
+                if (existingItem.quantity < product.stock) {
+                    existingItem.quantity += 1;
+                } else {
+                    Swal.fire({
+                        title: 'Stock insuficiente',
+                        text: `Solo quedan ${product.stock} unidades disponibles`,
+                        icon: 'warning',
+                        background: '#1a1a1a',
+                        color: '#ffffff'
+                    });
+                    return;
+                }
             } else {
                 cart.push({ 
                     productId, 
@@ -1284,13 +1799,26 @@
             });
         }
 
-        // Actualizar cantidad
+        // Actualizar cantidad en carrito
         function updateQuantity(index, change) {
             const item = cart[index];
+            const product = productsDB.find(p => p.id === item.productId);
+            
+            if (!product) return;
+            
             item.quantity += change;
             
             if (item.quantity <= 0) {
                 cart.splice(index, 1);
+            } else if (item.quantity > product.stock) {
+                item.quantity = product.stock;
+                Swal.fire({
+                    title: 'Stock insuficiente',
+                    text: `Solo quedan ${product.stock} unidades disponibles`,
+                    icon: 'warning',
+                    background: '#1a1a1a',
+                    color: '#ffffff'
+                });
             }
             
             saveCart();
@@ -1311,103 +1839,28 @@
             if (cart.length === 0) return;
             
             const total = cart.reduce((sum, item) => {
-                const product = products.find(p => p.id === item.productId);
+                const product = productsDB.find(p => p.id === item.productId);
                 return sum + (product ? product.price * item.quantity : 0);
             }, 0);
             
-            Swal.fire({
-                title: '🎯 Finalizar compra',
-                html: `
-                    <p>Total a pagar: <strong style="color: #c5a047;">$${total.toFixed(2)}</strong></p>
-                    <p>Selecciona método de pago:</p>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin: 1rem 0;">
-                        <button id="checkoutCard" style="
-                            padding: 1rem;
-                            background: rgba(42, 42, 42, 0.5);
-                            border: 2px solid rgba(255, 255, 255, 0.1);
-                            border-radius: 8px;
-                            color: #ffffff;
-                            cursor: pointer;
-                            transition: all 0.3s;
-                        " onmouseover="this.style.borderColor='#d32f2f'">
-                            <i class="fas fa-credit-card"></i><br>
-                            <small>Tarjeta/PayPal</small>
-                        </button>
-                        <button id="checkoutCrypto" style="
-                            padding: 1rem;
-                            background: rgba(42, 42, 42, 0.5);
-                            border: 2px solid rgba(255, 255, 255, 0.1);
-                            border-radius: 8px;
-                            color: #ffffff;
-                            cursor: pointer;
-                            transition: all 0.3s;
-                        " onmouseover="this.style.borderColor='#2962ff'">
-                            <i class="fas fa-coins"></i><br>
-                            <small>Criptomonedas</small>
-                        </button>
-                    </div>
-                `,
-                showCancelButton: true,
-                confirmButtonText: 'Continuar',
-                cancelButtonText: 'Cancelar',
-                background: '#1a1a1a',
-                color: '#ffffff',
-                confirmButtonColor: '#d32f2f',
-                cancelButtonColor: '#3a3a3a'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    // Obtener método seleccionado
-                    const method = selectedPaymentMethod;
-                    
-                    // Procesar pago
-                    Swal.fire({
-                        title: 'Procesando pago...',
-                        text: 'Por favor espera un momento',
-                        allowOutsideClick: false,
-                        showConfirmButton: false,
-                        background: '#1a1a1a',
-                        color: '#ffffff',
-                        didOpen: () => {
-                            Swal.showLoading();
-                            
-                            setTimeout(() => {
-                                Swal.fire({
-                                    title: '✅ ¡Pago completado!',
-                                    html: `
-                                        <p>Gracias por tu compra</p>
-                                        <p>Total: <strong>$${total.toFixed(2)}</strong></p>
-                                        <p>Método: <strong>${method === 'card' ? 'Tarjeta/PayPal' : 'Criptomonedas'}</strong></p>
-                                        <p>Recibirás un correo de confirmación con los detalles.</p>
-                                    `,
-                                    icon: 'success',
-                                    confirmButtonText: 'Entendido',
-                                    background: '#1a1a1a',
-                                    color: '#ffffff',
-                                    confirmButtonColor: '#d32f2f'
-                                });
-                                
-                                // Limpiar carrito después de la compra
-                                cart = [];
-                                saveCart();
-                                updateCartCount();
-                            }, 2000);
-                        }
-                    });
-                }
-            });
+            // Mostrar modal de pago
+            currentProduct = null; // Indica que es compra múltiple
+            selectedPaymentMethod = 'card';
             
-            // Asignar eventos a los botones de método
-            setTimeout(() => {
-                document.getElementById('checkoutCard')?.addEventListener('click', () => {
-                    selectedPaymentMethod = 'card';
-                    Swal.clickConfirm();
-                });
-                
-                document.getElementById('checkoutCrypto')?.addEventListener('click', () => {
-                    selectedPaymentMethod = 'crypto';
-                    Swal.clickConfirm();
-                });
-            }, 100);
+            // Actualizar UI del modal
+            document.getElementById('modalTitle').textContent = `Pagar carrito - $${total.toFixed(2)}`;
+            document.querySelectorAll('.payment-method').forEach(method => {
+                method.classList.remove('active');
+            });
+            document.querySelector('.payment-method.card').classList.add('active');
+            
+            document.querySelectorAll('.payment-details').forEach(details => {
+                details.classList.remove('active');
+            });
+            document.getElementById('cardDetails').classList.add('active');
+            
+            // Mostrar modal
+            document.getElementById('paymentModal').style.display = 'flex';
         }
 
         // Guardar carrito
@@ -1424,13 +1877,13 @@
 
         // Mostrar modal de compra individual
         function showPurchaseModal(productId, buyNow = false) {
-            currentProduct = products.find(p => p.id === productId);
-            if (!currentProduct) return;
+            currentProduct = productsDB.find(p => p.id === productId);
+            if (!currentProduct || currentProduct.stock <= 0) return;
             
             selectedPaymentMethod = 'card';
             
             // Actualizar UI
-            document.getElementById('modalTitle').textContent = `Comprar: ${currentProduct.name}`;
+            document.getElementById('modalTitle').textContent = `Comprar: ${currentProduct.name} - $${currentProduct.price}`;
             
             // Resetear métodos
             document.querySelectorAll('.payment-method').forEach(method => {
@@ -1438,13 +1891,82 @@
             });
             document.querySelector('.payment-method.card').classList.add('active');
             
-            document.querySelectorAll('.payment-form').forEach(form => {
-                form.classList.remove('active');
+            document.querySelectorAll('.payment-details').forEach(details => {
+                details.classList.remove('active');
             });
-            document.getElementById('cardForm').classList.add('active');
+            document.getElementById('cardDetails').classList.add('active');
+            
+            // Actualizar info crypto
+            updateCryptoInfo();
             
             // Mostrar modal
             document.getElementById('paymentModal').style.display = 'flex';
+        }
+
+        // Actualizar info crypto
+        function updateCryptoInfo() {
+            if (!currentProduct) return;
+            
+            const currency = document.getElementById('cryptoSelect').value;
+            const addresses = {
+                BTC: 'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh',
+                ETH: '0x71C7656EC7ab88b098defB751B7401B5f6d8976F',
+                USDT: 'TQr7hqUtQDY9qFv6kFnxPqQfY4rH7hJqJZ',
+                BNB: 'bnb136ns6lfw4zs5hg4n85vdthaad7hq5m4gtkgf23'
+            };
+            
+            const rates = {
+                BTC: 45000,
+                ETH: 3000,
+                USDT: 1,
+                BNB: 400
+            };
+            
+            document.getElementById('cryptoAddress').textContent = addresses[currency];
+            document.getElementById('cryptoCurrency').textContent = currency;
+            
+            const amount = (currentProduct ? currentProduct.price : calculateCartTotal()) / rates[currency];
+            document.getElementById('cryptoAmount').value = amount.toFixed(8);
+        }
+
+        // Calcular total del carrito
+        function calculateCartTotal() {
+            return cart.reduce((sum, item) => {
+                const product = productsDB.find(p => p.id === item.productId);
+                return sum + (product ? product.price * item.quantity : 0);
+            }, 0);
+        }
+
+        // Registrar venta
+        function registerSale(productId, quantity, paymentMethod) {
+            const product = productsDB.find(p => p.id === productId);
+            if (!product) return;
+            
+            // Actualizar stock
+            product.stock -= quantity;
+            product.sold += quantity;
+            
+            // Registrar en historial
+            const sale = {
+                productId,
+                productName: product.name,
+                quantity,
+                price: product.price,
+                total: product.price * quantity,
+                paymentMethod,
+                date: new Date().toISOString(),
+                sku: product.sku
+            };
+            
+            salesHistory.push(sale);
+            localStorage.setItem('adcm_sales', JSON.stringify(salesHistory));
+            
+            // Actualizar UI
+            updateProductCount();
+            updateInventoryStats();
+            
+            // Guardar productos actualizados
+            localStorage.setItem('adcm_products', JSON.stringify(productsDB));
         }
 
         // Inicializar modal de pago
@@ -1461,12 +1983,12 @@
                     document.querySelectorAll('.payment-method').forEach(m => m.classList.remove('active'));
                     this.classList.add('active');
                     
-                    document.querySelectorAll('.payment-form').forEach(form => {
-                        form.classList.remove('active');
+                    document.querySelectorAll('.payment-details').forEach(details => {
+                        details.classList.remove('active');
                     });
                     
-                    const activeForm = document.getElementById(selectedPaymentMethod === 'card' ? 'cardForm' : 'cryptoForm');
-                    activeForm.classList.add('active');
+                    const activeDetails = document.getElementById(selectedPaymentMethod === 'card' ? 'cardDetails' : 'cryptoDetails');
+                    activeDetails.classList.add('active');
                     
                     // Si es crypto, actualizar info
                     if (selectedPaymentMethod === 'crypto') {
@@ -1474,32 +1996,6 @@
                     }
                 });
             });
-            
-            // Actualizar info crypto
-            function updateCryptoInfo() {
-                if (!currentProduct) return;
-                
-                const currency = document.getElementById('cryptoSelect').value;
-                const addresses = {
-                    BTC: 'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh',
-                    ETH: '0x71C7656EC7ab88b098defB751B7401B5f6d8976F',
-                    USDT: '0xdAC17F958D2ee523a2206206994597C13D831ec7',
-                    BNB: 'bnb136ns6lfw4zs5hg4n85vdthaad7hq5m4gtkgf23'
-                };
-                
-                const rates = {
-                    BTC: 45000,
-                    ETH: 3000,
-                    USDT: 1,
-                    BNB: 400
-                };
-                
-                document.getElementById('cryptoAddress').textContent = addresses[currency];
-                document.getElementById('cryptoCurrency').textContent = currency;
-                
-                const amount = currentProduct.price / rates[currency];
-                document.getElementById('cryptoAmount').value = amount.toFixed(8);
-            }
             
             // Cambiar criptomoneda
             document.getElementById('cryptoSelect').addEventListener('change', updateCryptoInfo);
@@ -1521,10 +2017,19 @@
                 });
             });
             
-            // Formulario Tarjeta
-            document.getElementById('cardForm').addEventListener('submit', function(e) {
-                e.preventDefault();
-                
+            // Continuar con tarjeta
+            document.getElementById('continueCardBtn').addEventListener('click', function() {
+                processPayment('card');
+            });
+            
+            // Continuar con crypto
+            document.getElementById('continueCryptoBtn').addEventListener('click', function() {
+                processPayment('crypto');
+            });
+            
+            // Procesar pago
+            function processPayment(method) {
+                // Simular procesamiento
                 Swal.fire({
                     title: 'Procesando pago...',
                     text: 'Por favor espera un momento',
@@ -1536,72 +2041,67 @@
                         Swal.showLoading();
                         
                         setTimeout(() => {
-                            Swal.fire({
-                                title: '✅ ¡Pago exitoso!',
-                                html: `
-                                    <p>${currentProduct.name}</p>
-                                    <p>Total: <strong>$${currentProduct.price}</strong></p>
-                                    <p>Método: Tarjeta/PayPal</p>
-                                    <p>Recibirás los detalles por email.</p>
-                                `,
-                                icon: 'success',
-                                confirmButtonText: 'Entendido',
-                                background: '#1a1a1a',
-                                color: '#ffffff',
-                                confirmButtonColor: '#d32f2f'
-                            });
+                            // Si es compra individual
+                            if (currentProduct) {
+                                registerSale(currentProduct.id, 1, method);
+                                
+                                Swal.fire({
+                                    title: '✅ ¡Pago exitoso!',
+                                    html: `
+                                        <p>${currentProduct.name}</p>
+                                        <p>Total: <strong>$${currentProduct.price}</strong></p>
+                                        <p>Método: ${method === 'card' ? 'Tarjeta/PayPal' : 'Criptomonedas'}</p>
+                                        <p>Recibirás los detalles por email.</p>
+                                    `,
+                                    icon: 'success',
+                                    confirmButtonText: 'Entendido',
+                                    background: '#1a1a1a',
+                                    color: '#ffffff',
+                                    confirmButtonColor: '#d32f2f'
+                                });
+                                
+                                // Agregar al carrito
+                                addToCart(currentProduct.id);
+                                
+                            } else {
+                                // Si es compra del carrito completo
+                                cart.forEach(item => {
+                                    registerSale(item.productId, item.quantity, method);
+                                });
+                                
+                                const total = calculateCartTotal();
+                                
+                                Swal.fire({
+                                    title: '✅ ¡Compra completada!',
+                                    html: `
+                                        <p>Gracias por tu compra</p>
+                                        <p>Total: <strong>$${total.toFixed(2)}</strong></p>
+                                        <p>Método: ${method === 'card' ? 'Tarjeta/PayPal' : 'Criptomonedas'}</p>
+                                        <p>Recibirás un correo de confirmación con los detalles.</p>
+                                    `,
+                                    icon: 'success',
+                                    confirmButtonText: 'Entendido',
+                                    background: '#1a1a1a',
+                                    color: '#ffffff',
+                                    confirmButtonColor: '#d32f2f'
+                                });
+                                
+                                // Limpiar carrito después de la compra
+                                cart = [];
+                                saveCart();
+                                updateCartCount();
+                            }
                             
                             // Cerrar modal
                             modal.style.display = 'none';
-                            this.reset();
                             
-                            // Agregar al carrito
-                            addToCart(currentProduct.id);
+                            // Actualizar catálogo
+                            initCatalog();
+                            
                         }, 2000);
                     }
                 });
-            });
-            
-            // Formulario Crypto
-            document.getElementById('cryptoForm').addEventListener('submit', function(e) {
-                e.preventDefault();
-                
-                Swal.fire({
-                    title: 'Verificando pago...',
-                    text: 'Confirmando transacción en la blockchain',
-                    allowOutsideClick: false,
-                    showConfirmButton: false,
-                    background: '#1a1a1a',
-                    color: '#ffffff',
-                    didOpen: () => {
-                        Swal.showLoading();
-                        
-                        setTimeout(() => {
-                            Swal.fire({
-                                title: '✅ ¡Pago confirmado!',
-                                html: `
-                                    <p>${currentProduct.name}</p>
-                                    <p>Total: <strong>$${currentProduct.price}</strong></p>
-                                    <p>Método: Criptomonedas</p>
-                                    <p>Transacción verificada exitosamente.</p>
-                                `,
-                                icon: 'success',
-                                confirmButtonText: 'Entendido',
-                                background: '#1a1a1a',
-                                color: '#ffffff',
-                                confirmButtonColor: '#d32f2f'
-                            });
-                            
-                            // Cerrar modal
-                            modal.style.display = 'none';
-                            this.reset();
-                            
-                            // Agregar al carrito
-                            addToCart(currentProduct.id);
-                        }, 3000);
-                    }
-                });
-            });
+            }
             
             // Cerrar modal
             closeBtn.addEventListener('click', () => {
@@ -1615,38 +2115,128 @@
             });
         }
 
-        // Formatear inputs de tarjeta
-        function formatCardInputs() {
-            const cardNumber = document.querySelector('#cardForm input[type="text"]');
-            const expiryDate = document.querySelector('#cardForm input[placeholder="MM/AA"]');
+        // Inicializar inventario
+        function initInventory() {
+            const inventoryBtn = document.getElementById('inventoryBtn');
+            const inventoryModal = document.getElementById('inventoryModal');
+            const closeInventoryBtn = document.getElementById('closeInventoryBtn');
             
-            if (cardNumber) {
-                cardNumber.addEventListener('input', function(e) {
-                    let value = e.target.value.replace(/\s/g, '').replace(/\D/g, '');
-                    value = value.replace(/(\d{4})/g, '$1 ').trim();
-                    e.target.value = value.substring(0, 19);
-                });
+            inventoryBtn.addEventListener('click', () => {
+                updateInventoryStats();
+                inventoryModal.style.display = 'flex';
+            });
+            
+            closeInventoryBtn.addEventListener('click', () => {
+                inventoryModal.style.display = 'none';
+            });
+            
+            window.addEventListener('click', (e) => {
+                if (e.target === inventoryModal) {
+                    inventoryModal.style.display = 'none';
+                }
+            });
+        }
+
+        // Actualizar estadísticas del inventario
+        function updateInventoryStats() {
+            // Calcular estadísticas
+            const totalProducts = productsDB.length;
+            const totalStock = productsDB.reduce((sum, product) => sum + product.stock, 0);
+            const totalSold = productsDB.reduce((sum, product) => sum + product.sold, 0);
+            const totalValue = productsDB.reduce((sum, product) => sum + (product.price * product.stock), 0);
+            
+            // Calcular ventas de hoy y esta semana
+            const now = new Date();
+            const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+            
+            const salesToday = salesHistory.filter(sale => 
+                new Date(sale.date) >= today
+            ).length;
+            
+            const salesWeek = salesHistory.filter(sale => 
+                new Date(sale.date) >= weekAgo
+            ).length;
+            
+            const totalRevenue = salesHistory.reduce((sum, sale) => sum + sale.total, 0);
+            const outOfStock = productsDB.filter(product => product.stock <= 0).length;
+            
+            // Actualizar UI
+            document.getElementById('totalProducts').textContent = totalProducts;
+            document.getElementById('totalStock').textContent = totalStock;
+            document.getElementById('totalSold').textContent = totalSold;
+            document.getElementById('totalValue').textContent = `$${totalValue.toFixed(2)}`;
+            document.getElementById('salesToday').textContent = salesToday;
+            document.getElementById('salesWeek').textContent = salesWeek;
+            document.getElementById('totalRevenue').textContent = `$${totalRevenue.toFixed(2)}`;
+            document.getElementById('outOfStock').textContent = outOfStock;
+            
+            // Actualizar tabla
+            const tableBody = document.getElementById('inventoryTableBody');
+            tableBody.innerHTML = '';
+            
+            productsDB.forEach(product => {
+                let stockClass = 'stock-high';
+                if (product.stock <= 3) stockClass = 'stock-low';
+                else if (product.stock <= 10) stockClass = 'stock-medium';
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${product.name}</td>
+                    <td>${product.category}</td>
+                    <td>$${product.price}</td>
+                    <td class="stock-cell ${stockClass}">${product.stock} unidades</td>
+                    <td>${product.sold} unidades</td>
+                    <td>
+                        ${product.stock <= 0 ? 
+                            '<span style="color: var(--accent-red);">Agotado</span>' : 
+                          product.stock <= 3 ? 
+                            '<span style="color: var(--accent-red);">Bajo stock</span>' : 
+                          product.stock <= 10 ? 
+                            '<span style="color: var(--accent-gold);">Stock medio</span>' : 
+                            '<span style="color: var(--success);">Disponible</span>'
+                        }
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        // Cargar datos del localStorage
+        function loadFromStorage() {
+            const savedProducts = localStorage.getItem('adcm_products');
+            if (savedProducts) {
+                productsDB = JSON.parse(savedProducts);
             }
             
-            if (expiryDate) {
-                expiryDate.addEventListener('input', function(e) {
-                    let value = e.target.value.replace(/\D/g, '');
-                    if (value.length >= 2) {
-                        value = value.substring(0, 2) + '/' + value.substring(2, 4);
-                    }
-                    e.target.value = value.substring(0, 5);
-                });
+            const savedSales = localStorage.getItem('adcm_sales');
+            if (savedSales) {
+                salesHistory = JSON.parse(savedSales);
             }
+        }
+
+        // Guardar datos en localStorage
+        function saveToStorage() {
+            localStorage.setItem('adcm_products', JSON.stringify(productsDB));
+            localStorage.setItem('adcm_sales', JSON.stringify(salesHistory));
         }
 
         // Inicializar todo
         document.addEventListener('DOMContentLoaded', function() {
+            // Cargar datos
+            loadFromStorage();
+            
+            // Inicializar componentes
             initCatalog();
+            initSearch();
             initFilters();
             initCart();
             initPaymentModal();
-            formatCardInputs();
+            initInventory();
             updateCartCount();
+            
+            // Guardar datos periódicamente
+            setInterval(saveToStorage, 30000); // Cada 30 segundos
             
             // Efecto de entrada
             setTimeout(() => {
@@ -1656,10 +2246,33 @@
             }, 100);
             
             // Animar tarjetas
-            const cards = document.querySelectorAll('.product-card');
-            cards.forEach((card, index) => {
-                card.style.animationDelay = `${index * 0.1}s`;
-            });
+            setTimeout(() => {
+                const cards = document.querySelectorAll('.product-card');
+                cards.forEach((card, index) => {
+                    card.style.animationDelay = `${index * 0.1}s`;
+                });
+            }, 500);
+            
+            // Mostrar mensaje de bienvenida
+            setTimeout(() => {
+                if (cart.length === 0 && !localStorage.getItem('adcm_welcome_shown')) {
+                    Swal.fire({
+                        title: '🎉 ¡Bienvenido al catálogo ADCM!',
+                        html: `
+                            <p>Explora nuestros productos premium</p>
+                            <p>• ${productsDB.length} productos disponibles</p>
+                            <p>• Pago seguro con múltiples métodos</p>
+                            <p>• Entrega inmediata</p>
+                        `,
+                        icon: 'info',
+                        confirmButtonText: 'Comenzar',
+                        background: '#1a1a1a',
+                        color: '#ffffff',
+                        confirmButtonColor: '#d32f2f'
+                    });
+                    localStorage.setItem('adcm_welcome_shown', 'true');
+                }
+            }, 1000);
         });
     </script>
 </body>
