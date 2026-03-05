@@ -456,11 +456,11 @@ input[type="search"]::-webkit-search-cancel-button {
 
     
 
-    <!-- Aquí puedes añadir contenido privado -->
+    <!-- Aquí puedes añadir contenido privado++++++++++++++++++++++++++++++++++++++++++++++++ -->
 
 
 
-    
+
 <div id="admin" class="admin-panel">
   <h2>Panel de Administración</h2>
 
@@ -488,9 +488,136 @@ input[type="search"]::-webkit-search-cancel-button {
   </div>
 </div>
 
+<script>
+// Función para cargar usuarios y mostrarlos
+function cargarUsuarios() {
+  const db = firebase.database();
+  db.ref('users').once('value', snapshot => {
+    const users = snapshot.val() || {};
+    const container = document.getElementById('users-list');
+    
+    if (Object.keys(users).length === 0) {
+      container.innerHTML = '<p>No hay usuarios registrados.</p>';
+      return;
+    }
 
+    let html = '<table style="width:100%; border-collapse: collapse;">';
+    html += `<tr style="background: #333; color: #ff4d4d;">
+      <th style="padding: 10px; text-align: left;">Nombre</th>
+      <th style="padding: 10px; text-align: left;">Apellido</th>
+      <th style="padding: 10px; text-align: left;">Email</th>
+      <th style="padding: 10px; text-align: left;">Rol</th>
+      <th style="padding: 10px; text-align: left;">Acciones</th>
+    </tr>`;
 
-    <!-- Aquí puedes añadir contenido ADMIN -->
+    for (const [uid, user] of Object.entries(users)) {
+      html += `<tr style="border-bottom: 1px solid #444;">
+        <td style="padding: 10px;">${user.name || ''}</td>
+        <td style="padding: 10px;">${user.lastname || ''}</td>
+        <td style="padding: 10px;">${user.email || ''}</td>
+        <td style="padding: 10px;">
+          <!-- SELECT PARA CAMBIAR ROL -->
+          <select class="role-select" data-uid="${uid}" style="background: #2a2a2a; color: white; padding: 5px; border-radius: 4px;">
+            <option value="user" ${user.role === 'user' ? 'selected' : ''}>Usuario</option>
+            <option value="admin" ${user.role === 'admin' ? 'selected' : ''}>Administrador</option>
+          </select>
+        </td>
+        <td style="padding: 10px;">
+          <button class="delete-btn" data-uid="${uid}" style="background: #cc0000; color: white; border: none; border-radius: 4px; padding: 5px 10px; cursor: pointer;">Eliminar</button>
+        </td>
+      </tr>`;
+    }
+    html += '</table>';
+    container.innerHTML = html;
+
+    // ASIGNAR EVENTOS A LOS SELECT DE ROL
+    document.querySelectorAll('.role-select').forEach(select => {
+      select.addEventListener('change', async (e) => {
+        const uid = e.target.dataset.uid;
+        const newRole = e.target.value;
+        await db.ref(`users/${uid}/role`).set(newRole);
+        alert('Rol actualizado correctamente.');
+        // Opcional: recargar la lista para reflejar el cambio (ya se ve el cambio visualmente)
+        // cargarUsuarios(); // si quieres recargar, descomenta esta línea
+      });
+    });
+
+    // EVENTOS PARA ELIMINAR
+    document.querySelectorAll('.delete-btn').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        const uid = e.target.dataset.uid;
+        if (!confirm('¿Estás seguro de eliminar este usuario? Se borrará de la base de datos, pero no de Authentication (deberás hacerlo manualmente).')) return;
+        await db.ref(`users/${uid}`).remove();
+        cargarUsuarios(); // recargar lista
+        alert('Usuario eliminado de la base de datos.');
+      });
+    });
+  });
+}
+
+// CREAR NUEVO USUARIO (con rol)
+document.getElementById('btn-create-user')?.addEventListener('click', async () => {
+  const name = document.getElementById('new-name').value.trim();
+  const lastname = document.getElementById('new-lastname').value.trim();
+  const email = document.getElementById('new-email').value.trim();
+  const password = document.getElementById('new-password').value;
+  const role = document.getElementById('new-role').value;
+
+  if (!name || !lastname || !email || !password) {
+    alert('Completa todos los campos.');
+    return;
+  }
+  if (password.length < 6) {
+    alert('La contraseña debe tener al menos 6 caracteres.');
+    return;
+  }
+
+  try {
+    // Crear usuario en Firebase Authentication
+    const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
+    const uid = userCredential.user.uid;
+
+    // Guardar datos (incluyendo rol) en Realtime Database
+    await firebase.database().ref('users/' + uid).set({
+      name,
+      lastname,
+      email,
+      role
+    });
+
+    alert('Usuario creado exitosamente con rol: ' + role);
+    // Limpiar formulario
+    document.getElementById('new-name').value = '';
+    document.getElementById('new-lastname').value = '';
+    document.getElementById('new-email').value = '';
+    document.getElementById('new-password').value = '';
+    // Recargar lista
+    cargarUsuarios();
+  } catch (error) {
+    alert('Error al crear usuario: ' + error.message);
+  }
+});
+
+// INTEGRACIÓN CON TU onAuthStateChanged
+// Busca en tu código donde verificas que el usuario es admin y llama a cargarUsuarios()
+// Ejemplo:
+/*
+firebase.auth().onAuthStateChanged(user => {
+  if (user) {
+    firebase.database().ref('users/' + user.uid).once('value', snapshot => {
+      const userData = snapshot.val();
+      if (userData && userData.role === 'admin') {
+        document.getElementById('admin').classList.add('visible');
+        cargarUsuarios();  // <--- AÑADE ESTA LÍNEA
+      }
+    });
+  }
+});
+*/
+  
+</script>
+
+    <!-- Aquí puedes añadir contenido ADMIN++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
    <div id="admin" class="admin-panel" >
    <h2>Panel de Administración</h2>
    <iframe src="" width="100%" height="600px" style="border:none;"></iframe>
