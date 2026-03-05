@@ -460,6 +460,35 @@ input[type="search"]::-webkit-search-cancel-button {
 
 
 
+    
+<div id="admin" class="admin-panel">
+  <h2>Panel de Administración</h2>
+
+  <!-- FORMULARIO PARA CREAR USUARIO -->
+  <div style="background: #1e1e1e; padding: 1.5rem; border-radius: 16px; margin-bottom: 2rem;">
+    <h3 style="color: #ff4d4d; margin-bottom: 1rem;">➕ Crear nuevo usuario</h3>
+    <input type="text" id="new-name" placeholder="Nombre" style="width: 100%; padding: 0.8rem; margin-bottom: 0.8rem; border-radius: 8px; border: none; background: #2a2a2a; color: white;">
+    <input type="text" id="new-lastname" placeholder="Apellido" style="width: 100%; padding: 0.8rem; margin-bottom: 0.8rem; border-radius: 8px; border: none; background: #2a2a2a; color: white;">
+    <input type="email" id="new-email" placeholder="Correo electrónico" style="width: 100%; padding: 0.8rem; margin-bottom: 0.8rem; border-radius: 8px; border: none; background: #2a2a2a; color: white;">
+    <input type="password" id="new-password" placeholder="Contraseña (mínimo 6 caracteres)" style="width: 100%; padding: 0.8rem; margin-bottom: 0.8rem; border-radius: 8px; border: none; background: #2a2a2a; color: white;">
+    
+    <!-- SELECT PARA ASIGNAR ROL -->
+    <select id="new-role" style="width: 100%; padding: 0.8rem; margin-bottom: 1rem; border-radius: 8px; border: none; background: #2a2a2a; color: white;">
+      <option value="user">Usuario</option>
+      <option value="admin">Administrador</option>
+    </select>
+
+    <button id="btn-create-user" style="background: linear-gradient(145deg, #cc0000, #8b0000); color: white; padding: 0.8rem 2rem; border: none; border-radius: 40px; font-weight: bold; cursor: pointer; box-shadow: 0 8px 20px rgba(255,0,0,0.3);">Crear usuario</button>
+  </div>
+
+  <!-- LISTA DE USUARIOS -->
+  <h3 style="color: #ff4d4d;">📋 Usuarios existentes</h3>
+  <div id="users-list" style="background: #1e1e1e; padding: 1.5rem; border-radius: 16px; max-height: 400px; overflow-y: auto;">
+    Cargando usuarios...
+  </div>
+</div>
+
+
 
     <!-- Aquí puedes añadir contenido ADMIN -->
    <div id="admin" class="admin-panel" >
